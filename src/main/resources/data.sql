@@ -1,10 +1,39 @@
---Datos para carga inicial de la base de datos
+--Population of the DB with examples.
 
 --Para giis.demo.tkrun:
 delete from carreras;
-insert into carreras(id,inicio,fin,fecha,descr) values 
-	(100,'2016-10-05','2016-10-25','2016-11-09','finalizada'),
-	(101,'2016-10-05','2016-10-25','2016-11-10','en fase 3'),
-	(102,'2016-11-05','2016-11-09','2016-11-20','en fase 2'),
-	(103,'2016-11-10','2016-11-15','2016-11-21','en fase 1'),
-	(104,'2016-11-11','2016-11-15','2016-11-22','antes inscripcion');
+
+-- Teachers
+INSERT INTO "Teacher" ("teacher_id", "name", "fiscal_id", "email", "phone") VALUES 
+(1, 'Alan Turing', '11111111A', 'alan@uni.ovi.es', '600111222'),
+(2, 'Ada Lovelace', '22222222B', 'ada@uni.ovi.es', '600333444');
+
+-- Professionals
+INSERT INTO "Professional" ("professional_id", "name", "surname", "phone", "email") VALUES 
+(1, 'John', 'Doe', '611222333', 'john@doe.com'),
+(2, 'Jane', 'Smith', '622333444', 'jane@smith.com'),
+(3, 'Carlos', 'Sainz', '633444555', 'carlos@sainz.com');
+
+--Formative Actions
+INSERT INTO "FormativeAction" ("action_id", "name", "objectives", "mainContents", "spots", "startDate", "endDate", "numberOfHours", "inscriptionPeriodStart", "inscriptionPeriodEnd", "location", "fee", "status", "initialPayment", "teacher_id") VALUES 
+(1, 'Java Masterclass', 'Aprender Java', 'POO, Colecciones, JDBC', 20, '2026-05-01', '2026-05-15', '40', '2026-03-01', '2026-04-20', 'Online', 150.00, 'ACTIVE', 800.00, 1),
+(2, 'Bases de Datos SQL', 'Dominar SQLite', 'SELECT, JOIN, Tablas', 15, '2026-01-10', '2026-01-15', '20', '2025-12-01', '2025-12-31', 'Aula 2B', 100.00, 'CLOSED', 500.00, 2);
+
+--Inscriptions
+INSERT INTO "Inscription" ("inscription_id", "inscription_date", "fee", "state", "professional_id", "action_id") VALUES 
+(1, '2026-03-05 10:00:00', 150.00, 'RECEIVED', 1, 1),
+(2, '2026-03-06 11:30:00', 150.00, 'CONFIRMED', 2, 1),
+(3, '2025-12-15 09:00:00', 100.00, 'CONFIRMED', 3, 2);
+
+--Payments
+INSERT INTO "Payment" ("payment_id", "amountPaid", "inscription_id") VALUES 
+(1, 150.00, 2),
+(2, 100.00, 3);
+
+-- Invoices
+INSERT INTO "Invoice" ("invoice_id", "invoice_date", "netAmount", "vat", "totalAmount", "teacher_id", "action_id") VALUES 
+(1, '2026-01-16', 413.22, 86.78, 500.00, 2, 2);
+
+-- TeacherPayments
+INSERT INTO "MoneyMovement" ("movement_id", "movement_date", "amount", "invoice_id") VALUES 
+(1, '2026-01-20 10:00:00', 500.00, 1);
