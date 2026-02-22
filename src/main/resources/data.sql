@@ -19,6 +19,12 @@ INSERT INTO "FormativeAction" ("action_id", "name", "objectives", "mainContents"
 (1, 'Java Masterclass', 'Aprender Java', 'POO, Colecciones, JDBC', 20, '2026-05-01', '2026-05-15', '40', '2026-03-01', '2026-04-20', 'Online', 150.00, 'ACTIVE', 800.00, 1),
 (2, 'Bases de Datos SQL', 'Dominar SQLite', 'SELECT, JOIN, Tablas', 15, '2026-01-10', '2026-01-15', '20', '2025-12-01', '2025-12-31', 'Aula 2B', 100.00, 'CLOSED', 500.00, 2);
 
+--teacherFormativeAction
+INSERT INTO "Teacher_FormativeAction" ("remuneration", "action_id", "teacher_id") 
+VALUES (500.00, 1, 1), 
+(300.00, 1, 2);
+
+
 --Inscriptions
 INSERT INTO "Inscription" ("inscription_id", "inscription_date", "fee", "state", "professional_id", "action_id") VALUES 
 (1, '2026-03-05 10:00:00', 150.00, 'RECEIVED', 1, 1),

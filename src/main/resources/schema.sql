@@ -11,6 +11,8 @@ DROP TABLE IF EXISTS "Inscription";
 DROP TABLE IF EXISTS "FormativeAction";
 DROP TABLE IF EXISTS "Professional";
 DROP TABLE IF EXISTS "Teacher";
+DROP TABLE IF EXISTS "Teacher_FormativeAction";
+
 
 
 CREATE TABLE "Teacher" (
@@ -27,6 +29,16 @@ CREATE TABLE "Professional" (
     "surname" TEXT NOT NULL,
     "phone" TEXT NOT NULL UNIQUE,
     "email" TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE "Teacher_FormativeAction" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "remuneration" REAL NOT NULL,
+    "action_id" INTEGER NOT NULL,
+    "teacher_id" INTEGER NOT NULL,
+    FOREIGN KEY("action_id") REFERENCES "FormativeAction"("action_id"),
+    FOREIGN KEY("teacher_id") REFERENCES "Teacher"("teacher_id"),
+    UNIQUE("action_id", "teacher_id")
 );
 
 CREATE TABLE "FormativeAction" (
