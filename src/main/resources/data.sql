@@ -5,19 +5,19 @@ delete from carreras;
 
 -- Teachers
 INSERT INTO "Teacher" ("teacher_id", "name", "fiscal_id", "email", "phone") VALUES 
-(1, 'Alan Turing', '11111111A', 'alan@uni.ovi.es', '600111222'),
-(2, 'Ada Lovelace', '22222222B', 'ada@uni.ovi.es', '600333444');
+(1, 'Paco', '11111111A', 'pepe@uni.ovi.es', '600111222'),
+(2, 'Mortadelo', '22222222B', 'Mortadelo@uni.ovi.es', '600333444');
 
 -- Professionals
 INSERT INTO "Professional" ("professional_id", "name", "surname", "phone", "email") VALUES 
-(1, 'John', 'Doe', '611222333', 'john@doe.com'),
-(2, 'Jane', 'Smith', '622333444', 'jane@smith.com'),
-(3, 'Carlos', 'Sainz', '633444555', 'carlos@sainz.com');
+(1, 'Pepe', 'viyuela', '611222333', 'pepe@viyuela.com'),
+(2, 'Francisco', 'Ibáñez', '622333444', 'francisco@ibañez.com'),
+(3, 'Filemón', 'Pi', '633444555', 'filemon@pi.com');
 
 --Formative Actions
 INSERT INTO "FormativeAction" ("action_id", "name", "objectives", "mainContents", "spots", "startDate", "endDate", "numberOfHours", "inscriptionPeriodStart", "inscriptionPeriodEnd", "location", "fee", "status", "initialPayment", "teacher_id") VALUES 
-(1, 'Java Masterclass', 'Aprender Java', 'POO, Colecciones, JDBC', 20, '2026-05-01', '2026-05-15', '40', '2026-03-01', '2026-04-20', 'Online', 150.00, 'ACTIVE', 800.00, 1),
-(2, 'Bases de Datos SQL', 'Dominar SQLite', 'SELECT, JOIN, Tablas', 15, '2026-01-10', '2026-01-15', '20', '2025-12-01', '2025-12-31', 'Aula 2B', 100.00, 'CLOSED', 500.00, 2);
+(1, 'Software Engineering', 'Basics of Software Quality', 'Requirements Engineering, Domain Modeling, Process Models', 20, '2026-05-01', '2026-05-15', '40', '2026-03-01', '2026-04-20', 'Online', 150.00, 'ACTIVE', 800.00, 1),
+(2, 'Web Technologies', 'Basics of Web Technologies', 'HTML, CSS, JavaScript, PHP', 15, '2026-01-10', '2026-01-15', '20', '2025-12-01', '2025-12-31', 'Aulario Norte', 100.00, 'CLOSED', 500.00, 2);
 
 --teacherFormativeAction
 INSERT INTO "Teacher_FormativeAction" ("remuneration", "action_id", "teacher_id") 
@@ -36,7 +36,7 @@ INSERT INTO "Payment" ("payment_id", "amountPaid", "inscription_id") VALUES
 (1, 150.00, 2),
 (2, 100.00, 3);
 
--- Invoices
+-- invoices
 INSERT INTO "Invoice" ("invoice_id", "invoice_date", "netAmount", "vat", "totalAmount", "teacher_id", "action_id") VALUES 
 (1, '2026-01-16', 413.22, 86.78, 500.00, 2, 2);
 
