@@ -17,6 +17,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 /**
  * Metodos de utilidad para simplificar las queries realizadas en las clases 
@@ -197,5 +198,20 @@ public abstract class DbUtil {
 			// no causa excepcion intencionaamente
 		}
 	}
+	/*Executes an insert and returns the ID
+     * @return El ID generado (normalmente Integer o Long).
+     */
+    public Object executeInsert(String sql, Object... params){
+        Connection conn = null;
+        try{
+            conn = this.getConnection();
+            QueryRunner runner = new QueryRunner();
+            return runner.insert(conn, sql, new ScalarHandler<>(), params);
+        }catch (SQLException e){
+            throw new UnexpectedException(e);
+        }finally{
+            DbUtils.closeQuietly(conn);
+        }
+    }
 
 }
