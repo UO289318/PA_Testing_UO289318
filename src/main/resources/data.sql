@@ -27,14 +27,16 @@ VALUES (500.00, 1, 1),
 
 --Inscriptions
 INSERT INTO "Inscription" ("inscription_id", "inscription_date", "fee", "state", "professional_id", "action_id") VALUES 
-(1, '2026-03-05 10:00:00', 150.00, 'RECEIVED', 1, 1),
-(2, '2026-03-06 11:30:00', 150.00, 'CONFIRMED', 2, 1),
-(3, '2025-12-15 09:00:00', 100.00, 'CONFIRMED', 3, 2);
+(1, '2026-03-01', 150.00, 'RECEIVED', 1, 1),
+(2, '2026-03-01', 150.00, 'CONFIRMED', 2, 1),
+(3, '2025-12-15', 100.00, 'CONFIRMED', 3, 2),
+(4, '2026-03-02', 150.00, 'RECEIVED', 2, 1),
+(5, '2026-03-03', 150.00, 'RECEIVED', 3, 1);
 
 --Payments
-INSERT INTO "Payment" ("payment_id", "amountPaid", "inscription_id") VALUES 
-(1, 150.00, 2),
-(2, 100.00, 3);
+INSERT INTO "Payment" ("payment_id", "amountPaid", "inscription_id", "payment_date") VALUES 
+(1, 150.00, 2, '2026-03-01'),
+(2, 100.00, 3, '2025-12-15');
 
 -- invoices
 INSERT INTO "Invoice" ("invoice_id", "invoice_date", "netAmount", "vat", "totalAmount", "teacher_id", "action_id") VALUES 
@@ -42,4 +44,4 @@ INSERT INTO "Invoice" ("invoice_id", "invoice_date", "netAmount", "vat", "totalA
 
 -- TeacherPayments
 INSERT INTO "MoneyMovement" ("movement_id", "movement_date", "amount", "invoice_id") VALUES 
-(1, '2026-01-20 10:00:00', 500.00, 1);
+(1, '2026-01-20', 500.00, 1);

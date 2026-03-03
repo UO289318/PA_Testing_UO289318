@@ -75,6 +75,7 @@ CREATE TABLE "Inscription" (
 CREATE TABLE "Payment" (
     "payment_id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "amountPaid" REAL NOT NULL,
+    "payment_date" TEXT NOT NULL,
     "inscription_id" INTEGER NOT NULL,
     FOREIGN KEY("inscription_id") REFERENCES "Inscription"("inscription_id")
 );
