@@ -143,7 +143,7 @@ public class InscriptionsModel {
                          
         db.executeUpdate(sqlDelete, professionalId, actionId, currentDate, futureDate);
         //DEBUG: Quitar luego
-        System.out.println("⏳ PARADOJA RESUELTA: Se limpiaron posibles inscripciones futuras de este usuario.");
+        //System.out.println("PARADOJA RESUELTA: Se limpiaron posibles inscripciones futuras de este usuario.");
     }
 
     /*
@@ -193,11 +193,12 @@ public class InscriptionsModel {
         int enrolledCount = Integer.parseInt(enrolledRows.get(0)[0].toString());
 
         //DEBUG
+        /*
         System.out.println("Intentando matricular nel Cursu ID: " + actionId);
         System.out.println("Places totales (maxSpots): " + maxSpots);
         System.out.println("Xente yá apuntada (enrolledCount): " + enrolledCount);
         System.out.println("---------------------------");
-
+         */
         if(enrolledCount >= maxSpots)
             throw new ApplicationException("This Formative Action is full.");
         
@@ -238,10 +239,11 @@ public class InscriptionsModel {
         String cutoffDateIso = calculateCutoffDate(simulatedDate);
 
         //DEBUG
+        /*
         System.out.println("\n--- ACTUALIZACIÓN DE ESTADOS (VIAJE EN EL TIEMPO) ---");
         System.out.println("Fecha actual simulada: " + Util.dateToIsoString(simulatedDate));
         System.out.println("Fecha de corte (48h antes): " + cutoffDateIso);
-
+         */
         // Buscamos cuántas están en RECEIVED y son vieyas
         String sqlCheckCancel = "SELECT inscription_id FROM Inscription WHERE state = 'RECEIVED' AND inscription_date < ?";
         List<Object[]> aCancelar = db.executeQueryArray(sqlCheckCancel, cutoffDateIso);
@@ -251,12 +253,13 @@ public class InscriptionsModel {
                              + "WHERE state = 'RECEIVED' AND inscription_date < ?";
             db.executeUpdate(sqlCancel, cutoffDateIso);
             //DEBUG, QUITAR LUEGO
-            System.out.println("🔻 CADUCADAS: Se han cancelado " + aCancelar.size() + " inscripciones.");
+            
+            //System.out.println("CADUCADAS: Se han cancelado " + aCancelar.size() + " inscripciones.");
         }
-        else
+        /*else
             //DEBUG, QUITAR LUEGO
-            System.out.println("🔻 CADUCADAS: Ninguna (Todo está al día).");
-       
+            System.out.println("CADUCADAS: Ninguna (Todo está al día).");
+       */
         // Buscamos cuántas están en CANCELLED pero su fecha es POSTERIOR a la de corte
         // Esto es pa los viajes en el tiempo, al cambiar fecha, igual necesitamos cambiar el estado d las inscripciones.
         String sqlCheckRecover = "SELECT inscription_id FROM Inscription WHERE state = 'CANCELLED' AND inscription_date >= ?";
@@ -267,13 +270,14 @@ public class InscriptionsModel {
                               + "WHERE state = 'CANCELLED' AND inscription_date >= ?";
             db.executeUpdate(sqlRecover, cutoffDateIso);
             //DEBUG
-            System.out.println("✅ RECUPERADAS: Se han reactivado " + aRecuperar.size() + " inscripciones (Volviste al pasado).");
-        }
+            //System.out.println("RECUPERADAS: Se han reactivado " + aRecuperar.size() + " inscripciones (Volviste al pasado).");
+        }/*
         else 
         	//DEBUG
             System.out.println("✅ RECUPERADAS: Ninguna.");     
         
         System.out.println("-----------------------------------------------------\n");
+        */
     }
 
     
