@@ -91,6 +91,18 @@ public class SwingMain {
         });
         frame.getContentPane().add(btnEjecutarPagos);
 
+        // --- BOTÓN PA' REGISTRAR PAGOS A PROFESORES (SEGUNDA US) ---
+        JButton btnEjecutarPagosProfesores = new JButton("Registrar Pagos a Profesores");
+        btnEjecutarPagosProfesores.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                g54.si26.teacherpayments.TeacherPaymentModel model = new g54.si26.teacherpayments.TeacherPaymentModel();
+                g54.si26.teacherpayments.TeacherPaymentView view = new g54.si26.teacherpayments.TeacherPaymentView();
+                g54.si26.teacherpayments.TeacherPaymentController controller = new g54.si26.teacherpayments.TeacherPaymentController(model, view);
+                controller.initController();
+            }
+        });
+        frame.getContentPane().add(btnEjecutarPagosProfesores);
+
         // --- BOTONES DE BASE DE DATOS ---
         JButton btnInicializarBaseDeDatos = new JButton("Inicializar Base de Datos en Blanco");
         btnInicializarBaseDeDatos.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
