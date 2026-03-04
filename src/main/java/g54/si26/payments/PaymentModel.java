@@ -6,8 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import g54.si26.DTOs.EnrollmentRecordDTO;
-import giis.demo.util.ApplicationException;
-import giis.demo.util.Database;
+import g54.si26.utils.ApplicationException;
+import g54.si26.utils.Database;
 
 /**
  * Model for the "Register Payments" functionality.

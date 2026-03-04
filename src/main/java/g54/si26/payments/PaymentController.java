@@ -4,8 +4,8 @@ import java.util.List;
 import javax.swing.table.TableModel;
 
 import g54.si26.DTOs.EnrollmentRecordDTO;
-import giis.demo.util.ApplicationException;
-import giis.demo.util.SwingUtil;
+import g54.si26.utils.ApplicationException;
+import g54.si26.utils.SwingUtil;
 
 /**
  * Controller for managing payments and enrollment confirmations.

@@ -1,8 +1,5 @@
 --Population of the DB with examples.
 
---Para giis.demo.tkrun:
-delete from carreras;
-
 -- Teachers
 INSERT INTO "Teacher" ("teacher_id", "name", "fiscal_id", "email", "phone") VALUES 
 (1, 'Paco', '11111111A', 'pepe@uni.ovi.es', '600111222'),
@@ -44,8 +41,11 @@ INSERT INTO "Payment" ("payment_id", "amountPaid", "inscription_id", "payment_da
 
 -- invoices
 INSERT INTO "Invoice" ("invoice_id", "invoice_date", "netAmount", "vat", "totalAmount", "teacher_id", "action_id") VALUES 
-(1, '2026-01-16', 413.22, 86.78, 500.00, 2, 2);
+(1, '2026-01-16', 413.22, 86.78, 500.00, 2, 2),
+(2, '2026-03-01', 800.00, 168.00, 968.00, 1, 1),
+(3, '2026-03-05', 300.00, 63.00, 363.00, 2, 1);
 
--- TeacherPayments
+-- TeacherPayments (Money Movements)
 INSERT INTO "MoneyMovement" ("movement_id", "movement_date", "amount", "invoice_id") VALUES 
-(1, '2026-01-20 10:00:00', 500.00, 1);
+(1, '2026-01-20 10:00:00', 500.00, 1),
+(2, '2026-03-10', 200.00, 3);

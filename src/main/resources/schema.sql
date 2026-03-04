@@ -1,8 +1,4 @@
 
---For giis.demo.tkrun:
-drop table if exists Carreras;
-create table Carreras (idinteger primary key not null, inicio date not null, fin date not null, fecha date not null, descr varchar(32), check(inicio<=fin), check(fin<fecha));
-
 --For the g54.utils DataBases
 DROP TABLE IF EXISTS "MoneyMovement";
 DROP TABLE IF EXISTS "Payment";
