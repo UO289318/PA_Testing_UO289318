@@ -17,7 +17,11 @@ INSERT INTO "Professional" ("professional_id", "name", "surname", "phone", "emai
 --Formative Actions
 INSERT INTO "FormativeAction" ("action_id", "name", "objectives", "mainContents", "spots", "startDate", "endDate", "numberOfHours", "inscriptionPeriodStart", "inscriptionPeriodEnd", "location", "fee", "status", "initialPayment", "teacher_id") VALUES 
 (1, 'Software Engineering', 'Basics of Software Quality', 'Requirements Engineering, Domain Modeling, Process Models', 20, '2026-05-01', '2026-05-15', '40', '2026-03-01', '2026-04-20', 'Online', 150.00, 'ACTIVE', 800.00, 1),
-(2, 'Web Technologies', 'Basics of Web Technologies', 'HTML, CSS, JavaScript, PHP', 15, '2026-01-10', '2026-01-15', '20', '2025-12-01', '2025-12-31', 'Aulario Norte', 100.00, 'CLOSED', 500.00, 2);
+(2, 'Web Technologies', 'Basics of Web Technologies', 'HTML, CSS, JavaScript, PHP', 15, '2026-01-10', '2026-01-15', '20', '2025-12-01', '2025-12-31', 'Aulario Norte', 100.00, 'CLOSED', 500.00, 2),
+(3, 'Testing course', 'Try to repeat the enroll', 'HTML, CSS, JavaScript, PHP', 15, '2026-04-10', '2026-05-15', '20', '2025-12-01', '2026-3-31', 'Aulario Norte', 100.00, 'ACTIVE', 500.00, 2),
+(4, 'Testing course', 'Should only have 1 spot left', 'Lo q tu quieras manin, este curso tien d to', 2, '2026-04-10', '2026-05-15', '20', '2025-12-01', '2026-3-31', 'Aulario Norte', 100.00, 'ACTIVE', 500.00, 2),
+(5, 'Testing course, 0 spots', 'Should only have 0 spot left', 'Lo q tu quieras manin, este curso tien d to', 0, '2026-04-10', '2026-05-15', '20', '2025-12-01', '2026-3-31', 'Aulario Norte', 100.00, 'ACTIVE', 500.00, 2),
+(6, 'Testing course, -1 spots', 'Should only have -1 spot left', 'Lo q tu quieras manin, este curso tien d to', -1, '2026-04-10', '2026-05-15', '20', '2025-12-01', '2026-3-31', 'Aulario Norte', 100.00, 'ACTIVE', 500.00, 2);
 
 --teacherFormativeAction
 INSERT INTO "Teacher_FormativeAction" ("remuneration", "action_id", "teacher_id") 
@@ -44,4 +48,4 @@ INSERT INTO "Invoice" ("invoice_id", "invoice_date", "netAmount", "vat", "totalA
 
 -- TeacherPayments
 INSERT INTO "MoneyMovement" ("movement_id", "movement_date", "amount", "invoice_id") VALUES 
-(1, '2026-01-20', 500.00, 1);
+(1, '2026-01-20 10:00:00', 500.00, 1);

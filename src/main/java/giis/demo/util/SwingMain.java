@@ -64,7 +64,7 @@ public class SwingMain {
 		JButton btnEjecutarSi26 = new JButton("Register Payments (SI26)");
 		btnEjecutarSi26.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new g54.si26.payments.PaymentController(new g54.si26.payments.PaymentView());
+				new g54.si26.payments.PaymentController(new g54.si26.payments.PaymentModel(), new g54.si26.payments.PaymentView()).initController();
 			}
 		});
 		frame.getContentPane().add(btnEjecutarSi26);
