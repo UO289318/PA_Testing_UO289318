@@ -7,7 +7,7 @@ public class TrainingManagerService {
     private final FormativeActionDAO dao = new FormativeActionDAO();
 
     public void planFormativeAction(
-            String name,
+    		String name,
             String objectives,
             String mainContents,
             int spots,

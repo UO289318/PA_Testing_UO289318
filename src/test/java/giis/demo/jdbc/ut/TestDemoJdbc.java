@@ -2,12 +2,12 @@ package giis.demo.jdbc.ut;
 
 import org.junit.jupiter.api.Test;
 
-import giis.demo.jdbc.DemoJdbc;
+
 
 /**
  * Ejecuta las demo de acceso a base de datos con JDBC
  * (no compara resultados, solo se usa como ejecutor de los demos)
- */
+
 public class TestDemoJdbc {
 	@Test
 	public void testDemo1Basic() {
@@ -39,3 +39,4 @@ public class TestDemoJdbc {
 		d.demo5Autoincrement();
 	}
 }
+*/

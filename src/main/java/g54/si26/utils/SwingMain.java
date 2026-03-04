@@ -12,6 +12,9 @@ import javax.swing.JTextField;
 import g54.si26.inscriptions.InscriptionsController;
 import g54.si26.inscriptions.InscriptionsModel;
 import g54.si26.inscriptions.InscriptionsView;
+import g54.si26.payments.PaymentController;
+import g54.si26.payments.PaymentModel;
+import g54.si26.payments.PaymentView;
 
 // Importaciones de la nueva US (Cerrar Acción Formativa)
 // (Asegúrate de que la ruta del paquete es la correcta según tu proyecto)
@@ -61,7 +64,7 @@ public class SwingMain {
         txtSystemDate = new JTextField(Util.dateToIsoString(new Date()));
         frame.getContentPane().add(txtSystemDate);
         
-        // --- BOTÓN P'ARRINCAR LA HISTORIA D'USUARIU: INSCRIPCIONES ---
+        // --- BOTÓN P'ARRINCAR LA TO HISTORIA D'USUARIU ---
         JButton btnEjecutarInscripciones = new JButton("Abrir Inscripción de Profesionales");
         btnEjecutarInscripciones.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
             public void actionPerformed(ActionEvent e) {
@@ -98,7 +101,34 @@ public class SwingMain {
         });
         frame.getContentPane().add(btnCerrarAccion);
         
-        // --- BOTONES DE BASE DE DATOS (Mui útiles pal desendolcu) ---
+        // --- BOTÓN PA' REGISTRAR PAGOS (LA TO US) ---
+        JButton btnEjecutarPagos = new JButton("Registrar Pagos de Profesionales");
+        btnEjecutarPagos.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Instanciamos el MVC de Pagos
+                PaymentModel model = new PaymentModel();
+                PaymentView view = new PaymentView();
+                PaymentController controller = new PaymentController(model, view);
+                
+                // Arrincamos el controlador
+                controller.initController();
+            }
+        });
+        frame.getContentPane().add(btnEjecutarPagos);
+
+        // --- BOTÓN PA' REGISTRAR PAGOS A PROFESORES (SEGUNDA US) ---
+        JButton btnEjecutarPagosProfesores = new JButton("Registrar Pagos a Profesores");
+        btnEjecutarPagosProfesores.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //g54.si26.teacherpayments.TeacherPaymentModel model = new g54.si26.teacherpayments.TeacherPaymentModel();
+                //g54.si26.teacherpayments.TeacherPaymentView view = new g54.si26.teacherpayments.TeacherPaymentView();
+                //g54.si26.teacherpayments.TeacherPaymentController controller = new g54.si26.teacherpayments.TeacherPaymentController(model, view);
+                //controller.initController();
+            }
+        });
+        frame.getContentPane().add(btnEjecutarPagosProfesores);
+
+        // --- BOTONES DE BASE DE DATOS ---
         JButton btnInicializarBaseDeDatos = new JButton("Inicializar Base de Datos en Blanco");
         btnInicializarBaseDeDatos.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
             public void actionPerformed(ActionEvent e) {

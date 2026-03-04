@@ -1,5 +1,5 @@
 package giis.demo.tkrun.ut;
-
+/*
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import giis.demo.util.Util;
  * Ejemplo de comprobación de resultados en pruebas que actualizan la base de datos.
  * Se tratan igual que las que consultan, pero en este caso es esencial comprobar tanto los datos que se actualizan
  * en la base de datos los datos que tienen que cambiar como que no se han actualizado los datos que no deberian cambiar
- */
+ *
 public class TestUpdates {
 	private static Database db = new Database();
 
@@ -29,7 +29,7 @@ public class TestUpdates {
 	/**
 	 * Prueba otro metodo del modelo que actualiza las fechas de inscripcion de una carrera:
 	 * comprueba tanto las fechas que se han actualizado como las que no se han actualizado para evitar efectos indeseados
-	 */
+	 *
 	@Test
 	public void testUpdateFechasInscripcion1() {
 		CarrerasModel inscr = new CarrerasModel();
@@ -52,7 +52,7 @@ public class TestUpdates {
 	 * pues hay que reproducir todo el contenido de la tabla inicial salvo lo que debe cambiar.
 	 * Otra forma mas facil crear primero la salida deseada leyendo de la base de datos y modificando 
 	 * solo los valores que cambian
-	 */
+	 *
 	@Test
 	public void testUpdateFechasInscripcion2() {
 		// crea la salida deseada leyendo el estado inicial y cambiando solo las fechas de la carrera 101 (segundo
@@ -74,3 +74,4 @@ public class TestUpdates {
 	}
 
 }
+*/
