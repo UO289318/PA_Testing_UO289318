@@ -32,6 +32,7 @@ public class FormativeActionDTO {
 	private String status;          
 	private double initialPayment;  
 	private int teacherId;
+	private int availableSpots;
 
 	
 	public FormativeActionDTO(){}
@@ -185,6 +186,25 @@ public class FormativeActionDTO {
 	public void setTeacherId(int teacherId) {
 		this.teacherId = teacherId;
 	}
+
+
+	public int getAvailableSpots() {
+		return availableSpots;
+	}
+
+
+	public void setAvailableSpots(int availableSpots) {
+		this.availableSpots = availableSpots;
+	}
 	
+	public String getEnrolmentPeriod(){
+	    return this.inscriptionPeriodStart + " - " + this.inscriptionPeriodEnd;
+	}
 	
+	public String getAvailabilityStatus() {
+        if (this.availableSpots > 0) 
+            return String.valueOf(this.spots);
+        else 
+            return "Full";
+    }
 }

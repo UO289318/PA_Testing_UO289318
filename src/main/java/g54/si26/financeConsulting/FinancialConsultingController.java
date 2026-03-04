@@ -1,78 +1,116 @@
 package g54.si26.financeConsulting;
 
-import javax.swing.table.DefaultTableModel;
 import java.awt.Color;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import g54.si26.DTOs.FormativeActionDTO;
+import g54.si26.utils.SwingUtil;
+import g54.si26.utils.ApplicationException;
 
 public class FinancialConsultingController {
 
-    private FinancialConsultingView vista;
-    private FinancialConsultingModel modelo;
+    private FinancialConsultingModel model;
+    private FinancialConsultingView view;
+    private String simulatedDateStr;
 
-    public FinancialConsultingController(FinancialConsultingView vista, FinancialConsultingModel modelo) {
-        this.vista = vista;
-        this.modelo = modelo;
-
-        inicializarEventos();
-        // Cargar datos por defecto al iniciar
-        ejecutarConsulta(); 
+    public FinancialConsultingController(FinancialConsultingModel m, FinancialConsultingView v) {
+        this.model = m;
+        this.view = v;
     }
 
-    private void inicializarEventos() {
-        vista.getBtnConsultar().addActionListener(e -> ejecutarConsulta());
+    public void setSimulatedDate(String dateIso) {
+        this.simulatedDateStr = dateIso;
     }
 
-    private void ejecutarConsulta() {
-        String fechaInicio = vista.getTxtFechaInicio().getText();
-        String fechaFin = vista.getTxtFechaFin().getText();
-        String estado = (String) vista.getCbEstado().getSelectedItem();
+    public void initController() {
+        // 1. Load initial view
+        this.initView();
 
-        // 1. Pedir los datos al Modelo
-        List<Object[]> datos = modelo.obtenerReporteFinanciero(fechaInicio, fechaFin, estado);
+        // 2. RadioButtons events (Filters)
+        view.getRbTodos().addActionListener(e -> reloadCoursesCombo("All"));
+        view.getRbActivos().addActionListener(e -> reloadCoursesCombo("Active"));
+        view.getRbNoActivos().addActionListener(e -> reloadCoursesCombo("Not Active"));
 
-        // 2. Llenar la tabla de la Vista
-        DefaultTableModel modeloTabla = vista.getModeloTabla();
-        modeloTabla.setRowCount(0); // Limpiar tabla anterior
+        // 3. "Consult" button event
+        view.getBtnConsultar().addActionListener(e -> {
+            SwingUtil.exceptionWrapper(() -> {
+                FormativeActionDTO selectedAction = (FormativeActionDTO) view.getCbAccionesFormativas().getSelectedItem();
+                if (selectedAction == null) {
+                    throw new ApplicationException("Please, select a valid Formative Action.");
+                }
+                loadCourseDetails(selectedAction.getActionId());
+            });
+        });
+    }
 
-        for (Object[] fila : datos) {
-            modeloTabla.addRow(fila);
+    public void initView() {
+        reloadCoursesCombo("All"); // Initial load
+        view.getFrame().setVisible(true);
+    }
+
+    // Reloads the dropdown depending on the selected filter
+    private void reloadCoursesCombo(String filter) {
+        view.getCbAccionesFormativas().removeAllItems();
+        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus(filter);
+        for (FormativeActionDTO a : actions) {
+            view.getCbAccionesFormativas().addItem(a);
+        }
+        view.resetForm(); // Clear the bottom screen when changing the filter
+    }
+
+    private void loadCourseDetails(int actionId) {
+        // 1. Load basic data
+        Object[] basicData = model.getCourseBasicData(actionId);
+
+        view.getTxtNombre().setText(basicData[0] != null ? basicData[0].toString() : "-");
+        view.getTxtEstado().setText(basicData[1] != null ? basicData[1].toString() : "-");
+        
+        String startPeriod = basicData[2] != null ? basicData[2].toString() : "";
+        String endPeriod = basicData[3] != null ? basicData[3].toString() : "";
+        view.getTxtPeriodo().setText(startPeriod + " to " + endPeriod);
+        
+        view.getTxtFecha().setText(basicData[4] != null ? basicData[4].toString() : "-");
+        view.getTxtPlazasTotales().setText(basicData[5] != null ? basicData[5].toString() : "0");
+        view.getTxtPlazasLibres().setText(basicData[6] != null ? basicData[6].toString() : "0");
+
+        // Check if the enrollment period is open
+        if (simulatedDateStr != null && !startPeriod.isEmpty() && !endPeriod.isEmpty()) {
+            boolean isOpen = (simulatedDateStr.compareTo(startPeriod) >= 0 && simulatedDateStr.compareTo(endPeriod) <= 0);
+            view.getLblMatriculaAbierta().setVisible(isOpen);
         }
 
-        // 3. Calcular y mostrar los totales globales
-        calcularTotalesGlobales(datos);
-    }
+        // 2. Load Movements and Totals
+        List<Object[]> movements = model.getMovements(actionId);
+        DefaultTableModel tableModel = view.getModeloTabla();
+        tableModel.setRowCount(0);
 
-    private void calcularTotalesGlobales(List<Object[]> datos) {
-        double totalIngresosGlobal = 0;
-        double totalGastosGlobal = 0;
+        double totalIncomes = 0.0;
+        double totalExpenses = 0.0;
 
-        for (Object[] fila : datos) {
-            // En nuestra tabla, el Total Ingresos está en el índice 5 y Gastos en el 8
-            totalIngresosGlobal += parsearMonto((String) fila[5]);
-            totalGastosGlobal += parsearMonto((String) fila[8]);
+        for (Object[] row : movements) {
+            String date = row[0].toString();
+            String concept = row[1].toString();
+            double amount = Double.parseDouble(row[2].toString());
+            int isIncome = Integer.parseInt(row[3].toString());
+
+            String qtyStr = (isIncome == 1 ? "+ €" : "- €") + amount;
+            tableModel.addRow(new Object[]{date, concept, qtyStr});
+
+            if (isIncome == 1) totalIncomes += amount;
+            else totalExpenses += amount;
         }
 
-        double balanceGlobal = totalIngresosGlobal - totalGastosGlobal;
+        double balance = totalIncomes - totalExpenses;
 
-        vista.getLblTotalIngresos().setText("Total Ingresos Global: $" + totalIngresosGlobal);
-        vista.getLblTotalGastos().setText("Total Gastos Global: $" + totalGastosGlobal);
-        vista.getLblBalance().setText("BALANCE GENERAL: $" + balanceGlobal);
+        // 3. Update UI
+        view.getLblTotalIngresos().setText("Total Income: €" + totalIncomes);
+        view.getLblTotalGastos().setText("Total Expenses: €" + totalExpenses);
+        view.getLblBalance().setText("Course Balance: €" + balance);
 
-        // Cambiar color del balance
-        if (balanceGlobal >= 0) {
-            vista.getLblBalance().setForeground(new Color(0, 153, 51)); // Verde
+        if (balance >= 0) {
+            view.getLblBalance().setForeground(new Color(0, 153, 51));
         } else {
-            vista.getLblBalance().setForeground(Color.RED);
-        }
-    }
-
-    // Método auxiliar para convertir "$5000.0" a número (5000.0)
-    private double parsearMonto(String montoStr) {
-        if (montoStr == null || montoStr.trim().isEmpty() || montoStr.equals("-")) return 0;
-        try {
-            return Double.parseDouble(montoStr.replace("$", "").trim());
-        } catch (NumberFormatException e) {
-            return 0;
+            view.getLblBalance().setForeground(Color.RED);
         }
     }
 }
