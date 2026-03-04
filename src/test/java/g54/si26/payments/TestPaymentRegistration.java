@@ -11,9 +11,15 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+<<<<<<< HEAD
 import g54.si26.DTOs.*;
 import g54.si26.utils.*;
 
+=======
+import g54.si26.DTOs.EnrollmentRecordDTO;
+import g54.si26.utils.ApplicationException;
+import g54.si26.utils.Database;
+>>>>>>> branch 'main' of https://github.com/uo283213/SI2025-PL54.git
 
 public class TestPaymentRegistration {
     private g54.si26.utils.Database db = new Database();
