@@ -12,8 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import g54.si26.DTOs.EnrollmentRecordDTO;
-import giis.demo.util.ApplicationException;
-import giis.demo.util.Database;
+import g54.si26.utils.ApplicationException;
+import g54.si26.utils.Database;
 
 public class TestPaymentRegistration {
     private Database db = new Database();
