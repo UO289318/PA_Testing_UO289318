@@ -12,9 +12,11 @@ import javax.swing.JTextField;
 import g54.si26.inscriptions.InscriptionsController;
 import g54.si26.inscriptions.InscriptionsModel;
 import g54.si26.inscriptions.InscriptionsView;
+import g54.si26.payments.PaymentController;
+import g54.si26.payments.PaymentModel;
+import g54.si26.payments.PaymentView;
 
 // Importaciones de la nueva US (Cerrar Acción Formativa)
-// (Asegúrate de que la ruta del paquete es la correcta según tu proyecto)
 import g54.si26.closeFormativeActions.*;
 
 import java.awt.event.ActionListener;
@@ -23,8 +25,6 @@ import java.awt.event.ActionEvent;
 /**
  * Puntu d'entrada principal qu'inclúi botones pa la execución de les pantayes 
  * de les aplicaciones d'exemplu y aiciones d'inicialización de la base de datos.
- * Nun sigue MVC pos ye solamente temporal pa que mientres el desendolcu se tenga posibilidá
- * de realizar aiciones d'inicialización.
  */
 public class SwingMain {
 
@@ -51,8 +51,7 @@ public class SwingMain {
     private void initialize() {
         frame = new JFrame();
         frame.setTitle("Menú Principal - G54 SI26");
-        // Ampliamos un poco la ventana para que quepa el nuevo botón (de 250 a 300)
-        frame.setBounds(100, 100, 400, 300); 
+        frame.setBounds(100, 100, 450, 400); 
         frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
         
@@ -65,40 +64,54 @@ public class SwingMain {
         JButton btnEjecutarInscripciones = new JButton("Abrir Inscripción de Profesionales");
         btnEjecutarInscripciones.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
             public void actionPerformed(ActionEvent e) {
-                // Equí instanciamos el nuesu MVC nuevu
                 InscriptionsModel model = new InscriptionsModel();
                 InscriptionsView view = new InscriptionsView();
                 InscriptionsController controller = new InscriptionsController(model, view);
-                
-                // Le pasamos la fecha global al controlador antes de arrancar
                 controller.setSimulatedDate(txtSystemDate.getText());
-                
-                // Arrincamos los listeners del controlador
                 controller.initController(); 
             }
         });
         frame.getContentPane().add(btnEjecutarInscripciones);
         
-        // --- NUEVO BOTÓN: CERRAR ACCIÓN FORMATIVA ---
+        // --- BOTÓN PA' REGISTRAR PAGOS DE PROFESIONALES ---
+        JButton btnEjecutarPagos = new JButton("Registrar Pagos de Profesionales");
+        btnEjecutarPagos.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                PaymentModel model = new PaymentModel();
+                PaymentView view = new PaymentView();
+                PaymentController controller = new PaymentController(model, view);
+                controller.initController();
+            }
+        });
+        frame.getContentPane().add(btnEjecutarPagos);
+
+        // --- BOTÓN PA' REGISTRAR PAGOS A PROFESORES ---
+        JButton btnEjecutarPagosProfesores = new JButton("Registrar Pagos a Profesores");
+        btnEjecutarPagosProfesores.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                g54.si26.teacherpayments.TeacherPaymentModel model = new g54.si26.teacherpayments.TeacherPaymentModel();
+                g54.si26.teacherpayments.TeacherPaymentView view = new g54.si26.teacherpayments.TeacherPaymentView();
+                g54.si26.teacherpayments.TeacherPaymentController controller = new g54.si26.teacherpayments.TeacherPaymentController(model, view);
+                controller.initController();
+            }
+        });
+        frame.getContentPane().add(btnEjecutarPagosProfesores);
+
+        // --- BOTÓN: CERRAR ACCIÓN FORMATIVA ---
         JButton btnCerrarAccion = new JButton("Cerrar Acción Formativa");
         btnCerrarAccion.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Leemos la fecha actual del simulador
                 String fechaSimulada = txtSystemDate.getText();
-                
-                // Instanciamos el MVC de la nueva US
                 ViewCloseFormativeAction viewClose = new ViewCloseFormativeAction();
                 ModelCloseFormativeAction modelClose = new ModelCloseFormativeAction();
                 ControllerCloseFormativeAction controllerClose = new ControllerCloseFormativeAction(viewClose, modelClose, fechaSimulada);
-                
-                // Inicializamos y mostramos la ventana
                 controllerClose.initController();
                 viewClose.getFrame().setVisible(true);
             }
         });
         frame.getContentPane().add(btnCerrarAccion);
         
-        // --- BOTONES DE BASE DE DATOS (Mui útiles pal desendolcu) ---
+        // --- BOTONES DE BASE DE DATOS ---
         JButton btnInicializarBaseDeDatos = new JButton("Inicializar Base de Datos en Blanco");
         btnInicializarBaseDeDatos.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
             public void actionPerformed(ActionEvent e) {

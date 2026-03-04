@@ -1,7 +1,5 @@
 --Population of the DB with examples.
 
---Para giis.demo.tkrun:
---delete from carreras;
 -- Teachers
 INSERT INTO "Teacher" ("teacher_id", "name", "fiscal_id", "email", "phone") VALUES 
 (1, 'Paco', '11111111A', 'pepe@uni.ovi.es', '600111222'),
@@ -35,24 +33,27 @@ INSERT INTO "Teacher_FormativeAction" ("remuneration", "action_id", "teacher_id"
 
 -- Inscriptions
 INSERT INTO "Inscription" ("inscription_id", "inscription_date", "fee", "state", "professional_id", "action_id") VALUES 
-(1, '2026-03-05 10:00:00', 150.00, 'RECEIVED', 1, 1),
-(2, '2026-03-06 11:30:00', 150.00, 'CONFIRMED', 2, 1),
-(3, '2025-12-15 09:00:00', 100.00, 'CONFIRMED', 3, 2),
-(4, '2025-11-15 10:00:00', 100.00, 'RECEIVED', 1, 8);
+(1, '2026-03-01', 150.00, 'RECEIVED', 1, 1),
+(2, '2026-03-01', 150.00, 'CONFIRMED', 2, 1),
+(3, '2025-12-15', 100.00, 'CONFIRMED', 3, 2),
+(4, '2026-03-02', 150.00, 'RECEIVED', 2, 1),
+(5, '2026-03-03', 150.00, 'RECEIVED', 3, 1),
+(6, '2025-11-15', 100.00, 'RECEIVED', 1, 8);
 
 -- Payments
-INSERT INTO "Payment" ("payment_id", "amountPaid", "inscription_id") VALUES 
-(1, 150.00, 2),
-(2, 100.00, 3);
+INSERT INTO "Payment" ("payment_id", "amountPaid", "inscription_id", "payment_date") VALUES 
+(1, 150.00, 2, '2026-03-01'),
+(2, 100.00, 3, '2025-12-15');
 
 -- invoices 
 INSERT INTO "Invoice" ("invoice_id", "invoice_date", "netAmount", "vat", "totalAmount", "status", "teacher_id", "action_id") VALUES 
 (1, '2026-01-16', 413.22, 86.78, 500.00, 'PAID', 2, 2),
 (2, '2026-02-20', 300.00, 63.00, 363.00, 'PAID', 1, 8),    
-(3, '2026-02-20', 300.00, 63.00, 363.00, 'PENDING', 1, 9); 
+(3, '2026-02-20', 300.00, 63.00, 363.00, 'PENDING', 1, 9),
+(4, '2026-03-01', 800.00, 168.00, 968.00, 'PENDING', 1, 1),
+(5, '2026-03-05', 300.00, 63.00, 363.00, 'PENDING', 2, 1); 
 
 -- TeacherPayments (MoneyMovement)
 INSERT INTO "MoneyMovement" ("movement_id", "movement_date", "amount", "invoice_id") VALUES 
-(1, '2026-01-20 10:00:00', 500.00, 1);
-
-
+(1, '2026-01-20 10:00:00', 500.00, 1),
+(2, '2026-03-10', 200.00, 5);
