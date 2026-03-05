@@ -1,7 +1,6 @@
 
 --For giis.demo.tkrun:
-drop table if exists Carreras;
-create table Carreras (idinteger primary key not null, inicio date not null, fin date not null, fecha date not null, descr varchar(32), check(inicio<=fin), check(fin<fecha));
+--drop table if exists Carreras;
 
 --For the g54.utils DataBases
 DROP TABLE IF EXISTS "MoneyMovement";
@@ -34,6 +33,7 @@ CREATE TABLE "Professional" (
 CREATE TABLE "Teacher_FormativeAction" (
     "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "remuneration" REAL NOT NULL,
+    "status" TEXT,
     "action_id" INTEGER NOT NULL,
     "teacher_id" INTEGER NOT NULL,
     FOREIGN KEY("action_id") REFERENCES "FormativeAction"("action_id"),
@@ -86,6 +86,7 @@ CREATE TABLE "Invoice" (
     "netAmount" REAL NOT NULL,
     "vat" REAL NOT NULL,
     "totalAmount" REAL NOT NULL,
+    "status" TEXT,
     "teacher_id" INTEGER NOT NULL,
     "action_id" INTEGER NOT NULL,
     FOREIGN KEY("action_id") REFERENCES "FormativeAction"("action_id"),

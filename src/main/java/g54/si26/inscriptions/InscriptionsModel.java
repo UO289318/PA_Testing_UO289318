@@ -143,6 +143,7 @@ public class InscriptionsModel {
                          
         db.executeUpdate(sqlDelete, professionalId, actionId, currentDate, futureDate);
         //DEBUG: Quitar luego
+ 
         System.out.println("⏳ PARADOJA RESUELTA: Se limpiaron posibles inscripciones futuras de este usuario.");
     }
 
@@ -274,7 +275,15 @@ public class InscriptionsModel {
             System.out.println("✅ RECUPERADAS: Ninguna.");     
         
         System.out.println("-----------------------------------------------------\n");
+
+        //System.out.println("PARADOJA RESUELTA: Se limpiaron posibles inscripciones futuras de este usuario.");
     }
+
+    /*
+     * Gets a professional with their email.
+     * Si nun existe, facemos l'INSERT y recuperamos la ID buscando pol email.
+     */
+ 
 
     
 

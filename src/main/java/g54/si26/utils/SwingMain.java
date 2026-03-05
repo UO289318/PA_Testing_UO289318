@@ -8,10 +8,13 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+
 import g54.si26.inscriptions.InscriptionsController;
 import g54.si26.inscriptions.InscriptionsModel;
 import g54.si26.inscriptions.InscriptionsView;
-
+import g54.si26.closeFormativeActions.ControllerCloseFormativeAction;
+import g54.si26.closeFormativeActions.ModelCloseFormativeAction;
+import g54.si26.closeFormativeActions.ViewCloseFormativeAction;
 import g54.si26.financeConsulting.*;
 import g54.si26.tmConsulting.*;
 
@@ -45,11 +48,14 @@ public class SwingMain {
     public SwingMain() {
         initialize();
     }
+    
+
 
     private void initialize() {
         frame = new JFrame();
         frame.setTitle("Menú Principal - G54 SI26");
-        frame.setBounds(100, 100, 400, 250);
+        // Ampliamos un poco la ventana para que quepa el nuevo botón (de 250 a 300)
+        frame.setBounds(100, 100, 400, 300); 
         frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
         
@@ -58,7 +64,7 @@ public class SwingMain {
         txtSystemDate = new JTextField(Util.dateToIsoString(new Date()));
         frame.getContentPane().add(txtSystemDate);
         
-        // --- BOTÓN P'ARRINCAR LA TO HISTORIA D'USUARIU ---
+        // --- BOTÓN P'ARRINCAR LA HISTORIA D'USUARIU: INSCRIPCIONES ---
         JButton btnEjecutarInscripciones = new JButton("Abrir Inscripción de Profesionales");
         btnEjecutarInscripciones.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
             public void actionPerformed(ActionEvent e) {
@@ -74,6 +80,48 @@ public class SwingMain {
                 controller.initController(); 
             }
         });
+        frame.getContentPane().add(btnEjecutarInscripciones);
+        
+        // --- NUEVO BOTÓN: CERRAR ACCIÓN FORMATIVA ---
+        JButton btnCerrarAccion = new JButton("Cerrar Acción Formativa");
+        btnCerrarAccion.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Leemos la fecha actual del simulador
+                String fechaSimulada = txtSystemDate.getText();
+                
+                // Instanciamos el MVC de la nueva US
+                ViewCloseFormativeAction viewClose = new ViewCloseFormativeAction();
+                ModelCloseFormativeAction modelClose = new ModelCloseFormativeAction();
+                ControllerCloseFormativeAction controllerClose = new ControllerCloseFormativeAction(viewClose, modelClose, fechaSimulada);
+                
+                // Inicializamos y mostramos la ventana
+                controllerClose.initController();
+                viewClose.getFrame().setVisible(true);
+            }
+        });
+        frame.getContentPane().add(btnCerrarAccion);
+
+        
+        // --- BOTONES DE BASE DE DATOS (Mui útiles pal desendolcu) ---
+        JButton btnInicializarBaseDeDatos = new JButton("Inicializar Base de Datos en Blanco");
+        btnInicializarBaseDeDatos.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
+            public void actionPerformed(ActionEvent e) {
+                Database db = new Database();
+                db.createDatabase(false);
+            }
+        });
+        frame.getContentPane().add(btnInicializarBaseDeDatos);
+            
+        JButton btnCargarDatosIniciales = new JButton("Cargar Datos Iniciales pa Pruebes");
+        btnCargarDatosIniciales.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
+            public void actionPerformed(ActionEvent e) {
+                Database db = new Database();
+                db.createDatabase(false);
+                db.loadDatabase();
+            }
+        });
+        frame.getContentPane().add(btnCargarDatosIniciales);
+        
         
         JButton btnExecuteSecretaryConsult = new JButton("Secretary Consult");
         btnExecuteSecretaryConsult.addActionListener(new ActionListener() {
@@ -106,30 +154,10 @@ public class SwingMain {
                 controller.initController(); 
             }
         });
-        
+        frame.getContentPane().add(btnExecuteTMConsult);
         frame.getContentPane().add(btnEjecutarInscripciones);
         frame.getContentPane().add(btnExecuteSecretaryConsult);
-        frame.getContentPane().add(btnExecuteTMConsult);
         
-        // --- BOTONES DE BASE DE DATOS (Mui útiles pal desendolcu) ---
-        JButton btnInicializarBaseDeDatos = new JButton("Inicializar Base de Datos en Blanco");
-        btnInicializarBaseDeDatos.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
-            public void actionPerformed(ActionEvent e) {
-                Database db = new Database();
-                db.createDatabase(false);
-            }
-        });
-        frame.getContentPane().add(btnInicializarBaseDeDatos);
-            
-        JButton btnCargarDatosIniciales = new JButton("Cargar Datos Iniciales pa Pruebes");
-        btnCargarDatosIniciales.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
-            public void actionPerformed(ActionEvent e) {
-                Database db = new Database();
-                db.createDatabase(false);
-                db.loadDatabase();
-            }
-        });
-        frame.getContentPane().add(btnCargarDatosIniciales);
     }
 
     public JFrame getFrame() { return this.frame; }

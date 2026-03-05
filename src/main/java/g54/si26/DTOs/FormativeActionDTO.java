@@ -33,6 +33,9 @@ public class FormativeActionDTO {
 	private double initialPayment;  
 	private int teacherId;
 	private int availableSpots;
+	private int unhandledRegistrations;
+	private String teacherInvoicesStatus;
+
 
 	
 	public FormativeActionDTO(){}
@@ -95,11 +98,6 @@ public class FormativeActionDTO {
 
 	public void setStartDate(String startDate) {
 		this.startDate = startDate;
-	}
-
-
-	public String getEndDate() {
-		return endDate;
 	}
 
 
@@ -201,10 +199,44 @@ public class FormativeActionDTO {
 	    return this.inscriptionPeriodStart + " - " + this.inscriptionPeriodEnd;
 	}
 	
+
 	public String getAvailabilityStatus() {
         if (this.availableSpots > 0) 
             return String.valueOf(this.spots);
         else 
             return "Full";
     }
+
+	public int getUnhandledRegistrations() {
+		return unhandledRegistrations;
+	}
+
+
+	public void setUnhandledRegistrations(int unhandledRegistrations) {
+		this.unhandledRegistrations = unhandledRegistrations;
+	}
+
+
+	public String getTeacherInvoicesStatus() {
+		return teacherInvoicesStatus;
+	}
+
+
+	public void setTeacherInvoicesStatus(String teacherInvoicesStatus) {
+		this.teacherInvoicesStatus = teacherInvoicesStatus;
+	}
+	
+	
+	// El getter que tú hiciste (calculando +1 día)
+    public String getEndDate() {
+        if (this.startDate == null || this.startDate.isEmpty()) return "";
+        try {
+            java.time.LocalDate date = java.time.LocalDate.parse(this.startDate.substring(0, 10));
+            return date.plusDays(1).toString();
+        } catch (Exception e) {
+            return this.startDate; 
+        }
+    }
+
+
 }
