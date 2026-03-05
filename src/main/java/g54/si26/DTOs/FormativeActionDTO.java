@@ -36,6 +36,7 @@ public class FormativeActionDTO {
 	private int unhandledRegistrations;
 	private String teacherInvoicesStatus;
 
+
 	
 	public FormativeActionDTO(){}
 
@@ -194,7 +195,18 @@ public class FormativeActionDTO {
 		this.availableSpots = availableSpots;
 	}
 	
+	public String getEnrolmentPeriod(){
+	    return this.inscriptionPeriodStart + " - " + this.inscriptionPeriodEnd;
+	}
 	
+
+	public String getAvailabilityStatus() {
+        if (this.availableSpots > 0) 
+            return String.valueOf(this.spots);
+        else 
+            return "Full";
+    }
+
 	public int getUnhandledRegistrations() {
 		return unhandledRegistrations;
 	}
@@ -213,18 +225,7 @@ public class FormativeActionDTO {
 	public void setTeacherInvoicesStatus(String teacherInvoicesStatus) {
 		this.teacherInvoicesStatus = teacherInvoicesStatus;
 	}
-
-
-	public String getEnrolmentPeriod(){
-	    return this.inscriptionPeriodStart + " - " + this.inscriptionPeriodEnd;
-	}
 	
-	public String getAvailabilityStatus() {
-        if (this.availableSpots > 0) 
-            return String.valueOf(this.spots);
-        else 
-            return "Full";
-    }
 	
 	// El getter que tú hiciste (calculando +1 día)
     public String getEndDate() {
@@ -236,5 +237,6 @@ public class FormativeActionDTO {
             return this.startDate; 
         }
     }
+
 
 }

@@ -1,4 +1,3 @@
-
 INSERT INTO "Teacher" ("teacher_id", "name", "fiscal_id", "email", "phone") VALUES
 (1, 'Claudio', '11111111A', 'claudio@coiipa.com', '600111111'),
 (2, 'Raquel', '22222222B', 'raquel@coiipa.com', '600222222');

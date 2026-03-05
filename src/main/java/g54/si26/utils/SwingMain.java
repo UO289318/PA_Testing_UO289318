@@ -10,12 +10,11 @@ import javax.swing.JTextField;
 
 // Importaciones de la US de Inscripciones
 import g54.si26.inscriptions.*;
-
 import g54.si26.payments.*;
 import g54.si26.teacherpayments.*;
-
-// Importaciones de la nueva US (Cerrar Acción Formativa)
+import g54.si26.tmConsulting.*;
 import g54.si26.closeFormativeActions.*;
+import g54.si26.financeConsulting.*;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -45,12 +44,14 @@ public class SwingMain {
     public SwingMain() {
         initialize();
     }
+    
+
+
 
     private void initialize() {
         frame = new JFrame();
         frame.setTitle("Menú Principal - G54 SI26");
-        // Ampliamos un poco la ventana para que quepa el nuevo botón (de 250 a 300)
-        frame.setBounds(100, 100, 400, 300); 
+        frame.setBounds(100, 100, 450, 400); 
         frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
         
@@ -109,6 +110,7 @@ public class SwingMain {
             }
         });
         frame.getContentPane().add(btnCerrarAccion);
+
         
         // --- BOTONES DE BASE DE DATOS ---
         JButton btnInicializarBaseDeDatos = new JButton("Inicializar Base de Datos en Blanco");
@@ -129,6 +131,43 @@ public class SwingMain {
             }
         });
         frame.getContentPane().add(btnCargarDatosIniciales);
+        
+        
+        JButton btnExecuteSecretaryConsult = new JButton("Secretary Consult");
+        btnExecuteSecretaryConsult.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Equí instanciamos el nuesu MVC 
+                FinancialConsultingModel model = new FinancialConsultingModel();
+                FinancialConsultingView view = new FinancialConsultingView();
+                FinancialConsultingController controller = new FinancialConsultingController(model, view);
+                
+                // Le pasamos la fecha global al controlador antes de arrancar
+                controller.setSimulatedDate(txtSystemDate.getText());
+                
+                // Arrincamos los listeners del controlador
+                controller.initController(); 
+            }
+        });
+        
+        JButton btnExecuteTMConsult = new JButton("Training Manager Consult");
+        btnExecuteTMConsult.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Equí instanciamos el nuesu MVC nuevu
+                TMConsultingModel model = new TMConsultingModel();
+                TMConsultingView view = new TMConsultingView();
+                TMConsultingController controller = new TMConsultingController(model, view);
+                
+                // Le pasamos la fecha global al controlador antes de arrancar
+                controller.setSimulatedDate(txtSystemDate.getText());
+                
+                // Arrincamos los listeners del controlador
+                controller.initController(); 
+            }
+        });
+        frame.getContentPane().add(btnExecuteTMConsult);
+        frame.getContentPane().add(btnEjecutarInscripciones);
+        frame.getContentPane().add(btnExecuteSecretaryConsult);
+        
     }
 
     public JFrame getFrame() { return this.frame; }
