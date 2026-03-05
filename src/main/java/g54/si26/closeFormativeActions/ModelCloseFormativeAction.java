@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import g54.si26.DTOs.CloseValidationDTO;
-import g54.si26.DTOs.FormativeActionDTO;
+import g54.si26.DTOs.*;
 import g54.si26.utils.Database;
 import g54.si26.utils.Util;
 

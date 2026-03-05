@@ -1,59 +1,37 @@
---Population of the DB with examples.
 
--- Teachers
-INSERT INTO "Teacher" ("teacher_id", "name", "fiscal_id", "email", "phone") VALUES 
-(1, 'Paco', '11111111A', 'pepe@uni.ovi.es', '600111222'),
-(2, 'Mortadelo', '22222222B', 'Mortadelo@uni.ovi.es', '600333444');
+INSERT INTO "Teacher" ("teacher_id", "name", "fiscal_id", "email", "phone") VALUES
+(1, 'Claudio', '11111111A', 'claudio@coiipa.com', '600111111'),
+(2, 'Raquel', '22222222B', 'raquel@coiipa.com', '600222222');
 
--- Professionals
-INSERT INTO "Professional" ("professional_id", "name", "surname", "phone", "email") VALUES 
-(1, 'Pepe', 'viyuela', '611222333', 'pepe@viyuela.com'),
-(2, 'Francisco', 'Ibáñez', '622333444', 'francisco@ibañez.com'),
-(3, 'Filemón', 'Pi', '633444555', 'filemon@pi.com');
+INSERT INTO "Professional" ("professional_id", "name", "surname", "phone", "email") VALUES
+(1, 'Alice', 'Martínez', '611223344', 'alice@test.com'),
+(2, 'Marta', 'Rodriguez', '611223355', 'marta@test.com'),
+(3, 'Fanjul', 'García', '611223366', 'fanjul@test.com'),
+(4, 'Mateo', 'Martínez', '611223377', 'mateo@test.com');
 
--- Formative Actions
-INSERT INTO "FormativeAction" ("action_id", "name", "objectives", "mainContents", "spots", "startDate", "endDate", "numberOfHours", "inscriptionPeriodStart", "inscriptionPeriodEnd", "location", "fee", "status", "initialPayment", "teacher_id") VALUES 
-(1, 'Software Engineering', 'Basics of Software Quality', 'Requirements Engineering...', 20, '2026-05-01', '2026-05-15', '40', '2026-03-01', '2026-04-20', 'Online', 150.00, 'ACTIVE', 800.00, 1),
-(2, 'Web Technologies', 'Basics of Web Technologies', 'HTML, CSS, JavaScript, PHP', 15, '2026-01-10', '2026-01-15', '20', '2025-12-01', '2025-12-31', 'Aulario Norte', 100.00, 'CLOSED', 500.00, 2),
-(3, 'Testing course', 'Try to repeat the enroll', 'HTML, CSS, JavaScript, PHP', 15, '2026-04-10', '2026-05-15', '20', '2025-12-01', '2026-3-31', 'Aulario Norte', 100.00, 'ACTIVE', 500.00, 2),
-(4, 'Testing course', 'Should only have 1 spot left', 'Lo q tu quieras manin', 2, '2026-04-10', '2026-05-15', '20', '2025-12-01', '2026-3-31', 'Aulario Norte', 100.00, 'ACTIVE', 500.00, 2),
-(5, 'Testing course, 0 spots', 'Should only have 0 spot left', 'Lo q tu quieras manin', 0, '2026-04-10', '2026-05-15', '20', '2025-12-01', '2026-3-31', 'Aulario Norte', 100.00, 'ACTIVE', 500.00, 2),
-(6, 'Testing course, -1 spots', 'Should only have -1 spot left', 'Lo q tu quieras manin', -1, '2026-04-10', '2026-05-15', '20', '2025-12-01', '2026-3-31', 'Aulario Norte', 100.00, 'ACTIVE', 500.00, 2),
-(7, 'Perfect Course (Ready)', 'All paid, no pending', 'Test 100% OK', 20, '2026-01-01', '2026-02-15', '40', '2025-11-01', '2025-12-01', 'Online', 100.00, 'ACTIVE', 100.00, 1),
-(8, 'Warning Course', 'Has RECEIVED inscriptions', 'Test Warnings', 20, '2026-01-01', '2026-02-15', '40', '2025-11-01', '2025-12-01', 'Online', 100.00, 'ACTIVE', 100.00, 1),
-(9, 'Blocked Course', 'Teacher not paid', 'Test Blocked', 20, '2026-01-01', '2026-02-15', '40', '2025-11-01', '2025-12-01', 'Online', 100.00, 'ACTIVE', 100.00, 1);
+INSERT INTO "FormativeAction" ("action_id", "name", "objectives", "mainContents", "spots", "startDate", "endDate", "numberOfHours", "inscriptionPeriodStart", "inscriptionPeriodEnd", "location", "fee", "status", "initialPayment", "teacher_id") VALUES
+(1, 'New Testing Techniques', 'Learn new testing techniques', 'TDD, BDD, JUnit', 4, '2025-09-01', '2025-09-02', '24', '2025-07-01', '2025-07-31', 'Online', 200.00, 'CLOSED', 200.00, 1),
+(2, 'Neo4J Database Administration', 'Databases basics', 'Neo4J, Cypher', 3, '2026-03-27', '2026-03-28', '24', '2026-02-23', '2026-03-13', 'Aulario Sur', 150.00, 'ACTIVE', 150.00, 2);
 
--- teacherFormativeAction
-INSERT INTO "Teacher_FormativeAction" ("remuneration", "action_id", "teacher_id", "status") VALUES 
-(500.00, 1, 1, 'PENDING'), 
-(300.00, 1, 2, 'PENDING'),
-(400.00, 7, 1, 'PAID'),      
-(400.00, 8, 1, 'PAID'),      
-(400.00, 9, 1, 'PENDING');   
+INSERT INTO "Teacher_FormativeAction" ("remuneration", "status", "action_id", "teacher_id") VALUES
+(500.00, 'PAID', 1, 1),
+(300.00, 'PENDING', 2, 2);
 
--- Inscriptions
-INSERT INTO "Inscription" ("inscription_id", "inscription_date", "fee", "state", "professional_id", "action_id") VALUES 
-(1, '2026-03-01', 150.00, 'RECEIVED', 1, 1),
-(2, '2026-03-01', 150.00, 'CONFIRMED', 2, 1),
-(3, '2025-12-15', 100.00, 'CONFIRMED', 3, 2),
-(4, '2026-03-02', 150.00, 'RECEIVED', 2, 1),
-(5, '2026-03-03', 150.00, 'RECEIVED', 3, 1),
-(6, '2025-11-15', 100.00, 'RECEIVED', 1, 8);
+INSERT INTO "Inscription" ("inscription_id", "inscription_date", "fee", "state", "professional_id", "action_id") VALUES
+(1, '2025-07-15', 200.00, 'CONFIRMED', 1, 1),
+(2, '2025-07-30', 200.00, 'CONFIRMED', 2, 1),
+(3, '2026-02-23', 150.00, 'CONFIRMED', 2, 2),
+(4, '2026-02-25', 150.00, 'CONFIRMED', 3, 2),
+(5, '2026-03-05', 150.00, 'RECEIVED', 4, 2);
 
--- Payments
-INSERT INTO "Payment" ("payment_id", "amountPaid", "inscription_id", "payment_date") VALUES 
-(1, 150.00, 2, '2026-03-01'),
-(2, 100.00, 3, '2025-12-15');
+INSERT INTO "Payment" ("payment_id", "amountPaid", "payment_date", "inscription_id") VALUES
+(1, 200.00, '2025-07-16', 1),
+(2, 200.00, '2025-08-01', 2),
+(3, 150.00, '2026-02-24', 3),
+(4, 150.00, '2026-03-01', 4);
 
--- invoices 
-INSERT INTO "Invoice" ("invoice_id", "invoice_date", "netAmount", "vat", "totalAmount", "status", "teacher_id", "action_id") VALUES 
-(1, '2026-01-16', 413.22, 86.78, 500.00, 'PAID', 2, 2),
-(2, '2026-02-20', 300.00, 63.00, 363.00, 'PAID', 1, 8),    
-(3, '2026-02-20', 300.00, 63.00, 363.00, 'PENDING', 1, 9),
-(4, '2026-03-01', 800.00, 168.00, 968.00, 'PENDING', 1, 1),
-(5, '2026-03-05', 300.00, 63.00, 363.00, 'PENDING', 2, 1); 
+INSERT INTO "Invoice" ("invoice_id", "invoice_date", "netAmount", "vat", "totalAmount", "status", "teacher_id", "action_id") VALUES
+(1, '2025-09-03', 413.22, 86.78, 500.00, 'PAID', 1, 1);
 
--- TeacherPayments (MoneyMovement)
-INSERT INTO "MoneyMovement" ("movement_id", "movement_date", "amount", "invoice_id") VALUES 
-(1, '2026-01-20 10:00:00', 500.00, 1);
-(2, '2026-03-10', 200.00, 5);
+INSERT INTO "MoneyMovement" ("movement_id", "movement_date", "amount", "invoice_id") VALUES
+(1, '2025-09-05', 500.00, 1);

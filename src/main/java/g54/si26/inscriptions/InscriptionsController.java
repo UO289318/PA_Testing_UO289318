@@ -16,7 +16,6 @@ import g54.si26.utils.SwingUtil;
 import g54.si26.utils.Util;
 
 //Controlador pa la US d'Inscripciones.
-
 public class InscriptionsController {
 
     private InscriptionsModel model;
@@ -62,33 +61,34 @@ public class InscriptionsController {
     
     // Método para inyectar la fecha desde el SwingMain
     public void setSimulatedDate(String dateIso){
-    		this.simulatedDateStr = dateIso;
+            this.simulatedDateStr = dateIso;
     }
 
     public void initView(){
         // Cargar los usuarios en el dropdown
-    		List<ProfessionalDTO> users = model.getAllProfessionals(); 
-    		view.getCbUsuarios().addItem(null);//Elemento vacío por defecto
-    		for(ProfessionalDTO u : users) 
-    			view.getCbUsuarios().addItem(u);
+            List<ProfessionalDTO> users = model.getAllProfessionals(); 
+            view.getCbUsuarios().addItem(null);//Elemento vacío por defecto
+            for(ProfessionalDTO u : users) 
+                view.getCbUsuarios().addItem(u);
         
         //Cargamos la tabla na más abrir la ventana
-    		this.loadCourses();
+            this.loadCourses();
         
         //Abre la ventana
-    		view.getFrame().setVisible(true); 
+            view.getFrame().setVisible(true); 
     }
 
 
     public void loadCourses(){
-    		Date simulatedDate = Util.isoStringToDate(this.simulatedDateStr);
+        // ⏱️ Usamos la nueva fecha híbrida (Día del calendario + Hora real)
+        Date simulatedDate = getHybridSimulatedDate();
         
         // Pasamos la fecha simulada para liberar las caducadas
-    		model.checkAndReleaseExpiredBookings(simulatedDate);
+            model.checkAndReleaseExpiredBookings(simulatedDate);
         
         // Traemos los cursos
-    		List<FormativeActionDTO> courses = model.getAvailableCourses(simulatedDate);        
-    		String[] columnProperties = {"actionId", "name", "enrolmentPeriod", "fee", "availabilityStatus"};
+            List<FormativeActionDTO> courses = model.getAvailableCourses(simulatedDate);        
+            String[] columnProperties = {"actionId", "name", "enrolmentPeriod", "fee", "availabilityStatus"};
         
         TableModel tmodel = SwingUtil.getTableModelFromPojos(courses, columnProperties);
         view.getTablaCursos().setModel(tmodel);
@@ -99,9 +99,8 @@ public class InscriptionsController {
         view.getTablaCursos().getColumnModel().getColumn(3).setHeaderValue("Fee (€)");
         view.getTablaCursos().getColumnModel().getColumn(4).setHeaderValue("Places");
         
-        
         // Ajuste manual d las columnns
-        // ID is hidden for the review, onlfy for DEBUG
+        // ID is hidden for the review, only for DEBUG
         view.getTablaCursos().getColumnModel().getColumn(0).setMinWidth(0);
         view.getTablaCursos().getColumnModel().getColumn(0).setMaxWidth(0);
         view.getTablaCursos().getColumnModel().getColumn(0).setPreferredWidth(0);
@@ -128,14 +127,14 @@ public class InscriptionsController {
                 String status = table.getModel().getValueAt(row, 4).toString();
                 
                 if (!isSelected){ 
-                		//Full Courses
+                        //Full Courses
                     if ("Full".equals(status)){
-                    		c.setBackground(new Color(235, 235, 235));
-                    		c.setForeground(Color.GRAY);
+                            c.setBackground(new Color(235, 235, 235));
+                            c.setForeground(Color.GRAY);
                     }
                     else{
-                    		c.setBackground(table.getBackground());
-                    		// If it's the Places column, we add green color if there are still places
+                            c.setBackground(table.getBackground());
+                            // If it's the Places column, we add green color if there are still places
                         if (column == 4)
                             c.setForeground(new Color(0, 128, 0)); 
                          else 
@@ -143,8 +142,8 @@ public class InscriptionsController {
                     }
                 }
                 else{
-                		c.setForeground(table.getSelectionForeground());
-                		c.setBackground(table.getSelectionBackground());
+                        c.setForeground(table.getSelectionForeground());
+                        c.setBackground(table.getSelectionBackground());
                 }
                 return c;
             }
@@ -153,18 +152,18 @@ public class InscriptionsController {
 
    
     public void processEnrollment(){
-    		int selectedRow = view.getTablaCursos().getSelectedRow(); 
+            int selectedRow = view.getTablaCursos().getSelectedRow(); 
         if(selectedRow == -1)
-        		throw new ApplicationException("Please, select a Formative Action to progress");
+                throw new ApplicationException("Please, select a Formative Action to progress");
         
         int actionId;
         String feeStr;
         try{
-        		String selectedKey = view.getTablaCursos().getValueAt(selectedRow, 0).toString();
-        		actionId = Integer.parseInt(selectedKey);
-        		feeStr = view.getTablaCursos().getValueAt(selectedRow, 3).toString(); 
+                String selectedKey = view.getTablaCursos().getValueAt(selectedRow, 0).toString();
+                actionId = Integer.parseInt(selectedKey);
+                feeStr = view.getTablaCursos().getValueAt(selectedRow, 3).toString(); 
         }catch (Exception e){
-        		throw new ApplicationException("Error reading course data from the table. Data might be corrupted.");
+                throw new ApplicationException("Error reading course data from the table. Data might be corrupted.");
         }
         
         ProfessionalDTO alumno = new ProfessionalDTO();
@@ -173,11 +172,36 @@ public class InscriptionsController {
         alumno.setPhone(view.getTxtPhone());
         alumno.setEmail(view.getTxtEmail());
 
-        // Receive the simulated Date and send it to the enrollment
-        Date simulatedDate = Util.isoStringToDate(this.simulatedDateStr);
+        // ⏱️ Usamos la nueva fecha híbrida (Día del calendario + Hora real)
+        Date simulatedDate = getHybridSimulatedDate();
+        
         model.enrollProfessional(alumno, actionId, simulatedDate);
         view.showSuccessMessage(feeStr);
         view.resetForm();
         loadCourses();
+    }
+    
+    // --- MÉTODO PRIVADO: INYECCIÓN DE HORA REAL ---
+    /*
+     * Coge la fecha simulada (que viene con las 00:00:00 por defecto) 
+     * y le inyecta la hora, minuto y segundo actuales del ordenador.
+     */
+    private Date getHybridSimulatedDate() {
+        Date baseDate = Util.isoStringToDate(this.simulatedDateStr);
+        if (baseDate == null) {
+            return new Date(); // Fallback de seguridad
+        }
+
+        java.util.Calendar calSimulado = java.util.Calendar.getInstance();
+        calSimulado.setTime(baseDate);
+
+        java.util.Calendar calReal = java.util.Calendar.getInstance();
+
+        // Inyectamos la hora exacta
+        calSimulado.set(java.util.Calendar.HOUR_OF_DAY, calReal.get(java.util.Calendar.HOUR_OF_DAY));
+        calSimulado.set(java.util.Calendar.MINUTE, calReal.get(java.util.Calendar.MINUTE));
+        calSimulado.set(java.util.Calendar.SECOND, calReal.get(java.util.Calendar.SECOND));
+
+        return calSimulado.getTime();
     }
 }

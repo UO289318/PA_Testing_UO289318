@@ -23,6 +23,9 @@ public class ConcurrencyTest {
         db.executeUpdate("DELETE FROM Inscription WHERE action_id = 99");
         db.executeUpdate("DELETE FROM FormativeAction WHERE action_id = 99");
         
+        db.executeUpdate("DELETE FROM Professional WHERE phone = '600000001'");
+        db.executeUpdate("DELETE FROM Professional WHERE phone = '600000002'");
+        
         // Insertamos un curso de prueba (ID 99) con SOLO 2 PLAZAS
         db.executeUpdate("INSERT INTO FormativeAction (action_id, name, spots, startDate, endDate, numberOfHours, inscriptionPeriodStart, inscriptionPeriodEnd, location, fee, status, teacher_id) "
                        + "VALUES (99, 'Curso Test Concurrencia', 2, '2026-05-01', '2026-05-15', '10', '2025-01-01', '2026-12-31', 'Online', 100.0, 'ACTIVE', 1)");
