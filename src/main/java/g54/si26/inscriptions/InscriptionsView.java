@@ -68,7 +68,7 @@ public class InscriptionsView {
         btnLoadCourses.setBackground(new Color(230, 230, 230));
         btnLoadCourses.setForeground(Color.BLACK);
         btnLoadCourses.setName("btnLoadCourses");
-        topPanel.add(btnLoadCourses);
+        //topPanel.add(btnLoadCourses);
 
         // TABLE SECTION
         JPanel centerPanel = new JPanel();

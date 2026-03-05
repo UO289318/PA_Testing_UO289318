@@ -19,12 +19,12 @@ public class ModelCloseFormativeAction {
     //Loads the table taking into account the current date.
     public List<FormativeActionDTO> getUnclosedCourses(Date simulatedDate){
         	List<FormativeActionDTO> courses = new ArrayList<>();
-        	String simulatedDateStr = Util.dateToIsoString(simulatedDate);
+        	String simulatedDateStr = Util.dateToIsoString(simulatedDate) + " 23:59:59";
         
         	//SQL takig into account the current date
         	String sql = "SELECT fa.action_id AS actionId, fa.name, fa.startDate, fa.status, " +
                      "date(fa.startDate, '+1 day') AS calculatedEndDate, " +
-                     "(SELECT count(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state = 'RECEIVED' AND i.inscription_date <= ?) AS unhandledCount, " +
+                     "(SELECT count(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state IN ('RECEIVED', 'CANCELLED') AND i.inscription_date <= ?) AS unhandledCount, " +
                      "(SELECT inv.status FROM Invoice inv WHERE inv.action_id = fa.action_id AND inv.invoice_date <= ? LIMIT 1) AS invoiceStatus " +
                      "FROM FormativeAction fa " +
                      "WHERE fa.status != 'CLOSED' OR ? < date(fa.startDate, '+1 day')";
@@ -69,7 +69,7 @@ public class ModelCloseFormativeAction {
     //Validation of the course: 1 Blocked and 3 Warning scenarios.
     	public CloseValidationDTO validateClosure(int actionId, Date simulatedDate){
     		CloseValidationDTO result = new CloseValidationDTO();
-    		String simulatedDateStr = Util.dateToIsoString(simulatedDate);
+    		String simulatedDateStr = Util.dateToIsoString(simulatedDate) + " 23:59:59";
 
     		try (Connection conn = db.getConnection()){
     			// BLOCKED If it's before the endDate
@@ -93,7 +93,7 @@ public class ModelCloseFormativeAction {
     			}
 
     			// WARNING 1: Registrations unhandled (Ignorando las del futuro)
-    			String sqlReg = "SELECT count(*) AS unhandled FROM Inscription WHERE action_id = ? AND state = 'RECEIVED' AND inscription_date <= ?";
+    			String sqlReg = "SELECT count(*) AS unhandled FROM Inscription WHERE action_id = ? AND state IN ('RECEIVED', 'CANCELLED') AND inscription_date <= ?";
     			try (PreparedStatement pstmt = conn.prepareStatement(sqlReg)){
     				pstmt.setInt(1, actionId);
     				pstmt.setString(2, simulatedDateStr);

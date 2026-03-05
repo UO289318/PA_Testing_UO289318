@@ -20,7 +20,7 @@ INSERT INTO "Inscription" ("inscription_id", "inscription_date", "fee", "state",
 (1, '2025-07-15', 200.00, 'CONFIRMED', 1, 1),
 (2, '2025-07-30', 200.00, 'CONFIRMED', 2, 1),
 (3, '2026-02-23', 150.00, 'CONFIRMED', 2, 2),
-(4, '2026-02-25', 150.00, 'CONFIRMED', 3, 2),
+(4, '2026-02-25', 150.00, 'RECEIVED', 3, 2),
 (5, '2026-03-05', 150.00, 'RECEIVED', 4, 2);
 
 INSERT INTO "Payment" ("payment_id", "amountPaid", "payment_date", "inscription_id") VALUES

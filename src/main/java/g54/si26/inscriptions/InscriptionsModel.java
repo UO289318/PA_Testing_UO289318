@@ -17,32 +17,32 @@ public class InscriptionsModel {
     private Database db = new Database();
     
     //Gets the list of availablee Formative Actions for the given date (It must be available for the given date and in the enrolment period) 
-    	public List<FormativeActionDTO> getAvailableCourses(Date currentDate){
-    		validateNotNull(currentDate, "The consult date cannot be null");
+    public List<FormativeActionDTO> getAvailableCourses(Date currentDate){
+        validateNotNull(currentDate, "The consult date cannot be null");
         
-    		//Since the Closed attribute has no date, we'll show the FA that are also closed for the given date if it's within the
-    		//enrolment period since a course cannot be closed before endinf¡g.
-    		String sql = "SELECT action_id AS actionId, name, spots, fee, "
+        String sql = "SELECT action_id AS actionId, name, spots, fee, "
                    + "startDate, endDate, inscriptionPeriodStart, inscriptionPeriodEnd, status "
                    + "FROM FormativeAction "
                    + "WHERE status IN ('ACTIVE', 'CLOSED') "
+                   // Aquí las horas dan igual porque PeriodStart y End no suelen tener horas en la BD
                    + "AND ? >= inscriptionPeriodStart "
                    + "AND ? <= inscriptionPeriodEnd";
 
-    		String d = Util.dateToIsoString(currentDate);
-    		List<FormativeActionDTO> courses = db.executeQueryPojo(FormativeActionDTO.class, sql, d, d);
+        // Control de hrs
+        String d = dateToTimestamp(currentDate); 
+        
+        List<FormativeActionDTO> courses = db.executeQueryPojo(FormativeActionDTO.class, sql, d, d);
 
-    		//We check CONFIRMED and RESERVED until now. Ingoring the future. 
-    		for(FormativeActionDTO course : courses){
-    			String sqlEnrolled = "SELECT COUNT(*) FROM Inscription WHERE action_id = ? AND state IN ('RECEIVED', 'CONFIRMED') AND inscription_date <= ?";
-    			List<Object[]> result = db.executeQueryArray(sqlEnrolled, course.getActionId(), d);
-            
-    			int enrolledCount = Integer.parseInt(result.get(0)[0].toString());
-    			int availableSpots = course.getSpots() - enrolledCount;
+        for(FormativeActionDTO course : courses){
+            String sqlEnrolled = "SELECT COUNT(*) FROM Inscription WHERE action_id = ? AND state IN ('RECEIVED', 'CONFIRMED') AND inscription_date <= ?";
+            List<Object[]> result = db.executeQueryArray(sqlEnrolled, course.getActionId(), d);
+        
+            int enrolledCount = Integer.parseInt(result.get(0)[0].toString());
+            int availableSpots = course.getSpots() - enrolledCount;
             course.setAvailableSpots(availableSpots);
-    		}
-    		return courses;
-    	}
+        }
+        return courses;
+    }
     
 
     	//Returns the professionals for the dropdown
@@ -126,12 +126,12 @@ public class InscriptionsModel {
      * Deletes the inscription if there was any new inscription in the next 48 wrkn hors.
      * Only used if we make a trip to the past and we need to adjust the present or the future. 
      */
-    	private void clearFutureParadox(int professionalId, int actionId, Date simulatedDate){
-    		String currentDate = Util.dateToIsoString(simulatedDate);
-    		String futureDate = calculateFutureDate(simulatedDate);
+    private void clearFutureParadox(int professionalId, int actionId, Date simulatedDate){
+        // Consult with hrs
+        String currentDate = dateToTimestamp(simulatedDate); 
+        String futureDate = calculateFutureDate(simulatedDate);
         
-    		// Borramos si la inscripción dl usuario es estrictamente mayor q la simulada y menor q +48h
-    		//Delete if the inscription is not within the simulated date and the next 48h 
+        // Delete if the inscription is not within the simulated date and the next 48h 
         String sqlDelete = "DELETE FROM Inscription "
                          + "WHERE professional_id = ? AND action_id = ? "
                          + "AND inscription_date > ? AND inscription_date <= ?";
@@ -169,53 +169,55 @@ public class InscriptionsModel {
     }
 
 
-    // Checks if there's any places left comparing spots with COUNT of paid and received inscriptions.
-    	private void validateAvailableSpots(int actionId, Date simulatedDate){
-    		String sqlMaxSpots = "SELECT spots, status FROM FormativeAction WHERE action_id = ?";
-    		List<Object[]> maxSpotsRows = db.executeQueryArray(sqlMaxSpots, actionId);
+ // Checks if there's any places left comparing spots with COUNT of paid and received inscriptions.
+    private void validateAvailableSpots(int actionId, Date simulatedDate){
+        String sqlMaxSpots = "SELECT spots, status FROM FormativeAction WHERE action_id = ?";
+        List<Object[]> maxSpotsRows = db.executeQueryArray(sqlMaxSpots, actionId);
         
-    		if(maxSpotsRows.isEmpty() || maxSpotsRows.get(0)[0] == null)
-    			throw new ApplicationException("This Formative Action does not exist or could not be found");
+        if(maxSpotsRows.isEmpty() || maxSpotsRows.get(0)[0] == null)
+            throw new ApplicationException("This Formative Action does not exist or could not be found");
         
-    		String status = maxSpotsRows.get(0)[1].toString();
-    		//We allow CLOSED courses to reopen if we are within the enrolment period
-    		if(!"ACTIVE".equals(status) && !"CLOSED".equals(status)) 
-    			throw new ApplicationException("Security Error: The Formative Action is not available for enrollment.");
+        String status = maxSpotsRows.get(0)[1].toString();
+        //We allow CLOSED courses to reopen if we are within the enrolment period
+        if(!"ACTIVE".equals(status) && !"CLOSED".equals(status)) 
+            throw new ApplicationException("Security Error: The Formative Action is not available for enrollment.");
         
-    		int maxSpots = Integer.parseInt(maxSpotsRows.get(0)[0].toString());
+        int maxSpots = Integer.parseInt(maxSpotsRows.get(0)[0].toString());
         
-    		//Check for free places
-    		String simulatedDateStr = Util.dateToIsoString(simulatedDate);
-    		String sqlEnrolledCount = "SELECT COUNT(*) FROM Inscription WHERE action_id = ? AND state IN ('RECEIVED', 'CONFIRMED') AND inscription_date <= ?";
-    		List<Object[]> enrolledRows = db.executeQueryArray(sqlEnrolledCount, actionId, simulatedDateStr);
-    		int enrolledCount = Integer.parseInt(enrolledRows.get(0)[0].toString());
+        // Consult with hrs
+        String simulatedDateStr = dateToTimestamp(simulatedDate); 
+        
+        String sqlEnrolledCount = "SELECT COUNT(*) FROM Inscription WHERE action_id = ? AND state IN ('RECEIVED', 'CONFIRMED') AND inscription_date <= ?";
+        List<Object[]> enrolledRows = db.executeQueryArray(sqlEnrolledCount, actionId, simulatedDateStr);
+        int enrolledCount = Integer.parseInt(enrolledRows.get(0)[0].toString());
 
-    		if(enrolledCount >= maxSpots)
-    			throw new ApplicationException("This Formative Action is full.");
+        if(enrolledCount >= maxSpots)
+            throw new ApplicationException("This Formative Action is full.");
+    }
+
+ // Checks if there's no duplicated inscriptions.
+    private void validateNoDuplicateEnrollment(int professionalId, int actionId, Date simulatedDate){
+        // Consult with hrs
+        String simulatedDateStr = dateToTimestamp(simulatedDate); 
         
-    	}
+        String sql = "SELECT inscription_id AS inscriptionId FROM Inscription "
+                    + "WHERE professional_id = ? AND action_id = ? AND state != 'CANCELLED' AND inscription_date <= ?";
 
-    	// Checks if there's no duplicated inscriptions.
-    	private void validateNoDuplicateEnrollment(int professionalId, int actionId, Date simulatedDate){
-    		String simulatedDateStr = Util.dateToIsoString(simulatedDate);
-    		String sql = "SELECT inscription_id AS inscriptionId FROM Inscription "
-    					+ "WHERE professional_id = ? AND action_id = ? AND state != 'CANCELLED' AND inscription_date <= ?";
-
-    		List<InscriptionDTO> inscripciones = db.executeQueryPojo(InscriptionDTO.class, sql, professionalId, actionId, simulatedDateStr);
-    		if(!inscripciones.isEmpty())
-    			throw new ApplicationException("The professional is already enrolled (and active) in the Formative Action");
-    	}
+        List<InscriptionDTO> inscripciones = db.executeQueryPojo(InscriptionDTO.class, sql, professionalId, actionId, simulatedDateStr);
+        if(!inscripciones.isEmpty())
+            throw new ApplicationException("The professional is already enrolled (and active) in the Formative Action");
+    }
 
     	// Inserts the new inscription with date and received data, and triggers the Butterfly Effect.
     	private void createInscription(int professionalId, int actionId, Date simulatedDate){
-    		String simulatedDateStr = Util.dateToIsoString(simulatedDate);
+    		// Save hrs
+    		String simulatedDateStr = dateToTimestamp(simulatedDate); 
 
-    		//Create new inscription with state RECEIVED
     		String sqlInsertInsc = "INSERT INTO Inscription (inscription_date, fee, state, professional_id, action_id) "
-                             + "SELECT ?, fee, 'RECEIVED', ?, ? "
-                             + "FROM FormativeAction WHERE action_id = ?";
+    							+ "SELECT ?, fee, 'RECEIVED', ?, ? "
+    							+ "FROM FormativeAction WHERE action_id = ?";
     		db.executeUpdate(sqlInsertInsc, simulatedDateStr, professionalId, actionId, actionId);
-
+            
     		//If someone enrols in a closed FA, we reopen it since now there is an unhandled registration.
     		String sqlReactivate = "UPDATE FormativeAction SET status = 'ACTIVE' WHERE action_id = ? AND status = 'CLOSED'";
     		db.executeUpdate(sqlReactivate, actionId);
@@ -243,15 +245,18 @@ public class InscriptionsModel {
         		String inscDateStr = row[1].toString();
         		String payDateStr = row[2].toString(); 
         		String currentState = row[3].toString();
-            
-        		//48 wrkng hrs
-        		Date inscDate = Util.isoStringToDate(inscDateStr);
+                
+        		//Auxiliary method for the hrs
+        		Date inscDate = timestampToDate(inscDateStr);
         		String maxValidDateStr = calculateFutureDate(inscDate);
 
-            if(payDateStr.compareTo(maxValidDateStr) > 0)
+        		// Checkin the hrs
+        		if(payDateStr.length() == 10)
+        			payDateStr += " 00:00:00";
+        		if(payDateStr.compareTo(maxValidDateStr) > 0)
                 db.executeUpdate("UPDATE Inscription SET state = 'CANCELLED' WHERE inscription_id = ?", id);
-            else 
-            		//Pays in time
+        		else 
+        			//Pays in time
             		if ("RECEIVED".equals(currentState)) 
             			db.executeUpdate("UPDATE Inscription SET state = 'CONFIRMED' WHERE inscription_id = ?", id);
             
@@ -264,6 +269,22 @@ public class InscriptionsModel {
         db.executeUpdate("UPDATE Inscription SET state = 'RECEIVED' WHERE state = 'CANCELLED' AND inscription_date >= ?", cutoffDateIso);
     }
 
+    	private String dateToTimestamp(Date date) {
+    		if (date == null)
+    			return null;
+    		return new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
+    	}
+
+    	private Date timestampToDate(String timestamp) {
+    		if (timestamp == null) return null;
+    		try {
+    			// Si viene de datos antiguos que no tienen hora, le añadimos las 00:00:00 para que no explote
+    			if (timestamp.length() == 10) timestamp += " 00:00:00"; 
+    				return new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(timestamp);
+    		} catch (Exception e) {
+    			return new Date();
+    		}
+    	}
     
 
     /* De uso general para validacion de objetos */
