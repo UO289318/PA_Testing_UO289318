@@ -16,181 +16,174 @@ import g54.si26.utils.ApplicationException;
 import g54.si26.utils.SwingUtil;
 import g54.si26.utils.Util;
 
-//Controlador pa la US d'Inscripciones.
+//Controller for the inscriptions
 public class InscriptionsController {
 
-    private InscriptionsModel model;
-    private InscriptionsView view;
-    private String simulatedDateStr;
+    	private InscriptionsModel model;
+    	private InscriptionsView view;
+    	private String simulatedDateStr;
 
-    public InscriptionsController(InscriptionsModel m, InscriptionsView v){
-        this.model = m;
-        this.view = v;
-    }
+    	public InscriptionsController(InscriptionsModel m, InscriptionsView v){
+    		this.model = m;
+    		this.view = v;
+    	}
 
-    //DEBUG FOR Multiple USERS
-    public void initController(){
+    	
+    	public void initController(){
         this.initView(); 
         
-        //Botón pa recargar la llistina de cursos según la fecha simulada
+        //Button to reload the list
         view.getBtnLoadCourses().addActionListener(
             e -> SwingUtil.exceptionWrapper(() -> loadCourses())
         );
 
-        //Botón p'arrincar el procesu d'inscripción
-        view.getBtnEnroll().addActionListener(
-            e -> SwingUtil.exceptionWrapper(() -> processEnrollment())
-        );
+        	//Button to enrol
+        	view.getBtnEnroll().addActionListener(
+        		e -> SwingUtil.exceptionWrapper(() -> processEnrollment())
+        	);
         
-        view.getBtnBack().addActionListener(
+        	//Back button
+        	view.getBtnBack().addActionListener(
             e -> view.getFrame().dispose()
         );
             
-        // Evento para autocompletar formulario al seleccionar usuario del Dropdown
-        view.getCbUsuarios().addItemListener(e -> {
-            if(e.getStateChange() == ItemEvent.SELECTED){
-                ProfessionalDTO selectedUser = (ProfessionalDTO) view.getCbUsuarios().getSelectedItem();
-                if(selectedUser != null){
-                    view.setTxtName(selectedUser.getName());
-                    view.setTxtSurname(selectedUser.getSurname());
-                    view.setTxtPhone(selectedUser.getPhone());
-                    view.setTxtEmail(selectedUser.getEmail());
-                }
-            }
-        });
-    }
+        	//Autocomplete user
+        	view.getCbUsuarios().addItemListener(e -> {
+        		if(e.getStateChange() == ItemEvent.SELECTED){
+        			ProfessionalDTO selectedUser = (ProfessionalDTO) view.getCbUsuarios().getSelectedItem();
+        			if(selectedUser != null){
+        				view.setTxtName(selectedUser.getName());
+        				view.setTxtSurname(selectedUser.getSurname());
+        				view.setTxtPhone(selectedUser.getPhone());
+        				view.setTxtEmail(selectedUser.getEmail());
+        			}
+        		}
+        	});
+    	}
     
-    // Método para inyectar la fecha desde el SwingMain
-    public void setSimulatedDate(String dateIso){
-            this.simulatedDateStr = dateIso;
-    }
+    	//Get date from swingMain
+    	public void setSimulatedDate(String dateIso){
+    		this.simulatedDateStr = dateIso;
+    	}
 
-    public void initView(){
-        // Cargar los usuarios en el dropdown
-            List<ProfessionalDTO> users = model.getAllProfessionals(); 
-            view.getCbUsuarios().addItem(null);//Elemento vacío por defecto
-            for(ProfessionalDTO u : users) 
-                view.getCbUsuarios().addItem(u);
+    	public void initView(){
+    		//Load users from dropdown
+    		List<ProfessionalDTO> users = model.getAllProfessionals(); 
+    		view.getCbUsuarios().addItem(null);
+    		for(ProfessionalDTO u : users) 
+    			view.getCbUsuarios().addItem(u);
         
-        //Cargamos la tabla na más abrir la ventana
-            this.loadCourses();
-        
-        //Abre la ventana
-            view.getFrame().setVisible(true); 
+    		//Load the courses and open window 
+    		this.loadCourses();
+        view.getFrame().setVisible(true); 
     }
 
 
     public void loadCourses(){
-        // ⏱️ Usamos la nueva fecha híbrida (Día del calendario + Hora real)
-        Date simulatedDate = getHybridSimulatedDate();
+    		//simulate date process
+        	Date simulatedDate = getHybridSimulatedDate();
+        model.checkAndReleaseExpiredBookings(simulatedDate);
         
-        // Pasamos la fecha simulada para liberar las caducadas
-            model.checkAndReleaseExpiredBookings(simulatedDate);
+        //Get the courses
+        	List<FormativeActionDTO> courses = model.getAvailableCourses(simulatedDate);        
+        	String[] columnProperties = {"actionId", "name", "enrolmentPeriod", "fee", "availabilityStatus"};
+        	TableModel tmodel = SwingUtil.getTableModelFromPojos(courses, columnProperties);
+        	view.getTablaCursos().setModel(tmodel);
         
-        // Traemos los cursos
-            List<FormativeActionDTO> courses = model.getAvailableCourses(simulatedDate);        
-            String[] columnProperties = {"actionId", "name", "enrolmentPeriod", "fee", "availabilityStatus"};
+        	// Hide unused and show Important
+        	view.getTablaCursos().getColumnModel().getColumn(1).setHeaderValue("Course Name");
+        	view.getTablaCursos().getColumnModel().getColumn(2).setHeaderValue("Enrollment Period");
+        	view.getTablaCursos().getColumnModel().getColumn(3).setHeaderValue("Fee (€)");
+        	view.getTablaCursos().getColumnModel().getColumn(4).setHeaderValue("Places");
+        	// ID is hidden for the review, only for DEBUG
+        	view.getTablaCursos().getColumnModel().getColumn(0).setMinWidth(0);
+        	view.getTablaCursos().getColumnModel().getColumn(0).setMaxWidth(0);
+        	view.getTablaCursos().getColumnModel().getColumn(0).setPreferredWidth(0);
         
-        TableModel tmodel = SwingUtil.getTableModelFromPojos(courses, columnProperties);
-        view.getTablaCursos().setModel(tmodel);
+        	//Name
+        	view.getTablaCursos().getColumnModel().getColumn(1).setPreferredWidth(200);
         
-        // 2. CABECERAS LIMPIAS Y PROFESIONALES
-        view.getTablaCursos().getColumnModel().getColumn(1).setHeaderValue("Course Name");
-        view.getTablaCursos().getColumnModel().getColumn(2).setHeaderValue("Enrollment Period");
-        view.getTablaCursos().getColumnModel().getColumn(3).setHeaderValue("Fee (€)");
-        view.getTablaCursos().getColumnModel().getColumn(4).setHeaderValue("Places");
+        	// Enrolment period
+        	view.getTablaCursos().getColumnModel().getColumn(2).setPreferredWidth(170);
         
-        // Ajuste manual d las columnns
-        // ID is hidden for the review, only for DEBUG
-        view.getTablaCursos().getColumnModel().getColumn(0).setMinWidth(0);
-        view.getTablaCursos().getColumnModel().getColumn(0).setMaxWidth(0);
-        view.getTablaCursos().getColumnModel().getColumn(0).setPreferredWidth(0);
+        	//Fee and Places
+        	view.getTablaCursos().getColumnModel().getColumn(3).setPreferredWidth(70);
+        	view.getTablaCursos().getColumnModel().getColumn(4).setPreferredWidth(90);
         
-        //Name
-        view.getTablaCursos().getColumnModel().getColumn(1).setPreferredWidth(200);
-        
-        // Enrolment period
-        view.getTablaCursos().getColumnModel().getColumn(2).setPreferredWidth(170);
-        
-        //Fee and Places
-        view.getTablaCursos().getColumnModel().getColumn(3).setPreferredWidth(70);
-        view.getTablaCursos().getColumnModel().getColumn(4).setPreferredWidth(90);
-        
-        // Grey for Full courses, Green otherwise
-        view.getTablaCursos().setDefaultRenderer(Object.class, new DefaultTableCellRenderer(){
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, 
-                    boolean isSelected, boolean hasFocus, int row, int column){
-                
-                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                
-                // Read availabilityStatus, hidden for review, only for DEBUG
-                String status = table.getModel().getValueAt(row, 4).toString();
-                
-                if (!isSelected){ 
-                        //Full Courses
-                    if ("Full".equals(status)){
-                            c.setBackground(new Color(235, 235, 235));
-                            c.setForeground(Color.GRAY);
-                    }
-                    else{
-                            c.setBackground(table.getBackground());
-                            // If it's the Places column, we add green color if there are still places
-                        if (column == 4)
-                            c.setForeground(new Color(0, 128, 0)); 
-                         else 
-                            c.setForeground(Color.BLACK);
-                    }
-                }
-                else{
-                        c.setForeground(table.getSelectionForeground());
-                        c.setBackground(table.getSelectionBackground());
-                }
-                return c;
-            }
+        	// Grey for Full courses, Green otherwise
+        	view.getTablaCursos().setDefaultRenderer(Object.class, new DefaultTableCellRenderer(){
+	        	@Override
+	        	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
+	            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+	            
+	            // Read availabilityStatus, hidden for review, only for DEBUG
+	            String status = table.getModel().getValueAt(row, 4).toString();
+	            if (!isSelected){ 
+	            		//Full Courses
+	            		if ("Full".equals(status)){
+	            			c.setBackground(new Color(235, 235, 235));
+	            			c.setForeground(Color.GRAY);
+	            		}
+	            		else{
+	            			c.setBackground(table.getBackground());
+	            			// If it's the Places column, we add green color if there are still places
+	            			if (column == 4)
+	            				c.setForeground(new Color(0, 128, 0)); 
+	            			else 
+	            				c.setForeground(Color.BLACK);
+	            		}
+	            }
+	            else{
+	            		c.setForeground(table.getSelectionForeground());
+	            		c.setBackground(table.getSelectionBackground());
+	            }
+	            return c;
+	        	}
         });
     }
 
-   
+    //Enrollmen process
     public void processEnrollment(){
-            int selectedRow = view.getTablaCursos().getSelectedRow(); 
-        if(selectedRow == -1)
-                throw new ApplicationException("Please, select a Formative Action to progress");
+    		int selectedRow = view.getTablaCursos().getSelectedRow(); 
+    		if(selectedRow == -1)
+    			throw new ApplicationException("Please, select a Formative Action to progress");
         
-        int actionId;
-        String feeStr;
-        try{
-                String selectedKey = view.getTablaCursos().getValueAt(selectedRow, 0).toString();
-                actionId = Integer.parseInt(selectedKey);
-                feeStr = view.getTablaCursos().getValueAt(selectedRow, 3).toString(); 
-        }catch (Exception e){
-                throw new ApplicationException("Error reading course data from the table. Data might be corrupted.");
-        }
+    		int actionId;
+    		String feeStr;
+    		try{
+    			String selectedKey = view.getTablaCursos().getValueAt(selectedRow, 0).toString();
+    			actionId = Integer.parseInt(selectedKey);
+    			feeStr = view.getTablaCursos().getValueAt(selectedRow, 3).toString(); 
+    		}catch (Exception e){
+    			throw new ApplicationException("Error reading course data from the table. Data might be corrupted.");
+    		}
         
-        ProfessionalDTO alumno = new ProfessionalDTO();
-        alumno.setName(view.getTxtName());
-        alumno.setSurname(view.getTxtSurname());
-        alumno.setPhone(view.getTxtPhone());
-        alumno.setEmail(view.getTxtEmail());
-
-        // ⏱️ Usamos la nueva fecha híbrida (Día del calendario + Hora real)
-        Date simulatedDate = getHybridSimulatedDate();
+    		ProfessionalDTO alumno = new ProfessionalDTO();
+    		alumno.setName(view.getTxtName());
+    		alumno.setSurname(view.getTxtSurname());
+    		alumno.setPhone(view.getTxtPhone());
+    		alumno.setEmail(view.getTxtEmail());
+    		
+    		//Use the date system 
+    		Date simulatedDate = getHybridSimulatedDate();
         
-        model.enrollProfessional(alumno, actionId, simulatedDate);
-        view.showSuccessMessage(feeStr);
-        view.resetForm();
-        loadCourses();
-    }
+    		model.enrollProfessional(alumno, actionId, simulatedDate);
+    		view.showSuccessMessage(feeStr);
+    		view.resetForm();
+    		loadCourses();
+    	}
     
-    // --- MÉTODO PRIVADO: INYECCIÓN DE HORA REAL ---
-    /*
-     * Coge la fecha simulada (que viene con las 00:00:00 por defecto) 
-     * y le inyecta la hora, minuto y segundo actuales del ordenador.
-     */
-    private Date getHybridSimulatedDate() {
-        Date baseDate = Util.isoStringToDate(this.simulatedDateStr);
-        if (baseDate == null) {
-            return new Date(); // Fallback de seguridad
+    //Internal date system to add correctly the hrs. 
+    	private Date getHybridSimulatedDate() {
+    		//Si el usuario borró la fecha, devolvemos el día actual.
+    		if (this.simulatedDateStr == null || this.simulatedDateStr.trim().isEmpty()) 
+    			return new Date();
+    		Date baseDate;
+    		try {
+    			baseDate = Util.isoStringToDate(this.simulatedDateStr);
+    			if (baseDate == null) return new Date();
+    		} catch (Exception e) {
+    			return new Date(); 
         }
 
         java.util.Calendar calSimulado = java.util.Calendar.getInstance();
@@ -198,7 +191,7 @@ public class InscriptionsController {
 
         java.util.Calendar calReal = java.util.Calendar.getInstance();
 
-        // Inyectamos la hora exacta
+        // Metemos la hora exacta
         calSimulado.set(java.util.Calendar.HOUR_OF_DAY, calReal.get(java.util.Calendar.HOUR_OF_DAY));
         calSimulado.set(java.util.Calendar.MINUTE, calReal.get(java.util.Calendar.MINUTE));
         calSimulado.set(java.util.Calendar.SECOND, calReal.get(java.util.Calendar.SECOND));

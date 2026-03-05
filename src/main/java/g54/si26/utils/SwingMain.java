@@ -50,18 +50,18 @@ public class SwingMain {
 
     private void initialize() {
         frame = new JFrame();
-        frame.setTitle("Menú Principal - G54 SI26");
+        frame.setTitle("Main Window - G54 SI26");
         frame.setBounds(100, 100, 450, 400); 
         frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
         
         // --- FECHA SIMULADA GLOBAL ---
-        frame.getContentPane().add(new JLabel("Fecha Simulada del Sistema (ISO):"));
+        frame.getContentPane().add(new JLabel("Simulated System Date (ISO):"));
         txtSystemDate = new JTextField(Util.dateToIsoString(new Date()));
         frame.getContentPane().add(txtSystemDate);
         
         // --- BOTÓN P'ARRINCAR LA HISTORIA D'USUARIU: INSCRIPCIONES ---
-        JButton btnEjecutarInscripciones = new JButton("Abrir Inscripción de Profesionales");
+        JButton btnEjecutarInscripciones = new JButton("Enrol in a Formative Action");
         btnEjecutarInscripciones.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
             public void actionPerformed(ActionEvent e) {
                 InscriptionsModel model = new InscriptionsModel();
@@ -74,7 +74,7 @@ public class SwingMain {
         frame.getContentPane().add(btnEjecutarInscripciones);
         
         // --- BOTÓN PA' REGISTRAR PAGOS DE PROFESIONALES ---
-        JButton btnEjecutarPagos = new JButton("Registrar Pagos de Profesionales");
+        JButton btnEjecutarPagos = new JButton("Register Payments");
         btnEjecutarPagos.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 PaymentModel model = new PaymentModel();
@@ -86,7 +86,7 @@ public class SwingMain {
         frame.getContentPane().add(btnEjecutarPagos);
 
         // --- BOTÓN PA' REGISTRAR PAGOS A PROFESORES ---
-        JButton btnEjecutarPagosProfesores = new JButton("Registrar Pagos a Profesores");
+        JButton btnEjecutarPagosProfesores = new JButton("Record Teacher Payments");
         btnEjecutarPagosProfesores.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 g54.si26.teacherpayments.TeacherPaymentModel model = new g54.si26.teacherpayments.TeacherPaymentModel();
@@ -98,7 +98,7 @@ public class SwingMain {
         frame.getContentPane().add(btnEjecutarPagosProfesores);
 
         // --- BOTÓN: CERRAR ACCIÓN FORMATIVA ---
-        JButton btnCerrarAccion = new JButton("Cerrar Acción Formativa");
+        JButton btnCerrarAccion = new JButton("Close Formative Actions");
         btnCerrarAccion.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String fechaSimulada = txtSystemDate.getText();
@@ -111,28 +111,6 @@ public class SwingMain {
         });
         frame.getContentPane().add(btnCerrarAccion);
 
-        
-        // --- BOTONES DE BASE DE DATOS ---
-        JButton btnInicializarBaseDeDatos = new JButton("Inicializar Base de Datos en Blanco");
-        btnInicializarBaseDeDatos.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
-            public void actionPerformed(ActionEvent e) {
-                Database db = new Database();
-                db.createDatabase(false);
-            }
-        });
-        frame.getContentPane().add(btnInicializarBaseDeDatos);
-            
-        JButton btnCargarDatosIniciales = new JButton("Cargar Datos Iniciales pa Pruebes");
-        btnCargarDatosIniciales.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
-            public void actionPerformed(ActionEvent e) {
-                Database db = new Database();
-                db.createDatabase(false);
-                db.loadDatabase();
-            }
-        });
-        frame.getContentPane().add(btnCargarDatosIniciales);
-        
-        
         JButton btnExecuteSecretaryConsult = new JButton("Secretary Consult");
         btnExecuteSecretaryConsult.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -167,6 +145,28 @@ public class SwingMain {
         frame.getContentPane().add(btnExecuteTMConsult);
         frame.getContentPane().add(btnEjecutarInscripciones);
         frame.getContentPane().add(btnExecuteSecretaryConsult);
+        
+     // --- BOTONES DE BASE DE DATOS ---
+        JButton btnInicializarBaseDeDatos = new JButton("Initialize Blank database");
+        btnInicializarBaseDeDatos.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
+            public void actionPerformed(ActionEvent e) {
+                Database db = new Database();
+                db.createDatabase(false);
+            }
+        });
+        frame.getContentPane().add(btnInicializarBaseDeDatos);
+            
+        JButton btnCargarDatosIniciales = new JButton("Load Data to DB");
+        btnCargarDatosIniciales.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
+            public void actionPerformed(ActionEvent e) {
+                Database db = new Database();
+                db.createDatabase(false);
+                db.loadDatabase();
+            }
+        });
+        frame.getContentPane().add(btnCargarDatosIniciales);
+        
+        
         
     }
 

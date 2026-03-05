@@ -16,106 +16,117 @@ public class ModelCloseFormativeAction {
 
     private Database db = new Database();
 
-    public List<FormativeActionDTO> getUnclosedCourses(){
-        List<FormativeActionDTO> courses = new ArrayList<>();
+    //Loads the table taking into account the current date.
+    public List<FormativeActionDTO> getUnclosedCourses(Date simulatedDate){
+        	List<FormativeActionDTO> courses = new ArrayList<>();
+        	String simulatedDateStr = Util.dateToIsoString(simulatedDate);
         
-        // Check for Formative Actinos not closed
-        String sql = "SELECT fa.action_id AS actionId, fa.name, fa.startDate, fa.status, " +
-                     "(SELECT count(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state = 'RECEIVED') AS unhandledCount, " +
-                     "(SELECT inv.status FROM Invoice inv WHERE inv.action_id = fa.action_id LIMIT 1) AS invoiceStatus " +
-                     "FROM FormativeAction fa WHERE fa.status != 'CLOSED'";
+        	//SQL takig into account the current date
+        	String sql = "SELECT fa.action_id AS actionId, fa.name, fa.startDate, fa.status, " +
+                     "date(fa.startDate, '+1 day') AS calculatedEndDate, " +
+                     "(SELECT count(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state = 'RECEIVED' AND i.inscription_date <= ?) AS unhandledCount, " +
+                     "(SELECT inv.status FROM Invoice inv WHERE inv.action_id = fa.action_id AND inv.invoice_date <= ? LIMIT 1) AS invoiceStatus " +
+                     "FROM FormativeAction fa " +
+                     "WHERE fa.status != 'CLOSED' OR ? < date(fa.startDate, '+1 day')";
 
-        try (Connection conn = db.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()){
-
-            while (rs.next()){
-                FormativeActionDTO dto = new FormativeActionDTO();
-                dto.setActionId(rs.getInt("actionId"));
-                dto.setName(rs.getString("name"));
-                dto.setStartDate(rs.getString("startDate"));
-                dto.setStatus(rs.getString("status"));
-                
-                dto.setUnhandledRegistrations(rs.getInt("unhandledCount"));
-                
-                // Pass the invoice status (no invoice if it doe not exist).
-                String invStatus = rs.getString("invoiceStatus");
-                dto.setTeacherInvoicesStatus(invStatus != null ? invStatus : "NO INVOICE");
-
-                courses.add(dto);
-            }
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
-        return courses;
-    }
+        	try (Connection conn = db.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)){
+             
+        		pstmt.setString(1, simulatedDateStr); 
+        		pstmt.setString(2, simulatedDateStr); 
+        		pstmt.setString(3, simulatedDateStr); 
+            
+        		try(ResultSet rs = pstmt.executeQuery()) {
+        			while (rs.next()){
+        				//Loads data
+        				FormativeActionDTO dto = new FormativeActionDTO();
+        				dto.setActionId(rs.getInt("actionId"));
+        				dto.setName(rs.getString("name"));
+        				dto.setStartDate(rs.getString("startDate"));
+                    
+        				String dbStatus = rs.getString("status");
+        				String calcEndDateStr = rs.getString("calculatedEndDate");
+        				Date endDate = Util.isoStringToDate(calcEndDateStr);
+                    
+        				if("CLOSED".equals(dbStatus) && endDate != null && simulatedDate.before(endDate)) 
+        					dto.setStatus("ACTIVE");
+        				else 
+        					dto.setStatus(dbStatus);
+                    
+        				dto.setUnhandledRegistrations(rs.getInt("unhandledCount"));
+                    
+        				String invStatus = rs.getString("invoiceStatus");
+        				dto.setTeacherInvoicesStatus(invStatus != null ? invStatus : "NO INVOICE");
+        				courses.add(dto);
+        			}
+        		}
+        	} catch (SQLException e){
+        		e.printStackTrace();
+        	}
+        	return courses;
+    	}
 
     
+    //Validation of the course: 1 Blocked and 3 Warning scenarios.
+    	public CloseValidationDTO validateClosure(int actionId, Date simulatedDate){
+    		CloseValidationDTO result = new CloseValidationDTO();
+    		String simulatedDateStr = Util.dateToIsoString(simulatedDate);
 
-    public CloseValidationDTO validateClosure(int actionId, Date simulatedDate){
-        CloseValidationDTO result = new CloseValidationDTO();
-
-        try (Connection conn = db.getConnection()){
-            
-        	// BLOCKED If it's before the endDate
-            String sqlDate = "SELECT date(startDate, '+1 day') AS calculatedEndDate FROM FormativeAction WHERE action_id = ?";
-            try (PreparedStatement pstmt = conn.prepareStatement(sqlDate)){
-                pstmt.setInt(1, actionId);
-                ResultSet rs = pstmt.executeQuery();
-                if (rs.next()){
-                    String calcDateStr = rs.getString("calculatedEndDate");
+    		try (Connection conn = db.getConnection()){
+    			// BLOCKED If it's before the endDate
+    			String sqlDate = "SELECT date(startDate, '+1 day') AS calculatedEndDate FROM FormativeAction WHERE action_id = ?";
+    			try (PreparedStatement pstmt = conn.prepareStatement(sqlDate)){
+    				pstmt.setInt(1, actionId);
+    				ResultSet rs = pstmt.executeQuery();
+    				if(rs.next()){
+    					String calcDateStr = rs.getString("calculatedEndDate");
                     
-                    // For the null date
-                    if (calcDateStr == null)
-                         result.addError("CRITICAL: This course has no valid Start Date in the database.");
-                    else {
-                         Date endDate = Util.isoStringToDate(calcDateStr);
-                         // Fix from tests
-                         if (endDate != null && simulatedDate.before(endDate))
-                             result.addError("The course cannot be closed before its end date (" + calcDateStr + ").");
-                         else if (endDate == null)
-                             result.addError("CRITICAL: The course dates are corrupted.");
-                         
-                    }
-                }
-            }
+    					if(calcDateStr == null)
+    						result.addError("CRITICAL: This course has no valid Start Date in the database.");
+    					else{
+    						Date endDate = Util.isoStringToDate(calcDateStr);
+    						if(endDate != null && simulatedDate.before(endDate))
+    							result.addError("The course cannot be closed before its end date (" + calcDateStr + ").");
+    						if(endDate == null)
+    							result.addError("CRITICAL: The course dates are corrupted.");
+    					}
+    				}
+    			}
 
-            // WARNING 1: Registrations unhandled (Unhandled Professionals)
-            String sqlReg = "SELECT count(*) AS unhandled FROM Inscription WHERE action_id = ? AND state = 'RECEIVED'";
-            try (PreparedStatement pstmt = conn.prepareStatement(sqlReg)){
-                pstmt.setInt(1, actionId);
-                ResultSet rs = pstmt.executeQuery();
-                if (rs.next() && rs.getInt("unhandled") > 0){
-                    result.addWarning("There are unhandled professional registrations (RECEIVED state).");
-                }
-            }
+    			// WARNING 1: Registrations unhandled (Ignorando las del futuro)
+    			String sqlReg = "SELECT count(*) AS unhandled FROM Inscription WHERE action_id = ? AND state = 'RECEIVED' AND inscription_date <= ?";
+    			try (PreparedStatement pstmt = conn.prepareStatement(sqlReg)){
+    				pstmt.setInt(1, actionId);
+    				pstmt.setString(2, simulatedDateStr);
+    				ResultSet rs = pstmt.executeQuery();
+    				if(rs.next() && rs.getInt("unhandled") > 0)
+    					result.addWarning("There are unhandled professional registrations (RECEIVED or CANCELLED state).");
+    			}
 
             // Invoice section
+            // Check if there exists any invoice sent until the simulated date
+    			String sqlTotalInv = "SELECT count(*) AS total_inv FROM Invoice WHERE action_id = ? AND invoice_date <= ?";
+    			boolean invoiceExists = false;
             
-            // Check if there exists any invoice count(*)
-            String sqlTotalInv = "SELECT count(*) AS total_inv FROM Invoice WHERE action_id = ?";
-            boolean invoiceExists = false;
-            
-            try (PreparedStatement pstmtTotal = conn.prepareStatement(sqlTotalInv)){
-                pstmtTotal.setInt(1, actionId);
-                ResultSet rsTotal = pstmtTotal.executeQuery();
-                if (rsTotal.next() && rsTotal.getInt("total_inv") > 0){
-                    invoiceExists = true;
-                }
+    			try (PreparedStatement pstmtTotal = conn.prepareStatement(sqlTotalInv)){
+    				pstmtTotal.setInt(1, actionId);
+    				pstmtTotal.setString(2, simulatedDateStr);
+    				ResultSet rsTotal = pstmtTotal.executeQuery();
+    				if(rsTotal.next() && rsTotal.getInt("total_inv") > 0)
+    					invoiceExists = true;
             }
 
-            if (!invoiceExists)
-                // WARNING 2: No invoice has been sent
-                result.addWarning("The Invoice has not been sent to the Teacher (Not Generated).");
-            else{
-                // WARNING 3: The invoice is sent but pending
-                String sqlNotPaid = "SELECT count(*) AS pending_count FROM Invoice WHERE action_id = ? AND status = 'PENDING'";
-                try (PreparedStatement pstmtPending = conn.prepareStatement(sqlNotPaid)){
-                    pstmtPending.setInt(1, actionId);
-                    ResultSet rsPending = pstmtPending.executeQuery();
-                    if (rsPending.next() && rsPending.getInt("pending_count") > 0)
-                        result.addWarning("The Invoice has been generated/sent but is NOT PAID yet (PENDING state).");
-                    
+    			if(!invoiceExists)
+    				// WARNING 2: No invoice has been sent (hasta la fecha simulada)
+    				result.addWarning("The Invoice has not been sent to the Teacher (Not Generated).");
+    			else{
+    				//WARNING 3: The invoice is sent but pending (hasta la fecha simulada)
+    				String sqlNotPaid = "SELECT count(*) AS pending_count FROM Invoice WHERE action_id = ? AND status = 'PENDING' AND invoice_date <= ?";
+    				try (PreparedStatement pstmtPending = conn.prepareStatement(sqlNotPaid)){
+    					pstmtPending.setInt(1, actionId);
+    					pstmtPending.setString(2, simulatedDateStr);
+    					ResultSet rsPending = pstmtPending.executeQuery();
+    					if(rsPending.next() && rsPending.getInt("pending_count") > 0)
+    						result.addWarning("The Invoice has been generated/sent but is NOT PAID yet (PENDING state).");
                 }
             }
 
@@ -127,15 +138,14 @@ public class ModelCloseFormativeAction {
         return result;
     }
 
-    public boolean executeClosure(int actionId){
-        String sql = "UPDATE FormativeAction SET status = 'CLOSED' WHERE action_id = ?";
-        try (Connection conn = db.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
-            pstmt.setInt(1, actionId);
-            return pstmt.executeUpdate() > 0;
-        } catch (SQLException e){
-            e.printStackTrace();
-            return false;
-        }
-    }
+    	public boolean executeClosure(int actionId){
+    		String sql = "UPDATE FormativeAction SET status = 'CLOSED' WHERE action_id = ?";
+    		try (Connection conn = db.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)){
+    			pstmt.setInt(1, actionId);
+    			return pstmt.executeUpdate() > 0;
+    		} catch (SQLException e){
+    			e.printStackTrace();
+    			return false;
+    		}
+    	}
 }
