@@ -1,7 +1,3 @@
-
---For giis.demo.tkrun:
---drop table if exists Carreras;
-
 --For the g54.utils DataBases
 DROP TABLE IF EXISTS "MoneyMovement";
 DROP TABLE IF EXISTS "Payment";
@@ -100,4 +96,3 @@ CREATE TABLE "MoneyMovement" (
     "invoice_id" INTEGER NOT NULL,
     FOREIGN KEY("invoice_id") REFERENCES "Invoice"("invoice_id")
 );
-
