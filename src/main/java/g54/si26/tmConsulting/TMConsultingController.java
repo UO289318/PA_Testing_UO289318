@@ -80,26 +80,39 @@ public class TMConsultingController {
             double totalExpenses = Double.parseDouble(row[6].toString());
             double confExpenses = Double.parseDouble(row[7].toString());
 
+            // 2. EXTRAEMOS LAS PLAZAS (El nuevo dato que añadimos al Model)
+            int totalSpots = Integer.parseInt(row[8].toString());
+
             boolean isClosed = "CLOSED".equalsIgnoreCase(status) || "CANCELLED".equalsIgnoreCase(status);
 
-            // Calculations
-            double estIncome = pendingEnrollments * fee;
-            double estExpenses = Math.max(0, totalExpenses - confExpenses);
+            // --- CÁLCULO PROFESIONAL CON TERNARIO ---
             
+            // Calculamos cuántos han confirmado (Dinero confirmado / precio del curso)
+            // (Ponemos una protección por si el fee es 0 para que no dé error de división)
+            int confirmedEnrollments = (fee > 0) ? (int) (confIncome / fee) : 0;
+            
+            // Calculamos plazas libres (Protegemos con Math.max para que no de negativo si hay overbooking)
+            int freeSpots = Math.max(0, totalSpots - confirmedEnrollments);
+
+            // TERNARIO: Ingreso confirmado + (Pendientes limitados por plazas libres * precio)
+            double estIncome = confIncome + ((pendingEnrollments > freeSpots ? freeSpots : pendingEnrollments) * fee);
+            
+            // Gastos estimados y Balances
+            double estExpenses = Math.max(0, totalExpenses - confExpenses);
             double totalCourseIncome = confIncome;
             double totalCourseExpenses = confExpenses;
-            double estBalance = estIncome - estExpenses;
+            
+            double estBalance = estIncome - (estExpenses + confExpenses);
             double courseBalance = totalCourseIncome - totalCourseExpenses;
 
             // Add to global totals (includes all, active and closed)
             globalIncome += totalCourseIncome;
             globalExpenses += totalCourseExpenses;
 
-            // Format columns (if closed, estimated and confirmed values are hidden)
-            String strEstIncome = isClosed ? "-" : String.format("€%.2f", estIncome);
-            String strConfIncome = isClosed ? "-" : String.format("€%.2f", confIncome);
-            String strEstExpenses = isClosed ? "-" : String.format("€%.2f", estExpenses);
-            String strConfExpenses = isClosed ? "-" : String.format("€%.2f", confExpenses);
+            String strEstIncome = String.format("€%.2f", estIncome);
+            String strConfIncome = String.format("€%.2f", confIncome);
+            String strEstExpenses = String.format("€%.2f", estExpenses);
+            String strConfExpenses = String.format("€%.2f", confExpenses);
 
             tableModel.addRow(new Object[]{
                 date, name, status,

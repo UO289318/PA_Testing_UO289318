@@ -32,7 +32,7 @@ public class TMConsultingView {
 
     private void initialize() {
         frame = new JFrame();
-        frame.setTitle("Formative Actions Financial Report");
+        frame.setTitle("Consult the income and expenses of the formative actions");
         frame.setBounds(100, 100, 1100, 500);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().setLayout(new BorderLayout(10, 10));

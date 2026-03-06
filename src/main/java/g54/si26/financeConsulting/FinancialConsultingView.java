@@ -31,7 +31,7 @@ public class FinancialConsultingView {
 
     private void initialize() {
         frame = new JFrame();
-        frame.setTitle("Course Economic Movements Consultation");
+        frame.setTitle("Consult money movements of the formative actions");
         frame.setBounds(100, 100, 950, 650);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().setLayout(new BorderLayout(10, 10));
@@ -63,7 +63,18 @@ public class FinancialConsultingView {
         cbAccionesFormativas = new JComboBox<>();
         cbAccionesFormativas.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         cbAccionesFormativas.setBackground(Color.WHITE);
-        cbAccionesFormativas.setPreferredSize(new Dimension(500, 25)); // Make combo longer
+        cbAccionesFormativas.setPreferredSize(new Dimension(500, 25));
+        cbAccionesFormativas.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof FormativeActionDTO) {
+                    FormativeActionDTO dto = (FormativeActionDTO) value;
+                    setText(dto.getName());
+                }
+                return this;
+            }
+        });
         panelSeleccion.add(cbAccionesFormativas);
         
         btnConsultar = new JButton("Consult");
