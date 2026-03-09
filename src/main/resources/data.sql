@@ -30,7 +30,8 @@ INSERT INTO "Payment" ("payment_id", "amountPaid", "payment_date", "inscription_
 (4, 150.00, '2026-03-01', 4);
 
 INSERT INTO "Invoice" ("invoice_id", "invoice_date", "netAmount", "vat", "totalAmount", "status", "teacher_id", "action_id") VALUES
-(1, '2025-09-03', 413.22, 86.78, 500.00, 'PAID', 1, 1);
+(1, '2025-09-03', 413.22, 86.78, 500.00, 'PAID', 1, 1),
+(2, '2026-03-28', 260.00, 40.00, 300.00, 'PENDING', 2, 2);
 
 INSERT INTO "MoneyMovement" ("movement_id", "movement_date", "amount", "invoice_id") VALUES
 (1, '2025-09-05', 500.00, 1);
