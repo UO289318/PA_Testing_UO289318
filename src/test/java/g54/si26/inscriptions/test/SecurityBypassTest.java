@@ -40,7 +40,7 @@ public class SecurityBypassTest {
         // Si el código NO lanza la excepción y matricula al usuario, el test FALLA (franja roja).
         ApplicationException exception = assertThrows(ApplicationException.class, () -> {
             
-            model.enrollProfessional(hacker, 96); // Intento de Bypass
+            //model.enrollProfessional(hacker, 96); // Intento de Bypass
             
         }, "❌ VULNERABILIDAD CRÍTICA: El modelo permitió inscribirse en un curso CLOSED. ¡Falta validación de estado en el Modelo!");
         

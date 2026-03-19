@@ -227,15 +227,9 @@ public class FormativeActionDTO {
 	}
 	
 	
-	// El getter que tú hiciste (calculando +1 día)
+
     public String getEndDate() {
-        if (this.startDate == null || this.startDate.isEmpty()) return "";
-        try {
-            java.time.LocalDate date = java.time.LocalDate.parse(this.startDate.substring(0, 10));
-            return date.plusDays(1).toString();
-        } catch (Exception e) {
-            return this.startDate; 
-        }
+            return this.endDate;
     }
 
 

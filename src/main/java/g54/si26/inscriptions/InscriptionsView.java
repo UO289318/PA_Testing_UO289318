@@ -98,8 +98,8 @@ public class InscriptionsView {
 
         JPanel formGridPanel = new JPanel();
         bottomPanel.add(formGridPanel, BorderLayout.CENTER);
-        formGridPanel.setLayout(new GridLayout(5, 2, 10, 8));
-
+        formGridPanel.setLayout(new GridLayout(4, 2, 10, 8));
+/*
         // DEBUG QUITAR LUEGO
         JLabel lblUserLoad = new JLabel("Load existing:");
         lblUserLoad.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -109,7 +109,7 @@ public class InscriptionsView {
         cbUsuarios.setBackground(Color.WHITE);
         cbUsuarios.setName("cbUsuarios");
         formGridPanel.add(cbUsuarios);
-
+*/
         // Pal nombre
         JLabel lblName = new JLabel("Name:");
         lblName.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -249,7 +249,7 @@ public class InscriptionsView {
         this.setTxtSurname("");
         this.setTxtPhone("");
         this.setTxtEmail("");
-        this.cbUsuarios.setSelectedIndex(-1);
+        //this.cbUsuarios.setSelectedIndex(-1);
         this.tabCourses.clearSelection();
         this.updateFormTitle(""); 
     }

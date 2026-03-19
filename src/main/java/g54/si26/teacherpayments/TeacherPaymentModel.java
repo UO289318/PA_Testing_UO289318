@@ -10,6 +10,7 @@ import g54.si26.utils.Database;
 
 /**
  * Model for the "Record Teacher Payments" functionality.
+ * Updated to support the new MoneyMovement schema.
  */
 public class TeacherPaymentModel {
     private Database db = new Database();
@@ -19,13 +20,14 @@ public class TeacherPaymentModel {
      * Retrieves invoices that have not been fully paid yet.
      */
     public List<TeacherInvoiceDTO> getPendingInvoices() {
+        // Consultamos el total pagado desde MoneyMovement filtrando por tipo PAYMENT
         String sql = "SELECT " +
                      "i.invoice_id AS invoiceId, " +
                      "t.name AS teacherName, " +
                      "fa.name AS courseName, " +
                      "i.totalAmount AS totalAmount, " +
                      "i.invoice_date AS invoiceDate, " +
-                     "(SELECT COALESCE(SUM(amount), 0) FROM MoneyMovement WHERE invoice_id = i.invoice_id) AS amountPaid " +
+                     "(SELECT COALESCE(SUM(amount), 0) FROM MoneyMovement WHERE invoice_id = i.invoice_id AND type = 'PAYMENT') AS amountPaid " +
                      "FROM Invoice i " +
                      "JOIN Teacher t ON i.teacher_id = t.teacher_id " +
                      "JOIN FormativeAction fa ON i.action_id = fa.action_id " +
@@ -35,11 +37,12 @@ public class TeacherPaymentModel {
 
     /**
      * Registers a new bank transfer for an invoice.
+     * Updated to include 'status' and 'type' in MoneyMovement.
      */
     public void registerTeacherPayment(int invoiceId, double amount, String transferDateStr) {
         // 1. Fetch invoice details
         String sqlSelect = "SELECT i.invoice_id AS invoiceId, i.totalAmount AS totalAmount, i.invoice_date AS invoiceDate, " +
-                           "(SELECT COALESCE(SUM(amount), 0) FROM MoneyMovement WHERE invoice_id = i.invoice_id) AS amountPaid " +
+                           "(SELECT COALESCE(SUM(amount), 0) FROM MoneyMovement WHERE invoice_id = i.invoice_id AND type = 'PAYMENT') AS amountPaid " +
                            "FROM Invoice i WHERE i.invoice_id = ?";
         List<TeacherInvoiceDTO> results = db.executeQueryPojo(TeacherInvoiceDTO.class, sqlSelect, invoiceId);
         
@@ -70,8 +73,13 @@ public class TeacherPaymentModel {
             throw new ApplicationException("Error: Transfer date cannot be before the invoice date (" + invDate + ").");
         }
 
-        // 4. Record Money Movement
-        String sqlInsert = "INSERT INTO MoneyMovement (movement_date, amount, invoice_id) VALUES (?, ?, ?)";
-        db.executeUpdate(sqlInsert, transferDateStr, amount, invoiceId);
+        // 4. Record Money Movement with the new required fields: status and type
+        String sqlInsert = "INSERT INTO MoneyMovement (movement_date, amount, status, type, invoice_id) VALUES (?, ?, ?, ?, ?)";
+        db.executeUpdate(sqlInsert, transferDateStr, amount, "EXECUTED", "PAYMENT", invoiceId);
+        
+        // 5. Update Invoice status to PAID if fully covered
+        if (Math.abs(amount - pending) < 0.001) {
+            db.executeUpdate("UPDATE Invoice SET status = 'PAID' WHERE invoice_id = ?", invoiceId);
+        }
     }
 }

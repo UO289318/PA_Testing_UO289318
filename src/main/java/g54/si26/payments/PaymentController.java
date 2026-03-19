@@ -55,6 +55,7 @@ public class PaymentController {
             throw new ApplicationException("Please select an enrollment from the list.");
         }
 
+        // Recuperar el ID de la inscripción (Columna 0)
         int inscriptionId = (int) view.getTabEnrollments().getValueAt(selectedRow, 0);
         double amount;
         try {

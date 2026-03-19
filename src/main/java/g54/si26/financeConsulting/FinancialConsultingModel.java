@@ -36,27 +36,35 @@ public class FinancialConsultingModel {
         return rows.get(0);
     }
 
+    /**
+     * ACTUALIZADO: Recupera los movimientos económicos usando el nuevo esquema.
+     * Los ingresos vienen de MoneyMovement (tipo PAYMENT vinculado a Inscription).
+     * Los gastos vienen de MoneyMovement (tipo PAYMENT vinculado a Invoice/Teacher).
+     */
     public List<Object[]> getMovements(int actionId) {
         String sql =
-            // INCOME
-            "SELECT i.inscription_date as date, " +
+            // 1. INGRESOS (Pagos de profesionales/alumnos)
+            "SELECT mm.movement_date as date, " +
             "('Enrollment Payment - ' || p.name || ' ' || p.surname) as concept, " +
-            "pay.amountPaid as amount, " +
-            "1 as is_income " +
-            "FROM Payment pay " +
-            "INNER JOIN Inscription i ON pay.inscription_id = i.inscription_id " +
+            "mm.amount as amount, " +
+            "1 as is_income " + // Flag para identificar ingresos en el Controller
+            "FROM MoneyMovement mm " +
+            "INNER JOIN Inscription i ON mm.inscription_id = i.inscription_id " +
             "INNER JOIN Professional p ON i.professional_id = p.professional_id " +
-            "WHERE i.action_id = ? " +
+            "WHERE i.action_id = ? AND mm.type = 'PAYMENT' " +
+            
             "UNION ALL " +
-            // EXPENSES
+            
+            // 2. GASTOS (Pagos realizados a profesores)
             "SELECT mm.movement_date as date, " +
             "('Teacher Payment - ' || t.name) as concept, " +
             "mm.amount as amount, " +
-            "0 as is_income " +
+            "0 as is_income " + // Flag para identificar gastos en el Controller
             "FROM MoneyMovement mm " +
             "INNER JOIN Invoice inv ON mm.invoice_id = inv.invoice_id " +
             "INNER JOIN Teacher t ON inv.teacher_id = t.teacher_id " +
-            "WHERE inv.action_id = ? " +
+            "WHERE inv.action_id = ? AND mm.type = 'PAYMENT' " +
+            
             "ORDER BY date ASC";
 
         return db.executeQueryArray(sql, actionId, actionId);

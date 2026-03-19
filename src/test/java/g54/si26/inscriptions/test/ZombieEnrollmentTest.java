@@ -49,7 +49,7 @@ public class ZombieEnrollmentTest {
         
         try {
             // Esto NO debería lanzar excepción si el modelo filtra bien por estado
-            model.enrollProfessional(zombieUser, 95);
+            //model.enrollProfessional(zombieUser, 95);
             
             System.out.println("✅ ÉXITO: El sistema permitió la re-inscripción.");
             

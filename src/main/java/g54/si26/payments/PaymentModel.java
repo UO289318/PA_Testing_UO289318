@@ -22,12 +22,13 @@ public class PaymentModel {
      * for formative actions that are 'ACTIVE'.
      */
     public List<EnrollmentRecordDTO> getPendingEnrollments() {
+        // Cambio: i.fee -> i.applied_fee
         String sql = "SELECT " +
                      "i.inscription_id AS inscriptionId, " +
                      "fa.name AS courseName, " +
                      "p.name || ' ' || p.surname AS professionalName, " +
                      "p.email AS professionalEmail, " +
-                     "i.fee AS fee, " +
+                     "i.applied_fee AS fee, " +
                      "i.inscription_date AS registrationDate " +
                      "FROM Inscription i " +
                      "JOIN FormativeAction fa ON i.action_id = fa.action_id " +
@@ -40,8 +41,8 @@ public class PaymentModel {
      * Business Logic: Registers a new payment and updates enrollment status if correct.
      */
     public void registerPayment(int inscriptionId, double amount, String paymentDateStr) {
-        // 1. Fetch current enrollment details to validate
-        String sqlSelect = "SELECT inscription_id AS inscriptionId, inscription_date AS registrationDate, fee, state " +
+        // 1. Fetch current enrollment details to validate (Cambio: fee -> applied_fee)
+        String sqlSelect = "SELECT inscription_id AS inscriptionId, inscription_date AS registrationDate, applied_fee AS fee, state " +
                            "FROM Inscription WHERE inscription_id = ?";
         List<EnrollmentRecordDTO> results = db.executeQueryPojo(EnrollmentRecordDTO.class, sqlSelect, inscriptionId);
         
@@ -50,7 +51,7 @@ public class PaymentModel {
         }
         EnrollmentRecordDTO enrollment = results.get(0);
 
-        // 2. Validate Amount (Restriction: Exact amount required in this sprint)
+        // 2. Validate Amount
         if (Math.abs(amount - enrollment.getFee()) > 0.001) {
             throw new ApplicationException("Error: The amount paid (" + amount + ") does not match the required fee (" + enrollment.getFee() + ").");
         }
@@ -76,9 +77,9 @@ public class PaymentModel {
             throw new ApplicationException("Validation Error: Payment received after the 2 working days deadline.");
         }
 
-        // 4. Record Payment
-        String sqlInsertPayment = "INSERT INTO Payment (amountPaid, inscription_id, payment_date) VALUES (?, ?, ?)";
-        db.executeUpdate(sqlInsertPayment, amount, inscriptionId, paymentDateStr);
+        // 4. Record Payment (Cambio: Tabla Payment -> MoneyMovement con type 'PAYMENT')
+        String sqlInsertMovement = "INSERT INTO MoneyMovement (amount, movement_date, status, type, inscription_id) VALUES (?, ?, ?, ?, ?)";
+        db.executeUpdate(sqlInsertMovement, amount, paymentDateStr, "EXECUTED", "PAYMENT", inscriptionId);
 
         // 5. Update Inscription Status to CONFIRMED
         String sqlUpdateStatus = "UPDATE Inscription SET state = 'CONFIRMED' WHERE inscription_id = ?";
