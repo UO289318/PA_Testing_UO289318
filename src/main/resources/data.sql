@@ -39,7 +39,8 @@ INSERT INTO "Inscription" ("inscription_id", "inscription_date", "applied_fee", 
 
 -- 6. Facturas (Invoices)
 INSERT INTO "Invoice" ("invoice_id", "invoice_date", "netAmount", "vat", "totalAmount", "status", "teacher_id", "action_id") VALUES
-(1, '2025-09-03', 413.22, 86.78, 500.00, 'PAID', 1, 1);
+(1, '2025-09-03', 413.22, 86.78, 500.00, 'PAID', 1, 1),
+(2, '2026-03-28', 260.00, 40.00, 300.00, 'PENDING', 2, 2);
 
 -- 7. Movimientos de Dinero (Sustituye a la tabla Payment antigua)
 -- Para inscripciones (Alumnos)
