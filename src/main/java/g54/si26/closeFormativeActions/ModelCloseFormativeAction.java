@@ -45,6 +45,7 @@ public class ModelCloseFormativeAction {
                     
         				String dbStatus = rs.getString("status");
         				String calcEndDateStr = rs.getString("calculatedEndDate");
+        				dto.setEndDate(calcEndDateStr);
         				Date endDate = Util.isoStringToDate(calcEndDateStr);
                     
         				if("CLOSED".equals(dbStatus) && endDate != null && simulatedDate.before(endDate)) 

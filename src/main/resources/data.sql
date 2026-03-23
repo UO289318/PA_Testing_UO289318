@@ -1,8 +1,8 @@
--- 1. Maestras
+
 INSERT INTO "Community" ("community_id", "communityName") VALUES
-(1, 'COIIPA'),
-(2, 'CITIPA'),
-(3, 'Externo');
+(1, 'College Members'),
+(2, 'Uniovi Students'),
+(3, 'General Public');
 
 INSERT INTO "Teacher" ("teacher_id", "name", "fiscal_id", "email", "phone") VALUES
 (1, 'Claudio', '11111111A', 'claudio@coiipa.com', '600111111'),

@@ -24,6 +24,7 @@ import g54.si26.tmConsulting.*;
 import g54.si26.closeFormativeActions.*;
 import g54.si26.financeConsulting.*;
 import g54.si26.planFormativeAction.*;
+import g54.si26.planMultipleFees.*;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -186,7 +187,7 @@ public class SwingMain {
         });
         leftPanel.add(btnExecuteTMConsult);
 
-	    JButton btnPlanFormativeAction = new JButton("Plan Formative Action");
+        JButton btnPlanFormativeAction = new JButton("Plan Formative Action");
 		btnPlanFormativeAction.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
         		ModelPlanFormativeAction model      = new ModelPlanFormativeAction();
@@ -196,9 +197,22 @@ public class SwingMain {
         		ctrl.initController();
     		}
 		});
-        rightPanel.add(btnPlanFormativeAction);
+		rightPanel.add(btnPlanFormativeAction);
+        
+		JButton btnMultipleFees = new JButton("Plan Formative Action with Multiple Fees");
+		btnMultipleFees.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent e) {
+        		ModelPlanMultipleFees model      = new ModelPlanMultipleFees();
+        		ViewPlanMultipleFees  view       = new ViewPlanMultipleFees();
+        		ControllerPlanMultipleFees ctrl  = new ControllerPlanMultipleFees(model, view);
+        		ctrl.setSimulatedDate(txtSystemDate.getText());
+        		ctrl.initController();
+    		}
+		});
+        rightPanel.add(btnMultipleFees);
+        
 
-        for (int i = 2; i <= 14; i++) {
+        for (int i = 3; i <= 13; i++) {
             JButton placeholder = new JButton("US " + i + " – (not yet implemented)");
             placeholder.setEnabled(false);
             placeholder.setFont(new Font("Segoe UI", Font.ITALIC, 11));
