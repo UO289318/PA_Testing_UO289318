@@ -99,12 +99,12 @@ public abstract class DbUtil {
 	 * Ejecuta una sentencia sql de actualizacion con los parametros especificados;
 	 * Utiliza apache commons-dbutils para manejar todos los aspectos de jdbc
 	 */
-	public void executeUpdate(String sql, Object... params) {
+	public int executeUpdate(String sql, Object... params) {
 		Connection conn = null;
 		try {
 			conn = this.getConnection();
 			QueryRunner runner = new QueryRunner();
-			runner.update(conn, sql, params);
+			return runner.update(conn, sql, params);
 		} catch (SQLException e) {
 			throw new UnexpectedException(e);
 		} finally {

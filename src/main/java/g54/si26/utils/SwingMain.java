@@ -23,7 +23,8 @@ import g54.si26.teacherpayments.*;
 import g54.si26.tmConsulting.*;
 import g54.si26.closeFormativeActions.*;
 import g54.si26.financeConsulting.*;
-import g54.si26.planFormativeAction.*;
+import g54.si26.reopenFormativeActions.*;
+//import g54.si26.planFormativeAction.*;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -189,16 +190,27 @@ public class SwingMain {
 	    JButton btnPlanFormativeAction = new JButton("Plan Formative Action");
 		btnPlanFormativeAction.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
-        		ModelPlanFormativeAction model      = new ModelPlanFormativeAction();
-        		ViewPlanFormativeAction  view       = new ViewPlanFormativeAction();
-        		ControllerPlanFormativeAction ctrl  = new ControllerPlanFormativeAction(model, view);
-        		ctrl.setSimulatedDate(txtSystemDate.getText());
-        		ctrl.initController();
+        		//ModelPlanFormativeAction model      = new ModelPlanFormativeAction();
+        		//ViewPlanFormativeAction  view       = new ViewPlanFormativeAction();
+        		//ControllerPlanFormativeAction ctrl  = new ControllerPlanFormativeAction(model, view);
+        		//ctrl.setSimulatedDate(txtSystemDate.getText());
+        		//ctrl.initController();
     		}
 		});
         rightPanel.add(btnPlanFormativeAction);
 
-        for (int i = 2; i <= 14; i++) {
+        JButton btnReopenFA = new JButton("Re-open FA's");
+        btnReopenFA.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ModelReopenFormativeAction model = new ModelReopenFormativeAction();
+                ViewReopenFormativeAction view = new ViewReopenFormativeAction();
+                ControllerReopenFormativeAction controller = new ControllerReopenFormativeAction(model, view);
+                controller.initController();
+            }
+        });
+        rightPanel.add(btnReopenFA);
+
+        for (int i = 3; i <= 14; i++) {
             JButton placeholder = new JButton("US " + i + " – (not yet implemented)");
             placeholder.setEnabled(false);
             placeholder.setFont(new Font("Segoe UI", Font.ITALIC, 11));
