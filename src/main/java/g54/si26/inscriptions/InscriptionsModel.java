@@ -17,9 +17,7 @@ public class InscriptionsModel {
     public List<FormativeActionDTO> getAvailableCourses(Date currentDate){
         validateNotNull(currentDate, "The consult date cannot be null");
         
-        // El fee ahora se obtiene de la tabla Fee mediante una subconsulta
         String sql = "SELECT action_id AS actionId, name, spots, "
-                   + "(SELECT amount FROM Fee WHERE action_id = FormativeAction.action_id LIMIT 1) AS fee, "
                    + "startDate, endDate, inscriptionPeriodStart, inscriptionPeriodEnd, status "
                    + "FROM FormativeAction "
                    + "WHERE status IN ('ACTIVE', 'CLOSED') "
@@ -40,23 +38,30 @@ public class InscriptionsModel {
         return courses;
     }
 
+    public List<Object[]> getCourseFees(int actionId){
+        String sql = "SELECT c.community_id, c.communityName, f.amount "
+           + "FROM Fee f JOIN Community c ON f.community_id = c.community_id "
+           + "WHERE f.action_id = ? ORDER BY c.communityName";
+        return db.executeQueryArray(sql, actionId);
+    }
+
     public List<ProfessionalDTO> getAllProfessionals(){
         String sql = "SELECT professional_id AS professionalId, name, surname, phone, email FROM Professional";
         return db.executeQueryPojo(ProfessionalDTO.class, sql);
     }
 
-    public synchronized void enrollProfessional(ProfessionalDTO profesional, int actionId, Date simulatedDate){
+    public synchronized void enrollProfessional(ProfessionalDTO profesional, int actionId, int communityId, Date simulatedDate){
         validateNotNull(profesional, "The professional object cannot be null");
         validateNotNull(profesional.getName(), "The professional name cannot be null");
         validateNotNull(profesional.getSurname(), "The professional surname cannot be null");
         validateNotNull(profesional.getPhone(), "The professional phone cannot be null");
         validateNotNull(profesional.getEmail(), "The email field cannot be null");
             
-        int professionalId = getOrCreateProfessional(profesional);
+        int professionalId = getOrCreateProfessional(profesional, communityId);
         clearFutureParadox(professionalId, actionId, simulatedDate);
         validateAvailableSpots(actionId, simulatedDate);
         validateNoDuplicateEnrollment(professionalId, actionId, simulatedDate);
-        createInscription(professionalId, actionId, simulatedDate);
+        createInscription(professionalId, actionId, communityId, simulatedDate);
     }
 
     private String calculateFutureDate(Date simulatedDate){
@@ -86,13 +91,13 @@ public class InscriptionsModel {
         db.executeUpdate(sqlDelete, professionalId, actionId, currentDate, futureDate);
     }
 
-    private int getOrCreateProfessional(ProfessionalDTO profesional){
+    private int getOrCreateProfessional(ProfessionalDTO profesional, int communityId){
         String sqlSearch = "SELECT professional_id AS professionalId, email, phone FROM Professional WHERE email = ? OR phone = ?";
         List<ProfessionalDTO> result = db.executeQueryPojo(ProfessionalDTO.class, sqlSearch, profesional.getEmail(), profesional.getPhone());
 
         if (result.isEmpty()) {
-            String sqlInsert = "INSERT INTO Professional (name, surname, phone, email) VALUES (?, ?, ?, ?)";            
-            db.executeUpdate(sqlInsert, profesional.getName(), profesional.getSurname(), profesional.getPhone(), profesional.getEmail());
+            String sqlInsert = "INSERT INTO Professional (name, surname, phone, email, community_id) VALUES (?, ?, ?, ?, ?)";            
+            db.executeUpdate(sqlInsert, profesional.getName(), profesional.getSurname(), profesional.getPhone(), profesional.getEmail(), communityId);
             String sqlSearchNew = "SELECT professional_id AS professionalId FROM Professional WHERE email = ?";
             List<ProfessionalDTO> newResult = db.executeQueryPojo(ProfessionalDTO.class, sqlSearchNew, profesional.getEmail());
             return newResult.get(0).getProfessionalId();
@@ -124,13 +129,20 @@ public class InscriptionsModel {
         if(!db.executeQueryArray(sql, professionalId, actionId, d).isEmpty()) throw new ApplicationException("Already enrolled.");
     }
 
-    private void createInscription(int professionalId, int actionId, Date simulatedDate){
+    private void createInscription(int professionalId, int actionId, int communityId, Date simulatedDate){
         String d = dateToTimestamp(simulatedDate); 
-        // applied_fee sustituye a fee y se obtiene de la tabla Fee
+        String sqlFee = "SELECT amount FROM Fee WHERE action_id = ? AND community_id = ?";
+        List<Object[]> feeRes = db.executeQueryArray(sqlFee, actionId, communityId);
+        double feeAmount = 0.0;
+        if(!feeRes.isEmpty())
+            feeAmount = Double.parseDouble(feeRes.get(0)[0].toString());
+
+        String state = (feeAmount == 0.0) ? "CONFIRMED" : "RECEIVED";
+
         String sqlInsertInsc = "INSERT INTO Inscription (inscription_date, applied_fee, state, professional_id, action_id) "
-                            + "SELECT ?, (SELECT amount FROM Fee WHERE action_id = ? LIMIT 1), 'RECEIVED', ?, ? "
-                            + "FROM FormativeAction WHERE action_id = ?";
-        db.executeUpdate(sqlInsertInsc, d, actionId, professionalId, actionId, actionId);
+                            + "VALUES (?, ?, ?, ?, ?)";
+
+        db.executeUpdate(sqlInsertInsc, d, feeAmount, state, professionalId, actionId);
         db.executeUpdate("UPDATE FormativeAction SET status = 'ACTIVE' WHERE action_id = ? AND status = 'CLOSED'", actionId);
     }
     
