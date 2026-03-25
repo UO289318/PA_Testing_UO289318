@@ -1,5 +1,6 @@
 -- Limpieza de tablas
 DROP TABLE IF EXISTS "MoneyMovement";
+DROP TABLE IF EXISTS "Payment";
 DROP TABLE IF EXISTS "Invoice";
 DROP TABLE IF EXISTS "Inscription";
 DROP TABLE IF EXISTS "Teacher_FormativeAction";
@@ -94,12 +95,23 @@ CREATE TABLE "Invoice" (
     FOREIGN KEY("teacher_id") REFERENCES "Teacher"("teacher_id")
 );
 
-CREATE TABLE "MoneyMovement" (
-    "movement_id" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "movement_date" TEXT NOT NULL,
+CREATE TABLE "Payment" (
+    "payment_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "payment_date" TEXT NOT NULL,
     "amount" REAL NOT NULL,
     "status" TEXT NOT NULL,
     "type" TEXT NOT NULL,
+    "inscription_id" INTEGER,
+    "invoice_id" INTEGER,
+    FOREIGN KEY("inscription_id") REFERENCES "Inscription"("inscription_id"),
+    FOREIGN KEY("invoice_id") REFERENCES "Invoice"("invoice_id")
+);
+
+CREATE TABLE "MoneyMovement" (
+    "movement_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "amount" REAL NOT NULL,
+    "movement_date" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
     "inscription_id" INTEGER,
     "invoice_id" INTEGER,
     FOREIGN KEY("inscription_id") REFERENCES "Inscription"("inscription_id"),

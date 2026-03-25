@@ -14,7 +14,7 @@ INSERT INTO "Professional" ("professional_id", "name", "surname", "phone", "emai
 (3, 'Fanjul', 'García', '611223366', 'fanjul@test.com', 3),
 (4, 'Mateo', 'Martínez', '611223377', 'mateo@test.com', 1);
 
--- 2. Acciones Formativas (Sin la columna obsoleta teacher_id ni fee)
+-- 2. Acciones Formativas
 INSERT INTO "FormativeAction" ("action_id", "name", "objectives", "mainContents", "spots", "startDate", "endDate", "numberOfHours", "inscriptionPeriodStart", "inscriptionPeriodEnd", "location", "status") VALUES
 (1, 'New Testing Techniques', 'Learn new testing techniques', 'TDD, BDD, JUnit', 4, '2025-09-01', '2025-09-02', '24', '2025-07-01', '2025-07-31', 'Online', 'CLOSED'),
 (2, 'Neo4J Database Administration', 'Databases basics', 'Neo4J, Cypher', 3, '2026-03-27', '2026-03-28', '24', '2026-02-23', '2026-03-13', 'Aulario Sur', 'ACTIVE');
@@ -29,7 +29,7 @@ INSERT INTO "Teacher_FormativeAction" ("remuneration", "status", "action_id", "t
 (500.00, 'PAID', 1, 1),
 (300.00, 'PENDING', 2, 2);
 
--- 5. Inscripciones (applied_fee en lugar de fee)
+-- 5. Inscripciones
 INSERT INTO "Inscription" ("inscription_id", "inscription_date", "applied_fee", "state", "professional_id", "action_id") VALUES
 (1, '2025-07-15', 200.00, 'CONFIRMED', 1, 1),
 (2, '2025-07-30', 200.00, 'CONFIRMED', 2, 1),
@@ -42,14 +42,22 @@ INSERT INTO "Invoice" ("invoice_id", "invoice_date", "netAmount", "vat", "totalA
 (1, '2025-09-03', 413.22, 86.78, 500.00, 'PAID', 1, 1),
 (2, '2026-03-28', 260.00, 40.00, 300.00, 'PENDING', 2, 2);
 
--- 7. Movimientos de Dinero (Sustituye a la tabla Payment antigua)
--- Para inscripciones (Alumnos)
-INSERT INTO "MoneyMovement" ("movement_date", "amount", "status", "type", "inscription_id", "invoice_id") VALUES
-('2025-07-16', 200.00, 'EXECUTED', 'PAYMENT', 1, NULL),
-('2025-08-01', 200.00, 'EXECUTED', 'PAYMENT', 2, NULL),
-('2026-02-24', 150.00, 'EXECUTED', 'PAYMENT', 3, NULL),
-('2026-03-01', 150.00, 'EXECUTED', 'PAYMENT', 4, NULL);
+-- 7. Registros Formales (Keep for legacy compatibility)
+INSERT INTO "Payment" ("payment_id", "payment_date", "amount", "status", "type", "inscription_id", "invoice_id") VALUES
+(1, '2025-07-16', 200.00, 'PAID', 'PAYMENT', 1, NULL),
+(2, '2025-08-01', 200.00, 'PAID', 'PAYMENT', 2, NULL),
+(3, '2026-02-24', 150.00, 'PAID', 'PAYMENT', 3, NULL),
+(4, '2026-03-01', 150.00, 'PAID', 'PAYMENT', 4, NULL),
+(5, '2025-09-05', 500.00, 'PAID', 'PAYMENT', NULL, 1);
 
--- Para facturas (Profesores)
-INSERT INTO "MoneyMovement" ("movement_date", "amount", "status", "type", "inscription_id", "invoice_id") VALUES
-('2025-09-05', 500.00, 'EXECUTED', 'PAYMENT', NULL, 1);
+-- 8. Movimientos de Dinero (Real)
+-- Para inscripciones (Alumnos): Positivo (Ingreso)
+INSERT INTO "MoneyMovement" ("movement_date", "amount", "status", "inscription_id", "invoice_id") VALUES
+('2025-07-16', 200.00, 'EXECUTED', 1, NULL),
+('2025-08-01', 200.00, 'EXECUTED', 2, NULL),
+('2026-02-24', 150.00, 'EXECUTED', 3, NULL),
+('2026-03-01', 150.00, 'EXECUTED', 4, NULL);
+
+-- Para facturas (Profesores): Negativo (Egreso)
+INSERT INTO "MoneyMovement" ("movement_date", "amount", "status", "inscription_id", "invoice_id") VALUES
+('2025-09-05', -500.00, 'EXECUTED', NULL, 1);
