@@ -210,6 +210,8 @@ public class SwingMain {
     		}
 		});
         rightPanel.add(btnMultipleFees);
+        rightPanel.add(btnEjecutarInscripciones);
+        rightPanel.add(btnEjecutarPagos);
         
 
         for (int i = 3; i <= 13; i++) {
@@ -256,7 +258,6 @@ public class SwingMain {
                 cbProfessional.addItem(p);
             }
         } catch (Exception e) {
-            // Si la tabla no existe (ej. primer arranque), limpiamos el combo y silenciamos el error
             cbProfessional.removeAllItems();
             System.out.println("[Aviso] La tabla Professional no existe aún. Inicializa la DB.");
         }

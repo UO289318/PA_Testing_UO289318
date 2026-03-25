@@ -30,8 +30,6 @@ public class ControllerPlanMultipleFees {
         this.model = model;
         this.view  = view;
     }
-    
-
 
     public void initController(){
         loadTeachers();
@@ -54,17 +52,17 @@ public class ControllerPlanMultipleFees {
         // Detection of the Teacher in grid for UPDATE
         view.getTblTeachers().getSelectionModel().addListSelectionListener(e -> {
             if(!e.getValueIsAdjusting()){
-                int row = view.getTblTeachers().getSelectedRow();
-                if(row != -1){
-                    int tId = (int) view.getTblTeachers().getValueAt(row, 0);
-                    double rem = (double) view.getTblTeachers().getValueAt(row, 2);
+                int row=view.getTblTeachers().getSelectedRow();
+                if(row!=-1){
+                    int tId=(int) view.getTblTeachers().getValueAt(row, 0);
+                    double rem=(double) view.getTblTeachers().getValueAt(row, 2);
                     
                     view.getTxtRemunerationField().setText(String.valueOf(rem));
                     
                     // Block DropDownBox until update
-                    for(int i = 0; i < view.getCbTeacher().getItemCount(); i++){
-                        TeacherDTO t = view.getCbTeacher().getItemAt(i);
-                        if(t != null && t.getTeacherId() == tId){
+                    for(int i=0; i<view.getCbTeacher().getItemCount(); i++){
+                        TeacherDTO t=view.getCbTeacher().getItemAt(i);
+                        if(t!=null && t.getTeacherId()==tId){
                             view.getCbTeacher().setSelectedIndex(i);
                             break;
                         }
@@ -127,9 +125,9 @@ public class ControllerPlanMultipleFees {
                 view.getTblCommunities().clearSelection();
                 view.getTxtEditCommName().setText("");
             }
-            else{
+            else
                 view.getBtnUpdateComm().setText("Update Selected");
-            }
+            
         });
 
         view.getBtnFillDebug().addActionListener(e -> SwingUtil.exceptionWrapper(this::fillDebugData));
@@ -151,7 +149,7 @@ public class ControllerPlanMultipleFees {
         for(CommunityDTO c : list){
             String feeStr = "";
             if(currentFees.containsKey(c.getCommunityId()))
-                feeStr = String.valueOf(currentFees.get(c.getCommunityId()));
+                feeStr=String.valueOf(currentFees.get(c.getCommunityId()));
             
             tm.addRow(new Object[]{ c.getCommunityId(), c.getName(), feeStr });
         }
@@ -160,8 +158,8 @@ public class ControllerPlanMultipleFees {
     
     //Fills up the data from the grid to the info section
     private void populateEditFields(){
-        int row = view.getTblCommunities().getSelectedRow();
-        if(row != -1){
+        int row=view.getTblCommunities().getSelectedRow();
+        if(row!=-1){
             String name = view.getTblCommunities().getValueAt(row, 1).toString();
             String fee = view.getTblCommunities().getValueAt(row, 2).toString();
             view.getTxtEditCommName().setText(name);
@@ -170,7 +168,7 @@ public class ControllerPlanMultipleFees {
     }
 
     
-    //Adds new community, default value is 0 for fee and name is mandatory
+    // Adds new community, default value is 0 for fee, updates grid directly without full DB reload
     private void addNewCommunity(){
         String name = view.getTxtEditCommName().getText();
         String feeText = view.getTxtEditCommFee().getText().trim();
@@ -187,19 +185,20 @@ public class ControllerPlanMultipleFees {
             }
         }
         
-        model.addCommunity(name);
+        // Guardamos en DB y recuperamos el ID generado
+        int newId = model.addCommunity(name);
         view.getTxtEditCommName().setText("");
         view.getTxtEditCommFee().setText("");
         
-        loadCommunities();
+        // Añadimos directamente a la tabla sin recargar toda la BD
+        DefaultTableModel tm = (DefaultTableModel) view.getTblCommunities().getModel();
+        tm.addRow(new Object[]{newId, name, newFee});
         
-        if(newFee >= 0){
-            DefaultTableModel tm = (DefaultTableModel) view.getTblCommunities().getModel();
-            for(int i = 0; i < tm.getRowCount(); i++)
-                if(tm.getValueAt(i, 1).toString().equalsIgnoreCase(name)){
-                    tm.setValueAt(newFee, i, 2);
-                    break;
-                }
+        // Si el Single Fee está marcado, aplicamos el precio a todas
+        if(view.getChkSingleFee().isSelected()){
+            for(int j = 0; j < tm.getRowCount(); j++) {
+                tm.setValueAt(newFee, j, 2);
+            }
         }
     }
 
@@ -209,7 +208,7 @@ public class ControllerPlanMultipleFees {
         boolean isSingle = view.getChkSingleFee().isSelected();
         int row = view.getTblCommunities().getSelectedRow();
         
-        if(!isSingle && row == -1)
+        if(!isSingle && row==-1)
             throw new ApplicationException("Please select a community from the grid first.");
         
         if(!isSingle){
@@ -241,24 +240,20 @@ public class ControllerPlanMultipleFees {
                 if(!isSingle)
                 		view.getTblCommunities().setValueAt("", row, 2);
             
-        } catch (NumberFormatException ex){
+        }
+        catch (NumberFormatException ex){
             throw new ApplicationException("Invalid fee format.");
         }
     }
 
     
-    //Delete button function
+    // Removes the community from the visual grid so it won't be saved with the FA (Does not delete from DB)
     private void deleteCommunity(){
         int row = view.getTblCommunities().getSelectedRow();
         if(row == -1)
-        		throw new ApplicationException("Select a community to delete.");
-        int id = (int) view.getTblCommunities().getValueAt(row, 0);
+        		throw new ApplicationException("Select a community to remove from the list.");
         
-        int confirm=JOptionPane.showConfirmDialog(view.getFrame(), "Delete community? This removes all references.", "Confirm", JOptionPane.YES_NO_OPTION);
-        if(confirm == JOptionPane.YES_OPTION){
-            model.deleteCommunity(id);
-            loadCommunities();
-        }
+        ((DefaultTableModel) view.getTblCommunities().getModel()).removeRow(row);
     }
 
     //Reads comminity grid and returns map with ID and fees
@@ -269,6 +264,7 @@ public class ControllerPlanMultipleFees {
         for(int i=0; i<tm.getRowCount(); i++){
             int id = (int) tm.getValueAt(i, 0);
             String feeStr = tm.getValueAt(i, 2).toString();
+            // Solo coleccionamos aquellas filas que tienen una fee explícita para guardar
             if(feeStr!=null && !feeStr.isBlank())
                 fees.put(id, Double.parseDouble(feeStr));
         }
@@ -326,7 +322,6 @@ public class ControllerPlanMultipleFees {
         int row = view.getTblTeachers().getSelectedRow();
         if(row == -1)
         		return;
-        
         try{
             double rem = Double.parseDouble(view.getTxtRemunerationField().getText().replace(",", "."));
             if(rem<0)
@@ -344,7 +339,7 @@ public class ControllerPlanMultipleFees {
     //Remove the teacher from the temporal grid
     private void removeTeacherFromGrid(){
         int row = view.getTblTeachers().getSelectedRow();
-        if(row == -1)
+        if(row==-1)
         		throw new ApplicationException("Select a teacher row to remove.");
         
         ((DefaultTableModel) view.getTblTeachers().getModel()).removeRow(row);
@@ -379,7 +374,6 @@ public class ControllerPlanMultipleFees {
         	else 
         		dto.setLocation(view.getTxtLocation());
         
-
         try{
         		dto.setSpots(view.getTxtSpots().isEmpty() ? 0 : Integer.parseInt(view.getTxtSpots()));
         	} 
@@ -395,7 +389,7 @@ public class ControllerPlanMultipleFees {
         	}
 
         DefaultTableModel tmodel=(DefaultTableModel) view.getTblTeachers().getModel();
-        if(tmodel.getRowCount() == 0)
+        if(tmodel.getRowCount()==0)
             preCheck.errors.add("At least one teacher must be assigned.");
         
         
@@ -410,7 +404,7 @@ public class ControllerPlanMultipleFees {
         }
         */
 
-        Map<Integer, Double> fees = collectCommunityFees();
+        Map<Integer, Double> fees=collectCommunityFees();
 
         // Adds all the errors
         ModelPlanMultipleFees.ValidationResult finalResult = model.validate(dto, getSimulatedDateStr(), fees);
@@ -429,7 +423,7 @@ public class ControllerPlanMultipleFees {
             sb.append("\nDo you want to proceed and save anyway?");
             
             int choice = JOptionPane.showConfirmDialog(view.getFrame(), sb.toString(), "Validation Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if(choice == JOptionPane.NO_OPTION)
+            if(choice==JOptionPane.NO_OPTION)
             		return;
         }
 
@@ -460,7 +454,7 @@ public class ControllerPlanMultipleFees {
 
     //Get and set date from SwingMain
     private String getSimulatedDateStr(){
-        if(simulatedDateStr == null || simulatedDateStr.trim().isEmpty())
+        if(simulatedDateStr==null || simulatedDateStr.trim().isEmpty())
         		return Util.dateToIsoString(new Date());
         try{
         		return Util.dateToIsoString(Util.isoStringToDate(simulatedDateStr));

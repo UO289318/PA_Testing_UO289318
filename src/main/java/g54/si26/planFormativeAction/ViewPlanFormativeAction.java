@@ -215,7 +215,7 @@ public class ViewPlanFormativeAction {
 		panelSchedule.add(chkOnline);
 
 		//Section 3: Teacher
-		// Left side: combo + remuneration + buttons. Right side: selected teachers grid.
+		//Left side: combo + remuneration + buttons. Right side: selected teachers grid.
 		JPanel panelTeacher = new JPanel();
 		panelTeacher.setBorder(new TitledBorder(null, "3. Teacher", TitledBorder.LEADING, TitledBorder.TOP,
 				new Font("Segoe UI", Font.BOLD, 12), new Color(0, 120, 215)));
@@ -278,7 +278,7 @@ public class ViewPlanFormativeAction {
 		panelTeacher.add(scrollTeachers);
 
 		//Section 4: Finance
-		// Left side: fee field + free checkbox + buttons. Right side: fees grid.
+		//Left side: fee field + free checkbox + buttons. Right side: fees grid.
 		JPanel panelFinance = new JPanel();
 		panelFinance.setBorder(new TitledBorder(null, "4. Finance", TitledBorder.LEADING, TitledBorder.TOP,
 				new Font("Segoe UI", Font.BOLD, 12), new Color(0, 120, 215)));
@@ -341,7 +341,7 @@ public class ViewPlanFormativeAction {
 		lblEnrolWarning.setBounds(10, 85, 740, 18);
 		panelEnrolment.add(lblEnrolWarning);
 
-		// Bottom: Clear + Save (+ DEBUG Fill up Data) ───────────────────────
+		// Bottom: Clear + Save (+ DEBUG Fill up Data) 
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 		frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
@@ -666,7 +666,6 @@ public class ViewPlanFormativeAction {
 
 	
 	//Shows a summary dialog listing ALL validation issues (errors + warnings).
-
 	public void showValidationSummary(java.util.List<String> errors, java.util.List<String> warnings) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("The Formative Action could not be saved.\n");

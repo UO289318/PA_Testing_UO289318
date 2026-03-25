@@ -32,14 +32,19 @@ public class ViewPlanMultipleFees {
     private JButton btnFillDebug, btnBack, btnClear, btnSave;
 
     //CODIGOD COLORES
-    private static final Color COLOR_BG = Color.WHITE;                
-    private static final Color COLOR_INSERT = new Color(40, 167, 69);     
-    private static final Color COLOR_UPDATE = new Color(0, 120, 215);     
+                    
     private static final Color COLOR_DELETE = new Color(220, 53, 69);     
     private static final Color COLOR_LIGHT_BLUE = new Color(227, 242, 253);   
     private static final Color COLOR_LIGHT_GRAY = new Color(240, 244, 248);   
-    private static final Color COLOR_CLEAR = new Color(255, 193, 7);     
-    private static final Color COLOR_SEPARATOR = new Color(220, 225, 230);   
+    private static final Color COLOR_BG  = Color.WHITE;
+    private static final Color COLOR_SECTION_BG = new Color(225, 240, 255);    
+    private static final Color COLOR_SUBSECTION_BG = new Color(255, 252, 235);    
+    private static final Color COLOR_UPDATE = new Color(0, 85, 180);       
+    private static final Color COLOR_INSERT = new Color(255, 140, 50);     
+    private static final Color COLOR_CLEAR = new Color(255, 200, 0);    
+    private static final Color COLOR_SEPARATOR = new Color(180, 205, 230);    
+    
+    
     
     private static final Font FONT_REGULAR = new Font("Segoe UI", Font.PLAIN, 12);
     private static final Font FONT_BOLD    = new Font("Segoe UI", Font.BOLD, 12);
@@ -215,10 +220,6 @@ public class ViewPlanMultipleFees {
     //  HELPERS d ESTILO Y RENDERIZADO "WEB CARDS"
     // =========================================================================
 
-    /**
-     * Dibuja un borde d forma libre, permitiendo el uso d "Graphics2D" para añadir 
-     * antialiasing y bordes perfectamente redondeados en Swing.
-     */
     //draws a round border on each section acting as "cards"
     private javax.swing.border.Border createRoundedBorder(Color color, int thickness, int radius) {
         return new javax.swing.border.AbstractBorder() {
@@ -233,47 +234,62 @@ public class ViewPlanMultipleFees {
                 g2.dispose();
             }
             @Override
-            public Insets getBorderInsets(Component c) {
-            		return new Insets(4, 10, 4, 10);
-            	}
+            public Insets getBorderInsets(Component c) { return new Insets(4, 10, 4, 10); }
             @Override
             public Insets getBorderInsets(Component c, Insets insets) {
-            		insets.set(4, 10, 4, 10);
-            		return insets;
+                insets.set(4, 10, 4, 10);
+                return insets;
             }
         };
     }
 
-    	private JPanel createSection(String title, int x, int y, int w, int h) {
-        	JPanel p = new JPanel(null);
-        	p.setBounds(x, y, w, h);
-        	p.setBackground(COLOR_BG);
-        	javax.swing.border.Border rounded = createRoundedBorder(new Color(200, 205, 210), 2, 16);
-        	p.setBorder(BorderFactory.createTitledBorder(rounded, title, TitledBorder.LEFT, TitledBorder.TOP, FONT_BOLD, COLOR_UPDATE));
-        	return p;
-    	}
+    private JPanel createSection(String title, int x, int y, int w, int h) {
+        JPanel p = new JPanel(null) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(COLOR_SECTION_BG); 
+                g2.fillRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 16, 16);
+                g2.dispose();
+            }
+        };
+        p.setOpaque(false); 
+        p.setBounds(x, y, w, h);
+        p.setBorder(BorderFactory.createTitledBorder(createRoundedBorder(COLOR_UPDATE, 2, 16), title, TitledBorder.LEFT, TitledBorder.TOP, FONT_BOLD, COLOR_UPDATE));
+        return p;
+    }
 
     private JPanel createSubSection(String title, int x, int y, int w, int h) {
-        JPanel p = new JPanel(null);
+        JPanel p = new JPanel(null) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(COLOR_SUBSECTION_BG); 
+                g2.fillRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 12, 12);
+                g2.dispose();
+            }
+        };
+        p.setOpaque(false); 
         p.setBounds(x, y, w, h);
-        p.setBackground(COLOR_BG);
-        javax.swing.border.Border rounded = createRoundedBorder(new Color(225, 230, 235), 2, 12);
-        p.setBorder(BorderFactory.createTitledBorder(rounded, title, TitledBorder.LEFT, TitledBorder.TOP, new Font("Segoe UI", Font.ITALIC, 11), Color.GRAY));
+        p.setBorder(BorderFactory.createTitledBorder(createRoundedBorder(new Color(230, 200, 150), 2, 12), title, TitledBorder.LEFT, TitledBorder.TOP, new Font("Segoe UI", Font.ITALIC, 11), COLOR_UPDATE));
         return p;
     }
 
     //Apply unified style to the tables
     private void styleTable(JTable table) {
         table.setBackground(Color.WHITE);
-        table.setGridColor(new Color(230, 230, 230));
+        table.setGridColor(new Color(230, 240, 250)); 
         table.setSelectionBackground(new Color(200, 225, 255));
         table.setSelectionForeground(Color.BLACK);
         table.setRowHeight(22);
-        
-        table.getTableHeader().setBackground(new Color(245, 247, 250));
-        table.getTableHeader().setForeground(Color.DARK_GRAY);
+        table.getTableHeader().setBackground(new Color(240, 248, 255)); 
+        table.getTableHeader().setForeground(COLOR_UPDATE);
         table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 11));
-        table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(200, 200, 200)));
+        table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, COLOR_SEPARATOR));
     }
 
     private void addLabel(JPanel p, String text, int x, int y, int w) {

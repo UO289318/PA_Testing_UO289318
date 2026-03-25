@@ -157,9 +157,9 @@ public class ModelPlanMultipleFees {
 
         // DATE VALIDATION SECTION
         if(dto.getStartDate() == null || dto.getStartDate().isBlank())
-        		result.errors.add("Session start date is required.");
+        		result.errors.add("Formative Action start date is required.");
         if(dto.getEndDate() == null || dto.getEndDate().isBlank())
-        		result.errors.add("Session end date is required.");
+        		result.errors.add("Formative Action end date is required.");
         if(dto.getInscriptionPeriodStart() == null || dto.getInscriptionPeriodStart().isBlank())
         		result.errors.add("Enrolment start date is required.");
         if(dto.getInscriptionPeriodEnd() == null || dto.getInscriptionPeriodEnd().isBlank())
@@ -174,7 +174,7 @@ public class ModelPlanMultipleFees {
                 LocalDate enEnd = LocalDate.parse(dto.getInscriptionPeriodEnd().substring(0, 10));
 
                 if(!start.isAfter(today))
-                		result.errors.add("Session start date must be after today.");
+                		result.errors.add("The Formative Action cannot be planned in the past.");
                 if(end.isBefore(start))
                 		result.errors.add("The end date cannot be before the start date.");
                 if(enStart.isBefore(today))
@@ -182,11 +182,11 @@ public class ModelPlanMultipleFees {
                 if(enEnd.isBefore(enStart))
                 		result.errors.add("Enrolment end date cannot be before its start date.");
                 if(enEnd.isAfter(start))
-                		result.errors.add("Enrolment must end before the session starts.");
+                		result.warnings.add("Enrolment does not end before the Formative Action starts.");
 
                 // Aviso d 3 semanas (Warning)
                 if(!enrolmentMeetsLeadTimeRule(dto.getInscriptionPeriodStart(), dto.getStartDate()))
-                    result.warnings.add("Enrolment starts less than 3 weeks before the session date.");
+                    result.warnings.add("Enrolment starts less than 3 weeks before the Formative Action date.");
 
             }
             catch (Exception e){
