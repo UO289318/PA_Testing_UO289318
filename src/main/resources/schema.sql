@@ -1,4 +1,4 @@
--- Limpieza de tablas
+-- Limpieza de tablas (Orden inverso para evitar conflictos de Foreign Keys)
 DROP TABLE IF EXISTS "MoneyMovement";
 DROP TABLE IF EXISTS "Payment";
 DROP TABLE IF EXISTS "Invoice";
@@ -36,7 +36,8 @@ CREATE TABLE "FormativeAction" (
     "inscriptionPeriodStart" TEXT NOT NULL,
     "inscriptionPeriodEnd" TEXT NOT NULL,
     "location" TEXT NOT NULL,
-    "status" TEXT NOT NULL
+    "status" TEXT NOT NULL,
+    "creationDate" TEXT 
 );
 
 -- 2. Tablas con dependencias
@@ -100,7 +101,7 @@ CREATE TABLE "Payment" (
     "payment_date" TEXT NOT NULL,
     "amount" REAL NOT NULL,
     "status" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
+    "type" TEXT,
     "inscription_id" INTEGER,
     "invoice_id" INTEGER,
     FOREIGN KEY("inscription_id") REFERENCES "Inscription"("inscription_id"),

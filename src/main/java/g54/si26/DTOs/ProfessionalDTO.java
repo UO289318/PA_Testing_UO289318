@@ -74,5 +74,12 @@ public class ProfessionalDTO {
 	public void setCommunityId(Integer communityId) {
 		this.communityId = communityId;
 	}
+	@Override
+    public String toString() {
+        if (name == null && surname == null) 
+            return super.toString();
+
+        return surname + ", " + name; 
+    }
 
 }
