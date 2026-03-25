@@ -10,10 +10,15 @@ public class TeacherInvoiceDTO {
     private double totalAmount;
     private String invoiceDate;
     private double amountPaid;
+    private double netBalance;
+    private String status;
 
     public TeacherInvoiceDTO() {}
 
     // Getters and Setters
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
     public int getInvoiceId() { return invoiceId; }
     public void setInvoiceId(int invoiceId) { this.invoiceId = invoiceId; }
 
@@ -32,5 +37,8 @@ public class TeacherInvoiceDTO {
     public double getAmountPaid() { return amountPaid; }
     public void setAmountPaid(double amountPaid) { this.amountPaid = amountPaid; }
     
+    public double getNetBalance() { return netBalance; }
+    public void setNetBalance(double netBalance) { this.netBalance = netBalance; }
+
     public double getPendingAmount() { return totalAmount - amountPaid; }
 }

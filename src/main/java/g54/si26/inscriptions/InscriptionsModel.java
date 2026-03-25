@@ -138,12 +138,13 @@ public class InscriptionsModel {
         validateNotNull(simulatedDate, "Simulated date null");
         String cutoffDateIso = calculateCutoffDate(simulatedDate);
 
-        // Se ha sustituido Payment por MoneyMovement
-        db.executeUpdate("UPDATE Inscription SET state = 'RECEIVED' WHERE state = 'CONFIRMED' AND inscription_id NOT IN (SELECT inscription_id FROM MoneyMovement WHERE type = 'PAYMENT')");
+        // Se ha sustituido Payment por MoneyMovement, filtrando por tipo PAYMENT en el Registro Formal (Payment)
+        db.executeUpdate("UPDATE Inscription SET state = 'RECEIVED' WHERE state = 'CONFIRMED' AND inscription_id NOT IN (SELECT mm.inscription_id FROM MoneyMovement mm JOIN Payment p ON mm.payment_id = p.payment_id WHERE p.type = 'PAYMENT')");
 
         String sqlAudit = "SELECT i.inscription_id, i.inscription_date, m.movement_date, i.state "
                         + "FROM Inscription i JOIN MoneyMovement m ON i.inscription_id = m.inscription_id "
-                        + "WHERE m.type = 'PAYMENT' AND i.state IN ('RECEIVED', 'CONFIRMED')";
+                        + "JOIN Payment p ON m.payment_id = p.payment_id "
+                        + "WHERE p.type = 'PAYMENT' AND i.state IN ('RECEIVED', 'CONFIRMED')";
         List<Object[]> auditRows = db.executeQueryArray(sqlAudit);
         
         for(Object[] row : auditRows){

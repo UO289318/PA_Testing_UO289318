@@ -1,34 +1,30 @@
 package g54.si26.DTOs;
 
-/**
- * Data Transfer Object for the Payment table.
- */
-public class PaymentDTO {
-    private int paymentId;
+public class MoneyMovementDTO {
+    private int movementId;
     private double amount;
-    private String paymentDate;
+    private String movementDate;
     private String status;
-    private String type;
     private Integer inscriptionId;
     private Integer invoiceId;
+    private String relatedTo;
 
-    public PaymentDTO() {}
+    public MoneyMovementDTO() {}
 
-    // Getters and Setters
-    public int getPaymentId() { return paymentId; }
-    public void setPaymentId(int paymentId) { this.paymentId = paymentId; }
+    public String getRelatedTo() { return relatedTo; }
+    public void setRelatedTo(String relatedTo) { this.relatedTo = relatedTo; }
+
+    public int getMovementId() { return movementId; }
+    public void setMovementId(int movementId) { this.movementId = movementId; }
 
     public double getAmount() { return amount; }
     public void setAmount(double amount) { this.amount = amount; }
 
-    public String getPaymentDate() { return paymentDate; }
-    public void setPaymentDate(String paymentDate) { this.paymentDate = paymentDate; }
+    public String getMovementDate() { return movementDate; }
+    public void setMovementDate(String movementDate) { this.movementDate = movementDate; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
-
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
 
     public Integer getInscriptionId() { return inscriptionId; }
     public void setInscriptionId(Integer inscriptionId) { this.inscriptionId = inscriptionId; }

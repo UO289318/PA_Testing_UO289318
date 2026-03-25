@@ -51,7 +51,8 @@ public class FinancialConsultingModel {
             "FROM MoneyMovement mm " +
             "INNER JOIN Inscription i ON mm.inscription_id = i.inscription_id " +
             "INNER JOIN Professional p ON i.professional_id = p.professional_id " +
-            "WHERE i.action_id = ? AND mm.type = 'PAYMENT' " +
+            "INNER JOIN Payment pay ON mm.payment_id = pay.payment_id " +
+            "WHERE i.action_id = ? AND pay.type = 'PAYMENT' " +
             
             "UNION ALL " +
             
@@ -63,7 +64,8 @@ public class FinancialConsultingModel {
             "FROM MoneyMovement mm " +
             "INNER JOIN Invoice inv ON mm.invoice_id = inv.invoice_id " +
             "INNER JOIN Teacher t ON inv.teacher_id = t.teacher_id " +
-            "WHERE inv.action_id = ? AND mm.type = 'PAYMENT' " +
+            "INNER JOIN Payment pay ON mm.payment_id = pay.payment_id " +
+            "WHERE inv.action_id = ? AND pay.type = 'PAYMENT' " +
             
             "ORDER BY date ASC";
 

@@ -1,13 +1,14 @@
 package g54.si26.payments;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import g54.si26.DTOs.EnrollmentRecordDTO;
+import g54.si26.DTOs.PaymentDTO;
 import g54.si26.utils.ApplicationException;
 import g54.si26.utils.Database;
+import g54.si26.utils.Util;
 
 /**
  * Model for the "Register Payments" functionality.
@@ -73,31 +74,23 @@ public class PaymentModel {
             throw new ApplicationException("Error: Payment date cannot be before the registration date (" + regDate + ").");
         }
         
-        if (isAfterTwoWorkingDays(regDate, payDate)) {
+        if (Util.isAfterTwoWorkingDays(regDate, payDate)) {
             throw new ApplicationException("Validation Error: Payment received after the 2 working days deadline.");
         }
 
-        // 4. Record Payment (Cambio: Tabla Payment -> MoneyMovement con type 'PAYMENT')
-        String sqlInsertMovement = "INSERT INTO MoneyMovement (amount, movement_date, status, type, inscription_id) VALUES (?, ?, ?, ?, ?)";
-        db.executeUpdate(sqlInsertMovement, amount, paymentDateStr, "EXECUTED", "PAYMENT", inscriptionId);
+        // 4. Record Payment (Formal)
+        String sqlInsertPayment = "INSERT INTO Payment (amount, payment_date, status, type, inscription_id) VALUES (?, ?, ?, ?, ?)";
+        db.executeUpdate(sqlInsertPayment, amount, paymentDateStr, "PAID", "PAYMENT", inscriptionId);
+        
+        // Get the generated ID for the payment
+        int paymentId = db.executeQueryPojo(PaymentDTO.class, "SELECT last_insert_rowid() AS paymentId").get(0).getPaymentId();
 
-        // 5. Update Inscription Status to CONFIRMED
+        // 5. Record Money Movement (Real) - linked to the formal payment
+        String sqlInsertMovement = "INSERT INTO MoneyMovement (amount, movement_date, status, payment_id, inscription_id) VALUES (?, ?, ?, ?, ?)";
+        db.executeUpdate(sqlInsertMovement, amount, paymentDateStr, "EXECUTED", paymentId, inscriptionId);
+
+        // 6. Update Inscription Status to CONFIRMED
         String sqlUpdateStatus = "UPDATE Inscription SET state = 'CONFIRMED' WHERE inscription_id = ?";
         db.executeUpdate(sqlUpdateStatus, inscriptionId);
-    }
-
-    /**
-     * Business Logic: Checks if payDate is more than 2 working days after regDate.
-     */
-    public boolean isAfterTwoWorkingDays(LocalDate regDate, LocalDate payDate) {
-        LocalDate deadline = regDate;
-        int workingDaysAdded = 0;
-        while (workingDaysAdded < 2) {
-            deadline = deadline.plusDays(1);
-            if (deadline.getDayOfWeek() != DayOfWeek.SATURDAY && deadline.getDayOfWeek() != DayOfWeek.SUNDAY) {
-                workingDaysAdded++;
-            }
-        }
-        return payDate.isAfter(deadline);
     }
 }

@@ -13,12 +13,12 @@ public class TMConsultingModel {
                      "(SELECT amount FROM Fee WHERE action_id = fa.action_id LIMIT 1) AS fee, " +
                      // Inscriptions en estado RECEIVED
                      "(SELECT COUNT(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state = 'RECEIVED') AS pending_enrollments, " +
-                     // Ingresos Confirmados (MoneyMovement de tipo PAYMENT vinculado a Inscription)
-                     "(SELECT COALESCE(SUM(mm.amount), 0) FROM MoneyMovement mm INNER JOIN Inscription i ON mm.inscription_id = i.inscription_id WHERE i.action_id = fa.action_id AND mm.type = 'PAYMENT') AS conf_income, " +
+                     // Ingresos Confirmados (MoneyMovement de tipo PAYMENT vinculado a Inscription mediante Registro Formal)
+                     "(SELECT COALESCE(SUM(mm.amount), 0) FROM MoneyMovement mm JOIN Inscription i ON mm.inscription_id = i.inscription_id JOIN Payment p ON mm.payment_id = p.payment_id WHERE i.action_id = fa.action_id AND p.type = 'PAYMENT') AS conf_income, " +
                      // Gastos Potenciales (Remuneración total de profesores asignados)
                      "(SELECT COALESCE(SUM(tfa.remuneration), 0) FROM Teacher_FormativeAction tfa WHERE tfa.action_id = fa.action_id) AS total_expenses, " +
-                     // Gastos Confirmados (MoneyMovement de tipo PAYMENT vinculado a Invoice)
-                     "(SELECT COALESCE(SUM(mm.amount), 0) FROM MoneyMovement mm INNER JOIN Invoice inv ON mm.invoice_id = inv.invoice_id WHERE inv.action_id = fa.action_id AND mm.type = 'PAYMENT') AS conf_expenses " +
+                     // Gastos Confirmados (MoneyMovement de tipo PAYMENT vinculado a Invoice mediante Registro Formal)
+                     "(SELECT COALESCE(SUM(mm.amount), 0) FROM MoneyMovement mm JOIN Invoice inv ON mm.invoice_id = inv.invoice_id JOIN Payment p ON mm.payment_id = p.payment_id WHERE inv.action_id = fa.action_id AND p.type = 'PAYMENT') AS conf_expenses " +
                      "FROM FormativeAction fa " +
                      "WHERE fa.startDate >= ? AND fa.startDate <= ? ";
 

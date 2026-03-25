@@ -210,7 +210,19 @@ public class SwingMain {
         });
         rightPanel.add(btnReopenFA);
 
-        for (int i = 3; i <= 14; i++) {
+        JButton btnMoneyMovements = new JButton("Register Real Money Movements");
+        btnMoneyMovements.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                g54.si26.moneyMovements.MoneyMovementModel model = new g54.si26.moneyMovements.MoneyMovementModel();
+                g54.si26.moneyMovements.MoneyMovementView view = new g54.si26.moneyMovements.MoneyMovementView();
+                g54.si26.moneyMovements.MoneyMovementController controller = new g54.si26.moneyMovements.MoneyMovementController(model, view);
+                controller.setSimulatedDate(txtSystemDate.getText());
+                controller.initController();
+            }
+        });
+        rightPanel.add(btnMoneyMovements);
+
+        for (int i = 4; i <= 14; i++) {
             JButton placeholder = new JButton("US " + i + " – (not yet implemented)");
             placeholder.setEnabled(false);
             placeholder.setFont(new Font("Segoe UI", Font.ITALIC, 11));
