@@ -44,28 +44,26 @@ public class FinancialConsultingModel {
     public List<Object[]> getMovements(int actionId) {
         String sql =
             // 1. INGRESOS (Pagos de profesionales/alumnos)
-            "SELECT mm.movement_date as date, " +
-            "('Enrollment Payment - ' || p.name || ' ' || p.surname) as concept, " +
-            "mm.amount as amount, " +
-            "1 as is_income " + // Flag para identificar ingresos en el Controller
-            "FROM MoneyMovement mm " +
-            "INNER JOIN Inscription i ON mm.inscription_id = i.inscription_id " +
-            "INNER JOIN Professional p ON i.professional_id = p.professional_id " +
-            "INNER JOIN Payment pay ON mm.payment_id = pay.payment_id " +
-            "WHERE i.action_id = ? AND pay.type = 'PAYMENT' " +
+        		"SELECT mm.movement_date as date, " +
+                "('Enrollment Payment - ' || p.name || ' ' || p.surname) as concept, " +
+                "mm.amount as amount, " + // ABS para asegurar que devuelve el valor absoluto
+                "1 as is_income " + 
+                "FROM MoneyMovement mm " +
+                "INNER JOIN Inscription i ON mm.inscription_id = i.inscription_id " +
+                "INNER JOIN Professional p ON i.professional_id = p.professional_id " +
+                "WHERE i.action_id = ? AND mm.type = 'PAYMENT' " + // <-- Filtro corregido aquí
             
             "UNION ALL " +
             
             // 2. GASTOS (Pagos realizados a profesores)
             "SELECT mm.movement_date as date, " +
             "('Teacher Payment - ' || t.name) as concept, " +
-            "mm.amount as amount, " +
-            "0 as is_income " + // Flag para identificar gastos en el Controller
+            "mm.amount as amount, " + // ABS para que no salga "- €-500" en la vista
+            "0 as is_income " + 
             "FROM MoneyMovement mm " +
             "INNER JOIN Invoice inv ON mm.invoice_id = inv.invoice_id " +
             "INNER JOIN Teacher t ON inv.teacher_id = t.teacher_id " +
-            "INNER JOIN Payment pay ON mm.payment_id = pay.payment_id " +
-            "WHERE inv.action_id = ? AND pay.type = 'PAYMENT' " +
+            "WHERE inv.action_id = ? AND mm.type = 'PAYMENT' " +
             
             "ORDER BY date ASC";
 

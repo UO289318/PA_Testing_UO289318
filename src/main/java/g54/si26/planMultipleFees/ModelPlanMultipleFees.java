@@ -220,6 +220,16 @@ public class ModelPlanMultipleFees {
         		int tId = Integer.parseInt(teacherModel.getValueAt(i, 0).toString());
         		double rem = Double.parseDouble(teacherModel.getValueAt(i, 2).toString());
         		db.executeUpdate("INSERT INTO Teacher_FormativeAction (remuneration, status, action_id, teacher_id) VALUES (?, 'PENDING', ?, ?)", rem, actionId, tId);
+        		double netAmount = rem / 1.21;
+        		double vat = rem - netAmount;
+            
+        		String invoiceDate = dto.getEndDate();
+        		if (invoiceDate != null && invoiceDate.length() > 10) 
+        		    invoiceDate = invoiceDate.substring(0, 10);
+        		
+        		db.executeUpdate("INSERT INTO Invoice (invoice_date, netAmount, vat, totalAmount, status, teacher_id, action_id) " +
+        		                 "VALUES (?, ?, ?, ?, 'PENDING', ?, ?)", 
+        		                 invoiceDate, netAmount, vat, rem, tId, actionId);
         	}
     	}
 

@@ -121,7 +121,7 @@ public class SwingMain {
                 controller.initController(); 
             }
         });
-        leftPanel.add(btnEjecutarInscripciones);
+        rightPanel.add(btnEjecutarInscripciones);
         
         // --- BOTÓN PA' REGISTRAR PAGOS DE PROFESIONALES ---
         JButton btnEjecutarPagos = new JButton("Register Payments");
@@ -130,6 +130,7 @@ public class SwingMain {
                 PaymentModel model = new PaymentModel();
                 PaymentView view = new PaymentView();
                 PaymentController controller = new PaymentController(model, view);
+                
                 controller.initController();
             }
         });
@@ -142,6 +143,7 @@ public class SwingMain {
                 g54.si26.teacherpayments.TeacherPaymentModel model = new g54.si26.teacherpayments.TeacherPaymentModel();
                 g54.si26.teacherpayments.TeacherPaymentView view = new g54.si26.teacherpayments.TeacherPaymentView();
                 g54.si26.teacherpayments.TeacherPaymentController controller = new g54.si26.teacherpayments.TeacherPaymentController(model, view);
+                
                 controller.initController();
             }
         });
