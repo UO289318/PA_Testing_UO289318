@@ -173,7 +173,7 @@ public class ModelPlanMultipleFees {
                 LocalDate enStart= LocalDate.parse(dto.getInscriptionPeriodStart().substring(0, 10));
                 LocalDate enEnd = LocalDate.parse(dto.getInscriptionPeriodEnd().substring(0, 10));
 
-                if(!start.isAfter(today))
+                if(start.isBefore(today))
                 		result.errors.add("The Formative Action cannot be planned in the past.");
                 if(end.isBefore(start))
                 		result.errors.add("The end date cannot be before the start date.");
