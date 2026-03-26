@@ -16,6 +16,7 @@ public class ProfessionalDTO {
 	private String surname;
 	private String phone;
 	private String email;
+	private Integer communityId;
 	public ProfessionalDTO() {}
 
 	public ProfessionalDTO(int professionalId, String name, String surname, String phone, String email) {
@@ -65,5 +66,20 @@ public class ProfessionalDTO {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+	public Integer getCommunityId() {
+		return communityId;
+	}
+
+	public void setCommunityId(Integer communityId) {
+		this.communityId = communityId;
+	}
+	@Override
+    public String toString() {
+        if (name == null && surname == null) 
+            return super.toString();
+
+        return surname + ", " + name; 
+    }
 
 }

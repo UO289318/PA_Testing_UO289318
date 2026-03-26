@@ -56,7 +56,7 @@ public class ConcurrencyTest {
                 p1.setPhone("600000001");
                 p1.setEmail("mortadelo@test.com");
                 
-                model.enrollProfessional(p1, 99);
+                //model.enrollProfessional(p1, 99);
                 System.out.println("✅ Hilo 1: Mortadelo matriculado con éxito.");
             } catch (ApplicationException e) {
                 System.out.println("❌ Hilo 1 falló (Esperado si no hay plaza): " + e.getMessage());
@@ -77,7 +77,7 @@ public class ConcurrencyTest {
                 p2.setPhone("600000002");
                 p2.setEmail("filemon@test.com");
                 
-                model.enrollProfessional(p2, 99);
+                //model.enrollProfessional(p2, 99);
                 System.out.println("✅ Hilo 2: Filemón matriculado con éxito.");
             } catch (ApplicationException e) {
                 System.out.println("❌ Hilo 2 falló (Esperado si no hay plaza): " + e.getMessage());

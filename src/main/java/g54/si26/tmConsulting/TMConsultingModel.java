@@ -8,6 +8,7 @@ public class TMConsultingModel {
     private Database db = new Database();
 
     public List<Object[]> getReportData(String startDate, String endDate, String statusFilter) {
+
         // SQL query with subqueries to group the financial data per course
     	String sql = "SELECT fa.startDate, fa.name, fa.status, fa.fee, " +
                 "(SELECT COUNT(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state = 'RECEIVED'), " +
@@ -21,11 +22,10 @@ public class TMConsultingModel {
                 "FROM FormativeAction fa " +
                 "WHERE fa.startDate >= ? AND fa.startDate <= ? ";
 
-        // Apply the status filter if it's not "All"
+
         if ("Active".equals(statusFilter)) {
             sql += "AND fa.status = 'ACTIVE' ";
         } else if ("Closed".equals(statusFilter)) {
-            // We assume that closed statuses can be CLOSED or CANCELLED
             sql += "AND fa.status IN ('CLOSED', 'CANCELLED') "; 
         }
         

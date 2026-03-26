@@ -12,6 +12,7 @@ public class EnrollmentRecordDTO {
     private double fee;
     private String registrationDate;
     private double totalPaid;
+    private double netBalance;
     private String state;
 
     public EnrollmentRecordDTO() {}
@@ -40,4 +41,7 @@ public class EnrollmentRecordDTO {
 
     public double getTotalPaid() { return totalPaid; }
     public void setTotalPaid(double totalPaid) { this.totalPaid = totalPaid; }
+
+    public double getNetBalance() { return netBalance; }
+    public void setNetBalance(double netBalance) { this.netBalance = netBalance; }
 }

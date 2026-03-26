@@ -165,5 +165,20 @@ public class Util {
 		Format formatter = new SimpleDateFormat("yyyy-MM-dd");
 		return formatter.format(javaDate);
 	}
+
+	/**
+	 * Business Logic: Checks if payDate is more than 2 working days after regDate.
+	 */
+	public static boolean isAfterTwoWorkingDays(java.time.LocalDate regDate, java.time.LocalDate payDate) {
+		java.time.LocalDate deadline = regDate;
+		int workingDaysAdded = 0;
+		while (workingDaysAdded < 2) {
+			deadline = deadline.plusDays(1);
+			if (deadline.getDayOfWeek() != java.time.DayOfWeek.SATURDAY && deadline.getDayOfWeek() != java.time.DayOfWeek.SUNDAY) {
+				workingDaysAdded++;
+			}
+		}
+		return payDate.isAfter(deadline);
+	}
 	
 }
