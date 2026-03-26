@@ -110,7 +110,7 @@ public class SwingMain {
         frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
 
         // --- BOTÓN P'ARRINCAR LA HISTORIA D'USUARIU: INSCRIPCIONES ---
-        JButton btnEjecutarInscripciones = new JButton("Enrol in a Formative Action");
+        JButton btnEjecutarInscripciones = new JButton("Enrol Multiple Fees");
         btnEjecutarInscripciones.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
             public void actionPerformed(ActionEvent e) {
                 InscriptionsModel model = new InscriptionsModel();
@@ -121,7 +121,6 @@ public class SwingMain {
                 controller.initController(); 
             }
         });
-        rightPanel.add(btnEjecutarInscripciones);
         
         // --- BOTÓN PA' REGISTRAR PAGOS DE PROFESIONALES ---
         JButton btnEjecutarPagos = new JButton("Register Payments");
@@ -197,8 +196,7 @@ public class SwingMain {
         		ctrl.initController();
     		}
 		});
-        rightPanel.add(btnPlanFormativeAction);
-
+        
 	    JButton btnMultipleFees = new JButton("Plan Multiple Fees");
 		btnMultipleFees.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
@@ -209,8 +207,7 @@ public class SwingMain {
         		ctrl.initController();
     		}
 		});
-        rightPanel.add(btnMultipleFees);
-
+        
         JButton btnReopenFA = new JButton("Re-open FA's");
         btnReopenFA.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -220,8 +217,7 @@ public class SwingMain {
                 controller.initController();
             }
         });
-        rightPanel.add(btnReopenFA);
-
+        
         JButton btnMoneyMovements = new JButton("Register Real Money Movements");
         btnMoneyMovements.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -232,14 +228,20 @@ public class SwingMain {
                 controller.initController();
             }
         });
+        
+        rightPanel.add(btnPlanFormativeAction);
         rightPanel.add(btnMoneyMovements);
-
+        rightPanel.add(btnMultipleFees);
+        rightPanel.add(btnEjecutarInscripciones);
+        rightPanel.add(btnReopenFA);
+        /*
         for (int i = 5; i <= 14; i++) {
             JButton placeholder = new JButton("US " + i + " – (not yet implemented)");
             placeholder.setEnabled(false);
             placeholder.setFont(new Font("Segoe UI", Font.ITALIC, 11));
             rightPanel.add(placeholder);
         }
+        */
 
         // --- BOTONES DE BASE DE DATOS ---
         JButton btnInicializarBaseDeDatos = new JButton("Initialize Blank database");

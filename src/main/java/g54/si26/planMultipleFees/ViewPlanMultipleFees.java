@@ -145,6 +145,12 @@ public class ViewPlanMultipleFees {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         });
         styleTable(tblTeachers);
+        
+        //Debug, row con ID
+        tblTeachers.getColumnModel().getColumn(0).setMinWidth(0);
+        tblTeachers.getColumnModel().getColumn(0).setMaxWidth(0);
+        tblTeachers.getColumnModel().getColumn(0).setPreferredWidth(0);
+        
         JScrollPane spTeachers = new JScrollPane(tblTeachers);
         spTeachers.setBounds(420, 25, 400, 100);
         spTeachers.getViewport().setBackground(COLOR_BG);
@@ -160,6 +166,12 @@ public class ViewPlanMultipleFees {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         });
         styleTable(tblCommunities); 
+        
+        //Debug, hide ID for the review
+        tblCommunities.getColumnModel().getColumn(0).setMinWidth(0);
+        tblCommunities.getColumnModel().getColumn(0).setMaxWidth(0);
+        tblCommunities.getColumnModel().getColumn(0).setPreferredWidth(0);
+        
         JScrollPane spComm = new JScrollPane(tblCommunities);
         spComm.setBounds(10, 25, 400, 130);
         spComm.getViewport().setBackground(COLOR_BG);
@@ -207,6 +219,8 @@ public class ViewPlanMultipleFees {
         toolbar.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, COLOR_SEPARATOR));
         
         btnFillDebug = createStyledButton("Fill Debug Data", COLOR_LIGHT_GRAY, Color.DARK_GRAY, 0, 0, 150, 25);
+        //Escondido pa la review
+        btnFillDebug.setVisible(false);
         btnClear = createStyledButton("Clear", COLOR_CLEAR, Color.BLACK, 0, 0, 100, 25);
         btnSave = createStyledButton("Save Action", COLOR_UPDATE, Color.WHITE, 0, 0, 150, 25);
         

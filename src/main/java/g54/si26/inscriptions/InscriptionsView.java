@@ -103,6 +103,9 @@ public class InscriptionsView {
             @Override public boolean isCellEditable(int r, int c){ return false; }
         });
         styleTable(tblCommunityFees);
+        tblCommunityFees.getColumnModel().getColumn(0).setMinWidth(0);
+        tblCommunityFees.getColumnModel().getColumn(0).setMaxWidth(0);
+        tblCommunityFees.getColumnModel().getColumn(0).setPreferredWidth(0);
         tblCommunityFees.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane spFees = new JScrollPane(tblCommunityFees);
         spFees.setBounds(15, 45, 350, 140);
