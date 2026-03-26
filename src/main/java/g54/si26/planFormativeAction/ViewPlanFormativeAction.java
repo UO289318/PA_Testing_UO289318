@@ -270,7 +270,12 @@ public class ViewPlanFormativeAction {
 		tblTeachers.setRowHeight(20);
 		tblTeachers.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblTeachers.setDefaultEditor(Object.class, null);
-		tblTeachers.getColumnModel().getColumn(0).setPreferredWidth(30);
+		
+		tblTeachers.getColumnModel().getColumn(0).setMinWidth(0);
+        	tblTeachers.getColumnModel().getColumn(0).setMaxWidth(0);
+        
+        
+		tblTeachers.getColumnModel().getColumn(0).setPreferredWidth(0);
 		tblTeachers.getColumnModel().getColumn(1).setPreferredWidth(150);
 		tblTeachers.getColumnModel().getColumn(2).setPreferredWidth(110);
 		JScrollPane scrollTeachers = new JScrollPane(tblTeachers);
@@ -353,6 +358,7 @@ public class ViewPlanFormativeAction {
 		btnFillDebug.setBackground(new Color(255, 200, 0));
 		btnFillDebug.setForeground(Color.DARK_GRAY);
 		bottomPanel.add(btnFillDebug);
+		btnFillDebug.setVisible(false);
 		// END DEBUG
 
 		btnClear = new JButton("Clear");
