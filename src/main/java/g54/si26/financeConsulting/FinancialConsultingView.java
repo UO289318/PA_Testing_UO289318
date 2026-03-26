@@ -194,9 +194,9 @@ public class FinancialConsultingView {
         txtFecha.setText("-"); txtPlazasTotales.setText("-"); txtPlazasLibres.setText("-");
         lblMatriculaAbierta.setVisible(false);
         modeloTabla.setRowCount(0);
-        lblTotalIngresos.setText("Total Income: €0.00");
-        lblTotalGastos.setText("Total Expenses: €0.00");
-        lblBalance.setText("Course Balance: €0.00");
+        lblTotalIngresos.setText("Confirmed Income: €0.00");
+        lblTotalGastos.setText("Confirmed Expenses: €0.00");
+        lblBalance.setText("Course Confirmed Balance: €0.00");
         lblBalance.setForeground(Color.BLACK);
     }
 }

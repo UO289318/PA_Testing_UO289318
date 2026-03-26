@@ -103,9 +103,9 @@ public class FinancialConsultingController {
         double balance = totalIncomes - totalExpenses;
 
         // 3. Update UI
-        view.getLblTotalIngresos().setText("Total Income: €" + totalIncomes);
-        view.getLblTotalGastos().setText("Total Expenses: €" + totalExpenses);
-        view.getLblBalance().setText("Course Balance: €" + balance);
+        view.getLblTotalIngresos().setText("Confirmed Income: €" + totalIncomes);
+        view.getLblTotalGastos().setText("Confirmed Expenses: €" + totalExpenses);
+        view.getLblBalance().setText("Course Confirmed Balance: €" + balance);
 
         if (balance >= 0) {
             view.getLblBalance().setForeground(new Color(0, 153, 51));

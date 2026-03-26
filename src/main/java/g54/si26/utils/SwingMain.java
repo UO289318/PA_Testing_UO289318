@@ -111,7 +111,7 @@ public class SwingMain {
         });
         frame.getContentPane().add(btnCerrarAccion);
 
-        JButton btnExecuteSecretaryConsult = new JButton("Secretary Consult");
+        JButton btnExecuteSecretaryConsult = new JButton("Consult Money Movements");
         btnExecuteSecretaryConsult.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Equí instanciamos el nuesu MVC 
@@ -127,7 +127,7 @@ public class SwingMain {
             }
         });
         
-        JButton btnExecuteTMConsult = new JButton("Training Manager Consult");
+        JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         btnExecuteTMConsult.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Equí instanciamos el nuesu MVC nuevu
