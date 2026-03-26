@@ -21,6 +21,9 @@ import g54.si26.inscriptions.*;
 import g54.si26.payments.*;
 import g54.si26.teacherpayments.*;
 import g54.si26.tmConsulting.*;
+import g54.si26.viewPendingPayments.ViewPendingController;
+import g54.si26.viewPendingPayments.ViewPendingModel;
+import g54.si26.viewPendingPayments.ViewPendingView;
 import g54.si26.closeFormativeActions.*;
 import g54.si26.financeConsulting.*;
 import g54.si26.reopenFormativeActions.*;
@@ -235,6 +238,20 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         });
         rightPanel.add(btnMoneyMovements);
 
+     // --- BOTÓN PA' VER PAGOS PENDIENTES (NUEVA US) ---
+        JButton btnViewPendingPayments = new JButton("View Pending Payments");
+        btnViewPendingPayments.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ViewPendingModel model = new ViewPendingModel();
+                ViewPendingView view = new ViewPendingView();
+                ViewPendingController controller = new ViewPendingController(model, view);
+                
+                // Asegúrate de que esta línea dice initController()
+                controller.initController(); 
+            }
+        });
+        rightPanel.add(btnViewPendingPayments);
+        
         for (int i = 5; i <= 14; i++) {
             JButton placeholder = new JButton("US " + i + " – (not yet implemented)");
             placeholder.setEnabled(false);
