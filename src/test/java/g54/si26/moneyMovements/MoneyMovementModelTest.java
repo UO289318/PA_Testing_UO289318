@@ -1,8 +1,8 @@
 package g54.si26.moneyMovements;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import g54.si26.utils.Database;
 import java.util.List;
 import g54.si26.DTOs.EnrollmentRecordDTO;
@@ -11,7 +11,7 @@ public class MoneyMovementModelTest {
     private MoneyMovementModel model;
     private Database db;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         db = new Database();
         db.createDatabase(false);
@@ -30,7 +30,7 @@ public class MoneyMovementModelTest {
                 break;
             }
         }
-        assertNotNull("Should find a RECEIVED enrollment", target);
+        assertNotNull(target, "Should find a RECEIVED enrollment");
         
         // Register payment equal to fee
         model.registerMovement(target.getInscriptionId(), null, target.getFee(), "2026-03-25", "EXECUTED");

@@ -1,8 +1,8 @@
 package g54.si26.financeConsulting;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import java.util.List;
 import g54.si26.DTOs.FormativeActionDTO;
 import g54.si26.utils.ApplicationException;
@@ -11,7 +11,7 @@ public class FinancialConsultingModelTest {
 
     private FinancialConsultingModel model;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         // Se ejecuta antes de cada test para tener un modelo limpio
         model = new FinancialConsultingModel();
@@ -21,9 +21,9 @@ public class FinancialConsultingModelTest {
     public void testGetFormativeActionsByStatus_All() {
         // Probamos que devuelva la lista completa sin fallar
         List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("All");
-        assertNotNull("La lista de acciones formativas no debería ser nula", actions);
+        assertNotNull(actions, "La lista de acciones formativas no debería ser nula");
         // Asegúrate de tener al menos 1 curso en tu base de datos para que esto pase
-        assertTrue("Debería haber al menos una acción formativa en la BD", actions.size() > 0);
+        assertTrue(actions.size() > 0, "Debería haber al menos una acción formativa en la BD");
     }
 
     @Test
@@ -41,15 +41,17 @@ public class FinancialConsultingModelTest {
         int validActionId = 1; 
         Object[] basicData = model.getCourseBasicData(validActionId);
         
-        assertNotNull("Los datos básicos no deben ser nulos", basicData);
-        assertEquals("Debe devolver exactamente 7 columnas (name, status, etc)", 7, basicData.length);
-        assertNotNull("El nombre del curso no debe ser nulo", basicData[0]);
+        assertNotNull(basicData, "Los datos básicos no deben ser nulos");
+        assertEquals(7, basicData.length, "Debe devolver exactamente 7 columnas (name, status, etc)");
+        assertNotNull(basicData[0], "El nombre del curso no debe ser nulo");
     }
 
-    @Test(expected = ApplicationException.class)
+    @Test
     public void testGetCourseBasicData_InvalidId() {
         // Probamos un ID que NO existe (ej. -999) para ver si lanza nuestra ApplicationException
-        model.getCourseBasicData(-999);
+        assertThrows(ApplicationException.class, () -> {
+            model.getCourseBasicData(-999);
+        });
     }
 
     @Test
@@ -58,10 +60,10 @@ public class FinancialConsultingModelTest {
         int validActionId = 1;
         List<Object[]> movements = model.getMovements(validActionId);
         
-        assertNotNull("La lista de movimientos no debe ser nula", movements);
+        assertNotNull(movements, "La lista de movimientos no debe ser nula");
         if (!movements.isEmpty()) {
             Object[] firstMovement = movements.get(0);
-            assertEquals("Cada fila de movimiento debe tener 4 columnas (fecha, concepto, cantidad, es_ingreso)", 4, firstMovement.length);
+            assertEquals(4, firstMovement.length, "Cada fila de movimiento debe tener 4 columnas (fecha, concepto, cantidad, es_ingreso)");
         }
     }
 }

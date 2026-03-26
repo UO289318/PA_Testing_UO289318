@@ -121,7 +121,7 @@ public class SwingMain {
                 controller.initController(); 
             }
         });
-        leftPanel.add(btnEjecutarInscripciones);
+        rightPanel.add(btnEjecutarInscripciones);
         
         // --- BOTÓN PA' REGISTRAR PAGOS DE PROFESIONALES ---
         JButton btnEjecutarPagos = new JButton("Register Payments");
@@ -130,6 +130,7 @@ public class SwingMain {
                 PaymentModel model = new PaymentModel();
                 PaymentView view = new PaymentView();
                 PaymentController controller = new PaymentController(model, view);
+                
                 controller.initController();
             }
         });
@@ -142,6 +143,7 @@ public class SwingMain {
                 g54.si26.teacherpayments.TeacherPaymentModel model = new g54.si26.teacherpayments.TeacherPaymentModel();
                 g54.si26.teacherpayments.TeacherPaymentView view = new g54.si26.teacherpayments.TeacherPaymentView();
                 g54.si26.teacherpayments.TeacherPaymentController controller = new g54.si26.teacherpayments.TeacherPaymentController(model, view);
+                
                 controller.initController();
             }
         });
@@ -232,7 +234,19 @@ public class SwingMain {
         });
         rightPanel.add(btnMoneyMovements);
 
-        for (int i = 5; i <= 14; i++) {
+        JButton btnCancelFA = new JButton("Cancel Formative Action");
+        btnCancelFA.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                g54.si26.cancelFormativeActions.ModelCancelFormativeAction model = new g54.si26.cancelFormativeActions.ModelCancelFormativeAction();
+                g54.si26.cancelFormativeActions.ViewCancelFormativeAction view = new g54.si26.cancelFormativeActions.ViewCancelFormativeAction();
+                g54.si26.cancelFormativeActions.ControllerCancelFormativeAction controller = new g54.si26.cancelFormativeActions.ControllerCancelFormativeAction(model, view);
+                controller.setSimulatedDate(txtSystemDate.getText());
+                controller.initController();
+            }
+        });
+        rightPanel.add(btnCancelFA);
+
+        for (int i = 6; i <= 14; i++) {
             JButton placeholder = new JButton("US " + i + " – (not yet implemented)");
             placeholder.setEnabled(false);
             placeholder.setFont(new Font("Segoe UI", Font.ITALIC, 11));
