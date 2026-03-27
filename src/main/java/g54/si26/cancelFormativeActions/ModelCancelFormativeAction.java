@@ -24,7 +24,8 @@ public class ModelCancelFormativeAction {
 		// Allow cancellation if not closed, even if already cancelled (to allow fixing errors)
 		String sql = "SELECT action_id AS actionId, name, startDate, endDate, status " +
 					 "FROM FormativeAction " +
-					 "WHERE status != 'CLOSED' " + 
+					 "WHERE status != 'CLOSED' " +
+					 "AND status != 'CANCELLED' "+
 					 "AND endDate >= ? " +
 					 "ORDER BY startDate ASC";
 		
