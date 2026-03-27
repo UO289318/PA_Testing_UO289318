@@ -53,4 +53,4 @@ INSERT INTO "MoneyMovement" ("movement_date", "amount", "status", "type", "inscr
 
 -- Expense: Pago de factura a profesor
 INSERT INTO "MoneyMovement" ("movement_date", "amount", "status", "type", "inscription_id", "invoice_id") VALUES
-('2025-09-05', 500.00, 'EXECUTED', 'PAYMENT', NULL, 1); 
+('2025-09-05', -500.00, 'EXECUTED', 'PAYMENT', NULL, 1); 

@@ -99,7 +99,7 @@ public class ModelPlanFormativeAction {
                 LocalDate enStart = LocalDate.parse(dto.getInscriptionPeriodStart().substring(0, 10));
                 LocalDate enEnd = LocalDate.parse(dto.getInscriptionPeriodEnd().substring(0, 10));
 
-                if (!start.isAfter(today))
+                if(start.isBefore(today))
                 		result.errors.add("Formative Action start date cannot be set in the past");
                 if (end.isBefore(start)) 
                 		result.errors.add("The end date cannot be before the start date.");

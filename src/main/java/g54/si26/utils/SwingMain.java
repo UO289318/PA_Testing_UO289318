@@ -113,7 +113,7 @@ public class SwingMain {
         frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
 
         // --- BOTÓN P'ARRINCAR LA HISTORIA D'USUARIU: INSCRIPCIONES ---
-        JButton btnEjecutarInscripciones = new JButton("Enrol in a Formative Action");
+        JButton btnEjecutarInscripciones = new JButton("Enrol Multiple Fees");
         btnEjecutarInscripciones.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
             public void actionPerformed(ActionEvent e) {
                 InscriptionsModel model = new InscriptionsModel();
@@ -124,7 +124,6 @@ public class SwingMain {
                 controller.initController(); 
             }
         });
-        rightPanel.add(btnEjecutarInscripciones);
         
         // --- BOTÓN PA' REGISTRAR PAGOS DE PROFESIONALES ---
         JButton btnEjecutarPagos = new JButton("Register Payments");
@@ -201,8 +200,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         		ctrl.initController();
     		}
 		});
-        rightPanel.add(btnPlanFormativeAction);
-
+        
 	    JButton btnMultipleFees = new JButton("Plan Multiple Fees");
 		btnMultipleFees.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
@@ -213,8 +211,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         		ctrl.initController();
     		}
 		});
-        rightPanel.add(btnMultipleFees);
-
+        
         JButton btnReopenFA = new JButton("Re-open FA's");
         btnReopenFA.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -224,8 +221,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
                 controller.initController();
             }
         });
-        rightPanel.add(btnReopenFA);
-
+        
         JButton btnMoneyMovements = new JButton("Register Real Money Movements");
         btnMoneyMovements.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -236,7 +232,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
                 controller.initController();
             }
         });
-        rightPanel.add(btnMoneyMovements);
+
 
      // --- BOTÓN PA' VER PAGOS PENDIENTES (NUEVA US) ---
         JButton btnViewPendingPayments = new JButton("View Pending Payments");
@@ -252,6 +248,25 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         });
         rightPanel.add(btnViewPendingPayments);
         
+
+        JButton btnCancelFA = new JButton("Cancel Formative Action");
+        btnCancelFA.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                g54.si26.cancelFormativeActions.ModelCancelFormativeAction model = new g54.si26.cancelFormativeActions.ModelCancelFormativeAction();
+                g54.si26.cancelFormativeActions.ViewCancelFormativeAction view = new g54.si26.cancelFormativeActions.ViewCancelFormativeAction();
+                g54.si26.cancelFormativeActions.ControllerCancelFormativeAction controller = new g54.si26.cancelFormativeActions.ControllerCancelFormativeAction(model, view);
+                controller.setSimulatedDate(txtSystemDate.getText());
+                controller.initController();
+            }
+        });
+        
+        rightPanel.add(btnPlanFormativeAction);
+        rightPanel.add(btnMoneyMovements);
+        rightPanel.add(btnMultipleFees);
+        rightPanel.add(btnEjecutarInscripciones);
+        rightPanel.add(btnReopenFA);
+        rightPanel.add(btnCancelFA);
+
         for (int i = 5; i <= 14; i++) {
             JButton placeholder = new JButton("US " + i + " – (not yet implemented)");
             placeholder.setEnabled(false);
