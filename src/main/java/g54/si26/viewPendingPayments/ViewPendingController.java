@@ -2,7 +2,6 @@ package g54.si26.viewPendingPayments;
 
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
-import g54.si26.DTOs.MoneyMovementDTO;
 
 public class ViewPendingController {
     private ViewPendingModel model;
@@ -29,16 +28,15 @@ public class ViewPendingController {
     }
 
     private void loadPayments(String filter) {
-        List<MoneyMovementDTO> movements = model.getPendingPayments(filter);
+        // Obtenemos las filas ya calculadas desde el modelo
+        List<Object[]> rows = model.getPendingPaymentsData(filter);
         
         String[] columnNames = {"Professional/Teacher Name", "Amount", "Formative Action", "Reason"};
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
 
-        for (MoneyMovementDTO movement : movements) {
-            Object[] rowData = model.getPaymentDetailsForView(movement.getMovementId());
-            if (rowData != null) {
-                tableModel.addRow(rowData);
-            }
+        // Añadimos directamente las filas a la tabla
+        for (Object[] rowData : rows) {
+            tableModel.addRow(rowData);
         }
         
         view.getTabPayments().setModel(tableModel);
