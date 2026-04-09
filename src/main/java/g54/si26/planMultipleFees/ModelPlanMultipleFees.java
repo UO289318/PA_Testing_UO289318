@@ -132,14 +132,14 @@ public class ModelPlanMultipleFees {
         		result.errors.add("Course name is required.");
         	else if(nameExistsInPastOrPresent(dto.getName(), simulatedToday))
         		result.errors.add("A formative action named \"" + dto.getName() + "\" already exists created today or in the past.");
-
+/*
         	if(dto.getObjectives() == null || dto.getObjectives().isBlank())
         			result.errors.add("Objectives are required.");
         if(dto.getMainContents() == null || dto.getMainContents().isBlank())
         		result.errors.add("Main contents are required.");
         if(dto.getLocation() == null || dto.getLocation().isBlank())
         		result.errors.add("Location is required (or must be marked as Online).");
-            
+  */          
         // Hrs and spots must be a possitive nmbr
         if(dto.getNumberOfHours() < 1)
         		result.errors.add("Duration must be at least 1 hour.");

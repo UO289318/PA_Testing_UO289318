@@ -18,13 +18,14 @@ public class InscriptionsView {
     private JLabel lblCommunityHint; 
     private JButton btnEnroll, btnBack, btnLoadCourses;
 
-    private static final Color COLOR_BG  = Color.WHITE;
-    private static final Color COLOR_SECTION_BG = new Color(225, 240, 255);    
-    private static final Color COLOR_SUBSECTION_BG = new Color(255, 252, 235);    
+    private static final Color COLOR_BG  = UIManager.getColor("Panel.background");
+    private static final Color COLOR_SECTION_BG = COLOR_BG;//new Color(225, 240, 255);    
+    private static final Color COLOR_SUBSECTION_BG = COLOR_BG;//new Color(255, 252, 235);    
     private static final Color COLOR_UPDATE = new Color(0, 85, 180);       
     private static final Color COLOR_INSERT = new Color(255, 140, 50);     
     private static final Color COLOR_CLEAR = new Color(255, 235, 100);    
-    private static final Color COLOR_SEPARATOR = new Color(180, 205, 230);    
+    private static final Color COLOR_SEPARATOR = new Color(180, 205, 230);
+    private static final Color COLOR_LIGHT_BLUE = new Color(227, 242, 253);
     
     private static final Font FONT_REGULAR = new Font("Segoe UI", Font.PLAIN, 12);
     private static final Font FONT_BOLD = new Font("Segoe UI", Font.BOLD, 12);
@@ -55,7 +56,7 @@ public class InscriptionsView {
         topPanel.setBackground(COLOR_BG);
         topPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, COLOR_SEPARATOR));
         
-        btnBack = createStyledButton("Back", COLOR_BG, COLOR_UPDATE, 0, 0, 100, 30);
+        btnBack = createStyledButton("Back", COLOR_LIGHT_BLUE, COLOR_UPDATE, 0, 0, 80, 25);
         btnLoadCourses = createStyledButton("Refresh Courses", COLOR_CLEAR, Color.DARK_GRAY, 0, 0, 150, 30);
         topPanel.add(btnBack);
         topPanel.add(btnLoadCourses);
@@ -164,7 +165,7 @@ public class InscriptionsView {
         };
         p.setOpaque(false); 
         p.setBounds(x, y, w, h);
-        p.setBorder(BorderFactory.createTitledBorder(createRoundedBorder(COLOR_UPDATE, 2, 16), title, TitledBorder.LEFT, TitledBorder.TOP, FONT_BOLD, COLOR_UPDATE));
+        p.setBorder(BorderFactory.createTitledBorder(createRoundedBorder(COLOR_UPDATE, 1, 16), title, TitledBorder.LEFT, TitledBorder.TOP, FONT_BOLD, COLOR_UPDATE));
         return p;
     }
 
@@ -182,7 +183,7 @@ public class InscriptionsView {
         };
         p.setOpaque(false); 
         p.setBounds(x, y, w, h);
-        p.setBorder(BorderFactory.createTitledBorder(createRoundedBorder(new Color(230, 200, 150), 2, 12), title, TitledBorder.LEFT, TitledBorder.TOP, new Font("Segoe UI", Font.ITALIC, 11), COLOR_UPDATE));
+        p.setBorder(BorderFactory.createTitledBorder(createRoundedBorder(new Color(230, 200, 150), 1, 12), title, TitledBorder.LEFT, TitledBorder.TOP, new Font("Segoe UI", Font.ITALIC, 11), COLOR_UPDATE));
         return p;
     }
 

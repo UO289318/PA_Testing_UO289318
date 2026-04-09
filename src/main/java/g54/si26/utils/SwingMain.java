@@ -260,7 +260,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
             }
         });
         
-        rightPanel.add(btnPlanFormativeAction);
+        //leftPanel.add(btnPlanFormativeAction);
         rightPanel.add(btnMoneyMovements);
         rightPanel.add(btnMultipleFees);
         rightPanel.add(btnEjecutarInscripciones);

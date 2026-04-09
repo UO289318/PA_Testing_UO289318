@@ -36,9 +36,9 @@ public class ViewPlanMultipleFees {
     private static final Color COLOR_DELETE = new Color(220, 53, 69);     
     private static final Color COLOR_LIGHT_BLUE = new Color(227, 242, 253);   
     private static final Color COLOR_LIGHT_GRAY = new Color(240, 244, 248);   
-    private static final Color COLOR_BG  = Color.WHITE;
-    private static final Color COLOR_SECTION_BG = new Color(225, 240, 255);    
-    private static final Color COLOR_SUBSECTION_BG = new Color(255, 252, 235);    
+    private static final Color COLOR_BG  = UIManager.getColor("Panel.background");
+    private static final Color COLOR_SECTION_BG = COLOR_BG;//new Color(225, 240, 255);    
+    private static final Color COLOR_SUBSECTION_BG = COLOR_BG;// new Color(255, 252, 235);    
     private static final Color COLOR_UPDATE = new Color(0, 85, 180);       
     private static final Color COLOR_INSERT = new Color(255, 140, 50);     
     private static final Color COLOR_CLEAR = new Color(255, 200, 0);    
@@ -220,7 +220,7 @@ public class ViewPlanMultipleFees {
         
         btnFillDebug = createStyledButton("Fill Debug Data", COLOR_LIGHT_GRAY, Color.DARK_GRAY, 0, 0, 150, 25);
         //Escondido pa la review
-        btnFillDebug.setVisible(false);
+        btnFillDebug.setVisible(true);
         btnClear = createStyledButton("Clear", COLOR_CLEAR, Color.BLACK, 0, 0, 100, 25);
         btnSave = createStyledButton("Save Action", COLOR_UPDATE, Color.WHITE, 0, 0, 150, 25);
         
@@ -271,7 +271,7 @@ public class ViewPlanMultipleFees {
         };
         p.setOpaque(false); 
         p.setBounds(x, y, w, h);
-        p.setBorder(BorderFactory.createTitledBorder(createRoundedBorder(COLOR_UPDATE, 2, 16), title, TitledBorder.LEFT, TitledBorder.TOP, FONT_BOLD, COLOR_UPDATE));
+        p.setBorder(BorderFactory.createTitledBorder(createRoundedBorder(COLOR_UPDATE, 1, 16), title, TitledBorder.LEFT, TitledBorder.TOP, FONT_BOLD, COLOR_UPDATE));
         return p;
     }
 
@@ -289,7 +289,7 @@ public class ViewPlanMultipleFees {
         };
         p.setOpaque(false); 
         p.setBounds(x, y, w, h);
-        p.setBorder(BorderFactory.createTitledBorder(createRoundedBorder(new Color(230, 200, 150), 2, 12), title, TitledBorder.LEFT, TitledBorder.TOP, new Font("Segoe UI", Font.ITALIC, 11), COLOR_UPDATE));
+        p.setBorder(BorderFactory.createTitledBorder(createRoundedBorder(new Color(230, 200, 150), 1, 12), title, TitledBorder.LEFT, TitledBorder.TOP, new Font("Segoe UI", Font.ITALIC, 11), COLOR_UPDATE));
         return p;
     }
 

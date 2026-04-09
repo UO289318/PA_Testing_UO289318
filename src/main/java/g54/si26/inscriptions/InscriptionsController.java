@@ -106,7 +106,7 @@ public class InscriptionsController {
     		
     		view.getTablaCursos().getColumnModel().getColumn(1).setPreferredWidth(350);
     		view.getTablaCursos().getColumnModel().getColumn(2).setPreferredWidth(200);
-    		view.getTablaCursos().getColumnModel().getColumn(3).setPreferredWidth(100);
+    		//view.getTablaCursos().getColumnModel().getColumn(3).setPreferredWidth(100);
     		
     		view.getTablaCursos().setDefaultRenderer(Object.class, new DefaultTableCellRenderer(){
     			@Override

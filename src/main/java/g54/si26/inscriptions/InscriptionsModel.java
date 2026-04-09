@@ -19,8 +19,8 @@ public class InscriptionsModel {
                    + "startDate, endDate, inscriptionPeriodStart, inscriptionPeriodEnd, status "
                    + "FROM FormativeAction "
                    + "WHERE status IN ('ACTIVE', 'CLOSED') "
-                   + "AND ? >= inscriptionPeriodStart "
-                   + "AND ? <= inscriptionPeriodEnd";
+                   + "AND SUBSTR(?, 1, 10) >= inscriptionPeriodStart "
+                   + "AND SUBSTR(?, 1, 10) <= inscriptionPeriodEnd";
 
     		String d = dateToTimestamp(currentDate); 
     		List<FormativeActionDTO> courses = db.executeQueryPojo(FormativeActionDTO.class, sql, d, d);
