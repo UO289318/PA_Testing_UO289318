@@ -110,7 +110,8 @@ public class ControllerCloseFormativeAction{
 
         	int selectedRow=view.getTabCourses().getSelectedRow();
         	int actionId=Integer.parseInt(view.getTabCourses().getValueAt(selectedRow, 0).toString());
-        	boolean success=model.executeClosure(actionId);
+        	String closureDateStr = Util.dateToIsoString(getSafeSimulatedDate());
+        	boolean success=model.executeClosure(actionId, closureDateStr);
         
         	if (success){
         		view.showSuccessMessage();

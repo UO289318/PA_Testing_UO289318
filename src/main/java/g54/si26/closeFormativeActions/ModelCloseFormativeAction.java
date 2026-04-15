@@ -139,10 +139,11 @@ public class ModelCloseFormativeAction {
         return result;
     }
 
-    	public boolean executeClosure(int actionId){
-    		String sql = "UPDATE FormativeAction SET status = 'CLOSED' WHERE action_id = ?";
+    	public boolean executeClosure(int actionId, String closureDateStr){
+    		String sql = "UPDATE FormativeAction SET status = 'CLOSED', closureDate = ? WHERE action_id = ?";
     		try (Connection conn = db.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)){
-    			pstmt.setInt(1, actionId);
+    			pstmt.setString(1, closureDateStr);
+    			pstmt.setInt(2, actionId);
     			return pstmt.executeUpdate() > 0;
     		} catch (SQLException e){
     			e.printStackTrace();

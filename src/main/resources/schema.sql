@@ -36,6 +36,7 @@ CREATE TABLE "FormativeAction" (
     "inscriptionPeriodEnd" TEXT NOT NULL,
     "location" TEXT NOT NULL,
     "status" TEXT NOT NULL,
+    "closureDate" TEXT,
     "creationDate" TEXT 
 );
 

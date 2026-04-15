@@ -25,10 +25,12 @@ import g54.si26.viewPendingPayments.ViewPendingController;
 import g54.si26.viewPendingPayments.ViewPendingModel;
 import g54.si26.viewPendingPayments.ViewPendingView;
 import g54.si26.closeFormativeActions.*;
+import g54.si26.consultFormativeActionsSecretary.*;
 import g54.si26.financeConsulting.*;
 import g54.si26.reopenFormativeActions.*;
 import g54.si26.planFormativeAction.*;
 import g54.si26.planMultipleFees.*;
+import g54.si26.cancelFormativeActions.*;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -136,21 +138,18 @@ public class SwingMain {
                 controller.initController();
             }
         });
-        leftPanel.add(btnEjecutarPagos);
-
+        
         // --- BOTÓN PA' REGISTRAR PAGOS A PROFESORES ---
         JButton btnEjecutarPagosProfesores = new JButton("Record Teacher Payments");
         btnEjecutarPagosProfesores.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                g54.si26.teacherpayments.TeacherPaymentModel model = new g54.si26.teacherpayments.TeacherPaymentModel();
-                g54.si26.teacherpayments.TeacherPaymentView view = new g54.si26.teacherpayments.TeacherPaymentView();
-                g54.si26.teacherpayments.TeacherPaymentController controller = new g54.si26.teacherpayments.TeacherPaymentController(model, view);
-                
-                controller.initController();
+            		TeacherPaymentModel model = new TeacherPaymentModel();
+            		TeacherPaymentView view = new TeacherPaymentView();
+            		TeacherPaymentController controller = new TeacherPaymentController(model, view);
+            		controller.initController();
             }
         });
-        leftPanel.add(btnEjecutarPagosProfesores);
-
+        
         // --- BOTÓN: CERRAR ACCIÓN FORMATIVA ---
         JButton btnCerrarAccion = new JButton("Close Formative Actions");
         btnCerrarAccion.addActionListener(new ActionListener() {
@@ -163,8 +162,7 @@ public class SwingMain {
                 viewClose.getFrame().setVisible(true);
             }
         });
-        leftPanel.add(btnCerrarAccion);
-
+        
         JButton btnExecuteSecretaryConsult = new JButton("Consult Money Movements");
         btnExecuteSecretaryConsult.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -176,7 +174,7 @@ public class SwingMain {
             }
         });
 
-        leftPanel.add(btnExecuteSecretaryConsult);
+        
 
 JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         btnExecuteTMConsult.addActionListener(new ActionListener() {
@@ -188,7 +186,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
                 controller.initController(); 
             }
         });
-        leftPanel.add(btnExecuteTMConsult);
+        
 
 	    JButton btnPlanFormativeAction = new JButton("Plan Formative Action");
 		btnPlanFormativeAction.addActionListener(new ActionListener() {
@@ -246,13 +244,13 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
                 controller.initController(); 
             }
         });
-        rightPanel.add(btnViewPendingPayments);
+        
         
 
         JButton btnCancelFA = new JButton("Cancel Formative Action");
         btnCancelFA.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                g54.si26.cancelFormativeActions.ModelCancelFormativeAction model = new g54.si26.cancelFormativeActions.ModelCancelFormativeAction();
+                ModelCancelFormativeAction model = new ModelCancelFormativeAction();
                 g54.si26.cancelFormativeActions.ViewCancelFormativeAction view = new g54.si26.cancelFormativeActions.ViewCancelFormativeAction();
                 g54.si26.cancelFormativeActions.ControllerCancelFormativeAction controller = new g54.si26.cancelFormativeActions.ControllerCancelFormativeAction(model, view);
                 controller.setSimulatedDate(txtSystemDate.getText());
@@ -260,12 +258,29 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
             }
         });
         
+        JButton btnConsultFA = new JButton("Consult Formative Actions (Secretary)");
+        btnConsultFA.addActionListener(e -> {
+            ModelConsultFormativeActions model = new ModelConsultFormativeActions();
+            ViewConsultFormativeActions view = new ViewConsultFormativeActions();
+            ControllerConsultFormativeActions controller = new ControllerConsultFormativeActions(model, view);
+            controller.setSimulatedDateStr(txtSystemDate.getText());
+            controller.initController();
+        });
+        
+        leftPanel.add(btnEjecutarPagos);
+        leftPanel.add(btnEjecutarPagosProfesores);
+        leftPanel.add(btnCerrarAccion);
+        leftPanel.add(btnExecuteTMConsult);
+        leftPanel.add(btnExecuteSecretaryConsult);
         //leftPanel.add(btnPlanFormativeAction);
+        rightPanel.add(btnConsultFA);
         rightPanel.add(btnMoneyMovements);
         rightPanel.add(btnMultipleFees);
         rightPanel.add(btnEjecutarInscripciones);
         rightPanel.add(btnReopenFA);
         rightPanel.add(btnCancelFA);
+        rightPanel.add(btnViewPendingPayments);
+        
 
         for (int i = 5; i <= 14; i++) {
             JButton placeholder = new JButton("US " + i + " – (not yet implemented)");
