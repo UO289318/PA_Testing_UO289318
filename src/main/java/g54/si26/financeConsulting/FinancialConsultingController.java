@@ -26,11 +26,11 @@ public class FinancialConsultingController {
         // 1. Load initial view
         this.initView();
 
-        // 2. RadioButtons events (Filters)
-        view.getRbTodos().addActionListener(e -> reloadCoursesCombo("All"));
-        view.getRbActivos().addActionListener(e -> reloadCoursesCombo("Active"));
-        view.getRbNoActivos().addActionListener(e -> reloadCoursesCombo("Not Active"));
-
+        // 2. ComboBox events (Filters)
+        view.getCbStatusFilter().addActionListener(e -> {
+            String filter = (String) view.getCbStatusFilter().getSelectedItem();
+            reloadCoursesCombo(filter);
+        });
         // 3. "Consult" button event
         view.getBtnConsultar().addActionListener(e -> {
             SwingUtil.exceptionWrapper(() -> {
@@ -44,14 +44,15 @@ public class FinancialConsultingController {
     }
 
     public void initView() {
-        reloadCoursesCombo("All"); // Initial load
+    		String defaultFilter = (String) view.getCbStatusFilter().getSelectedItem();
+        reloadCoursesCombo(defaultFilter); // Initial load
         view.getFrame().setVisible(true);
     }
 
     // Reloads the dropdown depending on the selected filter
     private void reloadCoursesCombo(String filter) {
         view.getCbAccionesFormativas().removeAllItems();
-        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus(filter);
+        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus(filter, simulatedDateStr);
         for (FormativeActionDTO a : actions) {
             view.getCbAccionesFormativas().addItem(a);
         }
@@ -60,7 +61,7 @@ public class FinancialConsultingController {
 
     private void loadCourseDetails(int actionId) {
         // 1. Load basic data
-        Object[] basicData = model.getCourseBasicData(actionId);
+        Object[] basicData = model.getCourseBasicData(actionId, simulatedDateStr);
 
         view.getTxtNombre().setText(basicData[0] != null ? basicData[0].toString() : "-");
         view.getTxtEstado().setText(basicData[1] != null ? basicData[1].toString() : "-");

@@ -56,7 +56,7 @@ public class FinancialConsultingControllerTest {
         controller.initController();
 
         
-        view.getRbActivos().doClick();
+        view.getCbAccionesFormativas().setSelectedIndex(0);
         
        
         assertNotNull(view.getCbAccionesFormativas().getModel(), "El modelo del combo no debería ser nulo tras filtrar");

@@ -10,21 +10,26 @@ public class FinancialConsultingModel {
     private Database db = new Database();
 
     // Gets the courses filtered by their status (All, Active, Not Active)
-    public List<FormativeActionDTO> getFormativeActionsByStatus(String filter) {
-        String sql = "SELECT action_id AS actionId, name, status FROM FormativeAction";
+    public List<FormativeActionDTO> getFormativeActionsByStatus(String filter, String simDate) {
+    		String statusSql = getTemporalFaStatusSql(simDate, "fa");
+    		String sql = "SELECT * FROM (" +
+    				" SELECT fa.action_id AS actionId, fa.name, (" + statusSql + ") AS status " +
+    				"  FROM FormativeAction fa" + 
+    				") WHERE 1=1";
         
-        if ("Active".equals(filter)) {
-            sql += " WHERE status = 'ACTIVE'";
-        } else if ("Not Active".equals(filter) || "Not Active (Closed/Cancelled)".equals(filter)) {
-            sql += " WHERE status != 'ACTIVE'";
-        }
+    		if (filter!=null && !filter.equals("ALL") && !filter.equals("ACTIVE (Default)")) 
+                sql += " AND status = '" + filter + "'";
+    		else if ("ACTIVE (Default)".equals(filter))
+    			sql += " AND status NOT IN ('CLOSED', 'Cancelled')";
+            
         sql += " ORDER BY name ASC";
         
         return db.executeQueryPojo(FormativeActionDTO.class, sql);
     }
 
-    public Object[] getCourseBasicData(int actionId) {
-        String sql = "SELECT fa.name, fa.status, fa.inscriptionPeriodStart, fa.inscriptionPeriodEnd, " +
+    public Object[] getCourseBasicData(int actionId, String simDate) {
+    		String statusSql = getTemporalFaStatusSql(simDate, "fa");
+        String sql = "SELECT fa.name, (" + statusSql + ") AS status,  fa.inscriptionPeriodStart, fa.inscriptionPeriodEnd, " +
                      "fa.startDate, fa.spots, " +
                      "(fa.spots - (SELECT COUNT(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state IN ('RECEIVED', 'CONFIRMED'))) as freeSpots " +
                      "FROM FormativeAction fa WHERE fa.action_id = ?";
@@ -68,5 +73,18 @@ public class FinancialConsultingModel {
             "ORDER BY date ASC";
 
         return db.executeQueryArray(sql, actionId, actionId);
+    }
+    
+    public String getTemporalFaStatusSql(String simDate, String tableAlias){
+        String safeDate = (simDate!=null && !simDate.trim().isEmpty()) ? simDate.substring(0, 10) : "9999-12-31";
+        return "CASE " +
+               "  WHEN " + tableAlias + ".status = 'CANCELLED' THEN 'Cancelled' " +
+               "  WHEN " + tableAlias + ".status = 'CLOSED' AND " + tableAlias + ".closureDate IS NOT NULL AND date('" + safeDate + "') >= date(" + tableAlias + ".closureDate) THEN 'CLOSED' " +
+               "  WHEN date('" + safeDate + "') > date(" + tableAlias + ".endDate) THEN 'Finished' " +
+               "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".startDate) AND date('" + safeDate + "') <= date(" + tableAlias + ".endDate) THEN 'In progress' " +
+               "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".inscriptionPeriodStart) AND date('" + safeDate + "') <= date(" + tableAlias + ".inscriptionPeriodEnd) THEN 'Enrolment open' " +
+               "  WHEN date('" + safeDate + "') < date(" + tableAlias + ".startDate) THEN 'Upcoming' " +
+               "  ELSE " + tableAlias + ".status " +
+               "END";
     }
 }

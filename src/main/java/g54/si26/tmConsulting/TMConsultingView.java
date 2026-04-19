@@ -54,7 +54,7 @@ public class TMConsultingView {
         panelFiltros.add(txtFechaFin);
 
         panelFiltros.add(new JLabel("Status:"));
-        cbEstado = new JComboBox<>(new String[]{"All", "Active", "Closed"});
+        cbEstado = new JComboBox<>(new String[]{"ACTIVE (Default)", "ALL", "Upcoming", "Enrolment open", "In progress", "Finished", "CLOSED", "Cancelled"});
         cbEstado.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         cbEstado.setBackground(Color.WHITE);
         panelFiltros.add(cbEstado);

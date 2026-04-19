@@ -37,7 +37,7 @@ public class TMConsultingModelTest {
         String startDate = "2020-01-01";
         String endDate = "2030-12-31";
 
-        List<Object[]> report = model.getReportData(startDate, endDate, "All");
+        List<Object[]> report = model.getReportData(startDate, endDate, "All", "2026-04-19");
         
         assertNotNull(report, "El reporte no debe ser nulo");
         assertTrue(report.size() > 0, "Debería encontrar datos con el filtro 'All' y un rango amplio");
@@ -52,7 +52,7 @@ public class TMConsultingModelTest {
         String startDate = "2020-01-01";
         String endDate = "2030-12-31";
         
-        List<Object[]> report = model.getReportData(startDate, endDate, "Active");
+        List<Object[]> report = model.getReportData(startDate, endDate, "Active", "2026-04-19");
         assertNotNull(report, "El reporte no debe ser nulo");
         
         for (Object[] row : report) {
@@ -66,7 +66,7 @@ public class TMConsultingModelTest {
         String startDate = "2020-01-01";
         String endDate = "2030-12-31";
         
-        List<Object[]> report = model.getReportData(startDate, endDate, "Closed");
+        List<Object[]> report = model.getReportData(startDate, endDate, "Closed", "2026-04-19");
         assertNotNull(report, "El reporte no debe ser nulo");
         
         for (Object[] row : report) {
@@ -79,7 +79,7 @@ public class TMConsultingModelTest {
     @Test
     public void testGetReportData_NoResultsDateRange() {
         // Año lejano sin datos
-        List<Object[]> report = model.getReportData("2099-01-01", "2099-12-31", "All");
+        List<Object[]> report = model.getReportData("2099-01-01", "2099-12-31", "All", "2026-04-19");
         
         assertNotNull(report, "El reporte no debe ser nulo aunque no haya resultados");
         assertEquals(0, report.size(), "No debería haber cursos en el año 2099");

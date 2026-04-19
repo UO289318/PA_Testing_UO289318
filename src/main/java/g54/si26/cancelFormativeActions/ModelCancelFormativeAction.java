@@ -21,13 +21,16 @@ public class ModelCancelFormativeAction {
 	
 	public List<FormativeActionDTO> getCancelableActions(Date simulatedDate) {
 		String simulatedDateStr = Util.dateToIsoString(simulatedDate);
+		String statusSql = getTemporalFaStatusSql(simulatedDateStr, "FormativeAction");
 		// Allow cancellation if not closed, even if already cancelled (to allow fixing errors)
-		String sql = "SELECT action_id AS actionId, name, startDate, endDate, status " +
-					 "FROM FormativeAction " +
-					 "WHERE status != 'CLOSED' " +
-					 "AND status != 'CANCELLED' "+
-					 "AND endDate >= ? " +
-					 "ORDER BY startDate ASC";
+		String sql = "SELECT * FROM (" +
+                "  SELECT action_id AS actionId, name, startDate, endDate, " +
+                "  (" + statusSql + ") AS status " +
+                "  FROM FormativeAction " +
+                ") WHERE status != 'CLOSED' " +
+                "AND status != 'Cancelled' " + 
+                "AND endDate >= ? " +
+                "ORDER BY startDate ASC";
 		
 		return db.executeQueryPojo(FormativeActionDTO.class, sql, simulatedDateStr);
 	}
@@ -185,4 +188,16 @@ public class ModelCancelFormativeAction {
 			}
 		}
 	}
+	private String getTemporalFaStatusSql(String simDate, String tableAlias) {
+        String safeDate = (simDate!=null && !simDate.trim().isEmpty()) ? simDate.substring(0, 10) : "9999-12-31";
+        return "CASE " +
+               "  WHEN " + tableAlias + ".status = 'CANCELLED' THEN 'Cancelled' " +
+               "  WHEN " + tableAlias + ".status = 'CLOSED' AND " + tableAlias + ".closureDate IS NOT NULL AND date('" + safeDate + "') >= date(" + tableAlias + ".closureDate) THEN 'CLOSED' " +
+               "  WHEN date('" + safeDate + "') > date(" + tableAlias + ".endDate) THEN 'Finished' " +
+               "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".startDate) AND date('" + safeDate + "') <= date(" + tableAlias + ".endDate) THEN 'In progress' " +
+               "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".inscriptionPeriodStart) AND date('" + safeDate + "') <= date(" + tableAlias + ".inscriptionPeriodEnd) THEN 'Enrolment open' " +
+               "  WHEN date('" + safeDate + "') < date(" + tableAlias + ".startDate) THEN 'Upcoming' " +
+               "  ELSE " + tableAlias + ".status " +
+               "END";
+    }
 }

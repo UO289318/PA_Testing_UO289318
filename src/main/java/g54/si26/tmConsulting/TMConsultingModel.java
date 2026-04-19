@@ -41,11 +41,14 @@ public class TMConsultingModel {
         return db.executeQueryArray(sql, actionId, actionId);
     }
     
-    public List<Object[]> getReportData(String startDate, String endDate, String statusFilter) {
-        // SQL adaptado a las nuevas tablas (MoneyMovement, Inscription con state, etc.)
+    public List<Object[]> getReportData(String startDate, String endDate, String statusFilter, String simDate) {
+    		String statusSql = getTemporalFaStatusSql(simDate, "fa");
+    		// SQL adaptado a las nuevas tablas (MoneyMovement, Inscription con state, etc.)
         String sql = 
+        		"SELECT * FROM (" +
             "SELECT " +
-            "  fa.startDate, fa.name, fa.status, " +
+            "  fa.startDate, fa.name, " +
+            "    (" + statusSql + ") AS status, " +
             "  (SELECT COALESCE(AVG(applied_fee), 0) FROM Inscription WHERE action_id = fa.action_id) as avgFee, " + 
             "  (SELECT COUNT(*) FROM Inscription WHERE action_id = fa.action_id AND state = 'RECEIVED') as pendingInscriptions, " +
             "  (SELECT COALESCE(SUM(mm.amount), 0) FROM MoneyMovement mm " +
@@ -58,16 +61,30 @@ public class TMConsultingModel {
             "  fa.spots, " +
             "  (SELECT COUNT(*) FROM Inscription WHERE action_id = fa.action_id AND state = 'CONFIRMED') as confirmedCount " + 
             "FROM FormativeAction fa " +
-            "WHERE fa.startDate >= ? AND fa.startDate <= ? ";
+            "WHERE fa.startDate >= ? AND fa.startDate <= ? " +
+            ") WHERE 1=1 ";
 
-        if ("Active".equals(statusFilter)) {
-            sql += "AND fa.status = 'ACTIVE' ";
-        } else if ("Closed".equals(statusFilter)) {
-            sql += "AND fa.status IN ('CLOSED', 'CANCELLED') "; 
-        }
+        if (statusFilter!=null && !statusFilter.equals("ALL") && !statusFilter.equals("ACTIVE (Default)")) 
+            sql+="AND status = '" + statusFilter + "' ";
+        else if ("ACTIVE(Default)".equals(statusFilter)) 
+            sql += "AND status IN ('CLOSED', 'CANCELLED') "; 
         
-        sql += "ORDER BY fa.startDate ASC";
+        
+        sql += "ORDER BY startDate ASC";
 
         return db.executeQueryArray(sql, startDate, endDate);
+    }
+    
+    private String getTemporalFaStatusSql(String simDate, String tableAlias){
+        String safeDate=(simDate!=null && !simDate.trim().isEmpty()) ? simDate.substring(0, 10) : "9999-12-31";
+        return "CASE " +
+               "  WHEN " + tableAlias + ".status = 'CANCELLED' THEN 'Cancelled' " +
+               "  WHEN " + tableAlias + ".status = 'CLOSED' AND " + tableAlias + ".closureDate IS NOT NULL AND date('" + safeDate + "') >= date(" + tableAlias + ".closureDate) THEN 'CLOSED' " +
+               "  WHEN date('" + safeDate + "') > date(" + tableAlias + ".endDate) THEN 'Finished' " +
+               "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".startDate) AND date('" + safeDate + "') <= date(" + tableAlias + ".endDate) THEN 'In progress' " +
+               "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".inscriptionPeriodStart) AND date('" + safeDate + "') <= date(" + tableAlias + ".inscriptionPeriodEnd) THEN 'Enrolment open' " +
+               "  WHEN date('" + safeDate + "') < date(" + tableAlias + ".startDate) THEN 'Upcoming' " +
+               "  ELSE " + tableAlias + ".status " +
+               "END";
     }
 }

@@ -20,7 +20,7 @@ public class FinancialConsultingModelTest {
     @Test
     public void testGetFormativeActionsByStatus_All() {
         // Probamos que devuelva la lista completa sin fallar
-        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("All");
+        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("All", "2026-04-19");
         assertNotNull(actions, "La lista de acciones formativas no debería ser nula");
         // Asegúrate de tener al menos 1 curso en tu base de datos para que esto pase
         assertTrue(actions.size() > 0, "Debería haber al menos una acción formativa en la BD");
@@ -29,7 +29,7 @@ public class FinancialConsultingModelTest {
     @Test
     public void testGetFormativeActionsByStatus_Active() {
         // Probamos el filtro de Activos
-        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("Active");
+        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("Active", "2026-04-19");
         assertNotNull(actions);
         // Aquí no comprobamos tamaño porque podría no haber activos, 
         // pero verificamos que no lance excepción
@@ -39,7 +39,7 @@ public class FinancialConsultingModelTest {
     public void testGetCourseBasicData_ValidId() {
         // IMPORTANTE: Cambia el '1' por el ID de un curso que sepas que EXISTE en tu BD.db
         int validActionId = 1; 
-        Object[] basicData = model.getCourseBasicData(validActionId);
+        Object[] basicData = model.getCourseBasicData(validActionId, "2026-04-19");
         
         assertNotNull(basicData, "Los datos básicos no deben ser nulos");
         assertEquals(7, basicData.length, "Debe devolver exactamente 7 columnas (name, status, etc)");
@@ -50,7 +50,7 @@ public class FinancialConsultingModelTest {
     public void testGetCourseBasicData_InvalidId() {
         // Probamos un ID que NO existe (ej. -999) para ver si lanza nuestra ApplicationException
         assertThrows(ApplicationException.class, () -> {
-            model.getCourseBasicData(-999);
+            model.getCourseBasicData(-999, "2026-04-19");
         });
     }
 

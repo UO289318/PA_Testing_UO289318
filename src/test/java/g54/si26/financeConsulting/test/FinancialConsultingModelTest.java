@@ -36,7 +36,7 @@ public class FinancialConsultingModelTest {
 
     @Test
     public void testGetFormativeActionsByStatus_All() {
-        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("All");
+        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("All", "2026-04-19");
         assertNotNull(actions);
         // CAMBIO: Ahora solo tienes 2 cursos en el SQL
         assertEquals(2, actions.size(), "Deberían devolverse las 2 acciones formativas actuales");
@@ -44,7 +44,7 @@ public class FinancialConsultingModelTest {
 
     @Test
     public void testGetFormativeActionsByStatus_Active() {
-        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("Active");
+        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("Active", "2026-04-19");
         
         assertNotNull(actions);
         for (FormativeActionDTO dto : actions) {
@@ -55,7 +55,7 @@ public class FinancialConsultingModelTest {
     @Test
     public void testGetFormativeActionsByStatus_NotActive() {
         // Probamos el filtro "Not Active"
-        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("Not Active");
+        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("Not Active", "2026-04-19");
         
         assertNotNull(actions);
         for (FormativeActionDTO dto : actions) {
@@ -66,7 +66,7 @@ public class FinancialConsultingModelTest {
     @Test
     public void testGetFormativeActions_NotActiveFilter() {
         // Act
-        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("Not Active");
+        List<FormativeActionDTO> actions = model.getFormativeActionsByStatus("Not Active", "2026-04-19");
 
         // Assert
         assertNotNull(actions);
@@ -80,7 +80,7 @@ public class FinancialConsultingModelTest {
     public void testFreeSpotsCalculation_Dynamic() {
         int actionId = 1;
         
-        Object[] data = model.getCourseBasicData(actionId);
+        Object[] data = model.getCourseBasicData(actionId, "2026-04-19");
         int totalSpots = (int) data[5];
         int freeSpotsFromModel = (int) data[6];
 
@@ -96,7 +96,7 @@ public class FinancialConsultingModelTest {
     public void testGetCourseBasicData_InvalidId() {
         // Debe lanzar ApplicationException si el ID no existe
         assertThrows(ApplicationException.class, () -> {
-            model.getCourseBasicData(-1);
+            model.getCourseBasicData(-1, "2026-04-19");
         });
     }
 

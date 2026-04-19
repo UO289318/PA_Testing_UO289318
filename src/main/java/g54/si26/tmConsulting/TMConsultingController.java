@@ -62,7 +62,7 @@ public class TMConsultingController {
             throw new ApplicationException("Start and end dates are mandatory.");
         }
 
-        List<Object[]> reportData = model.getReportData(startDate, endDate, statusFilter);
+        List<Object[]> reportData = model.getReportData(startDate, endDate, statusFilter, simulatedDateStr);
         DefaultTableModel tableModel = view.getModeloTabla();
         tableModel.setRowCount(0); // Clear table
 

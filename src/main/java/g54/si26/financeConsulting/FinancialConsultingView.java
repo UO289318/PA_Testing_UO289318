@@ -12,7 +12,7 @@ public class FinancialConsultingView {
     private JFrame frame;
     
     // Filter and Selection Components
-    private JRadioButton rbTodos, rbActivos, rbNoActivos;
+    private JComboBox<String> cbStatusFilter;
     private JComboBox<FormativeActionDTO> cbAccionesFormativas;
     private JButton btnConsultar;
     
@@ -45,14 +45,12 @@ public class FinancialConsultingView {
         JPanel panelFiltros = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
         panelFiltros.setBorder(BorderFactory.createTitledBorder(null, "Filter by Status", TitledBorder.LEADING, TitledBorder.TOP, new Font("Segoe UI", Font.BOLD, 12)));
         
-        rbTodos = new JRadioButton("All", true);
-        rbActivos = new JRadioButton("Active");
-        rbNoActivos = new JRadioButton("Not Active (Closed/Cancelled)");
-        
-        ButtonGroup bgFiltros = new ButtonGroup();
-        bgFiltros.add(rbTodos); bgFiltros.add(rbActivos); bgFiltros.add(rbNoActivos);
-        
-        panelFiltros.add(rbTodos); panelFiltros.add(rbActivos); panelFiltros.add(rbNoActivos);
+        cbStatusFilter = new JComboBox<>(new String[]{
+                "ACTIVE (Default)", "ALL", "Upcoming", "Enrolment open", "In progress", "Finished", "CLOSED", "Cancelled"
+            });
+        cbStatusFilter.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        cbStatusFilter.setBackground(Color.WHITE);
+        panelFiltros.add(cbStatusFilter);
         panelNorte.add(panelFiltros, BorderLayout.NORTH);
 
         // 2. Selection Panel (Combo + Consult Button)
@@ -171,9 +169,6 @@ public class FinancialConsultingView {
 
     // --- Getters ---
     public JFrame getFrame() { return frame; }
-    public JRadioButton getRbTodos() { return rbTodos; }
-    public JRadioButton getRbActivos() { return rbActivos; }
-    public JRadioButton getRbNoActivos() { return rbNoActivos; }
     public JComboBox<FormativeActionDTO> getCbAccionesFormativas() { return cbAccionesFormativas; }
     public JButton getBtnConsultar() { return btnConsultar; }
     
@@ -188,6 +183,7 @@ public class FinancialConsultingView {
     public JLabel getLblTotalIngresos() { return lblTotalIngresos; }
     public JLabel getLblTotalGastos() { return lblTotalGastos; }
     public JLabel getLblBalance() { return lblBalance; }
+    public JComboBox<String> getCbStatusFilter() { return cbStatusFilter; }
 
     public void resetForm() {
         txtNombre.setText("-"); txtEstado.setText("-"); txtPeriodo.setText("-");
