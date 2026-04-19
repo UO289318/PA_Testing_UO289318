@@ -27,6 +27,8 @@ public class ViewConsultFormativeActions {
     private JTextArea txtMainContents;
     private JTextField txtLocation;
     private JTextField txtTeachers;
+    private JTextField txtTotalRegisters;
+    private JTable tblCommunityFees;
 
     // CODIGO DE COLORES Y ESTILOS
     private static final Color COLOR_LIGHT_BLUE = new Color(227, 242, 253);   
@@ -101,6 +103,14 @@ public class ViewConsultFormativeActions {
         // SECTION 2: GRID (Table)
         JPanel p2 = createSection("2. Formative Actions List", new BorderLayout(5, 5));
         
+        JPanel pnlHint = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        pnlHint.setOpaque(false); 
+        JLabel lblGridHint = new JLabel("(i) Select a row for Further Information");
+        lblGridHint.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        lblGridHint.setForeground(new Color(100, 120, 140));
+        pnlHint.add(lblGridHint);
+        p2.add(pnlHint, BorderLayout.NORTH); 
+        
         String[] columnNames = {"ID", "Name", "Status", "Enrolment Period", "Total Places", "Places Left", "Date", "Income (€)", "Expenses (€)", "Balance (€)"};
         tblFormativeActions = new JTable(new DefaultTableModel(columnNames, 0) {
             @Override public boolean isCellEditable(int row, int column) { return false; }
@@ -121,7 +131,12 @@ public class ViewConsultFormativeActions {
         centerContainer.add(p2, BorderLayout.CENTER);
 
         // SECTION 3: FURTHER INFORMATION (Details)
-        pnlDetails = createSection("3. Further Information (Select a row above)", new GridBagLayout());
+        pnlDetails = createSection("3. Further Information ", new BorderLayout(10, 10));
+        
+        //Left Side
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setOpaque(false);
+        formPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 10, 5, 10);
@@ -132,47 +147,87 @@ public class ViewConsultFormativeActions {
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.05; gbc.weighty = 0.5; gbc.fill = GridBagConstraints.BOTH;
         JLabel lblObj = new JLabel("Objectives:");
         lblObj.setFont(FONT_REGULAR);
-        pnlDetails.add(lblObj, gbc);
+        formPanel.add(lblObj, gbc);
         
         gbc.gridx = 1; gbc.weightx = 0.95; 
         txtObjectives = createReadOnlyTextArea(3); 
-        pnlDetails.add(new JScrollPane(txtObjectives), gbc);
+        formPanel.add(new JScrollPane(txtObjectives), gbc);
 
         // Main Contents
         gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.05;
         JLabel lblContents = new JLabel("Main Contents:");
         lblContents.setFont(FONT_REGULAR);
-        pnlDetails.add(lblContents, gbc);
+        formPanel.add(lblContents, gbc);
         
         gbc.gridx = 1; gbc.weightx = 0.95; 
         txtMainContents = createReadOnlyTextArea(4); 
-        pnlDetails.add(new JScrollPane(txtMainContents), gbc);
+        formPanel.add(new JScrollPane(txtMainContents), gbc);
 
         // Location
         gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.05; gbc.weighty = 0; gbc.fill = GridBagConstraints.HORIZONTAL;
         JLabel lblLocation = new JLabel("Place/Location:");
         lblLocation.setFont(FONT_REGULAR);
-        pnlDetails.add(lblLocation, gbc);
+        formPanel.add(lblLocation, gbc);
         
         gbc.gridx = 1; gbc.weightx = 0.95; 
         txtLocation = new JTextField();
         styleReadOnlyField(txtLocation);
-        pnlDetails.add(txtLocation, gbc);
+        formPanel.add(txtLocation, gbc);
 
         // Yeachers
         gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.05; 
         JLabel lblTeachers = new JLabel("Teacher(s):");
         lblTeachers.setFont(FONT_REGULAR);
-        pnlDetails.add(lblTeachers, gbc);
+        formPanel.add(lblTeachers, gbc);
         
         gbc.gridx = 1; gbc.weightx = 0.95; 
         txtTeachers = new JTextField();
         styleReadOnlyField(txtTeachers);
-        pnlDetails.add(txtTeachers, gbc);
+        formPanel.add(txtTeachers, gbc);
+        
+        //Total Inscriptions
+        gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 0.05; 
+        JLabel lblRegisters = new JLabel("Total Registers:");
+        lblRegisters.setFont(FONT_REGULAR);
+        formPanel.add(lblRegisters, gbc);
+        
+        gbc.gridx = 1; gbc.weightx = 0.95; 
+        txtTotalRegisters = new JTextField();
+        styleReadOnlyField(txtTotalRegisters);
+        formPanel.add(txtTotalRegisters, gbc);
+        
+        pnlDetails.add(formPanel, BorderLayout.CENTER);
 
         // details section
         centerContainer.add(pnlDetails, BorderLayout.SOUTH);
         pnlDetails.setVisible(false); 
+        
+        JPanel pnlFees = new JPanel(new BorderLayout());
+        pnlFees.setOpaque(false);
+        pnlFees.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(10, 0, 10, 10), "Community Fees", TitledBorder.LEFT, TitledBorder.TOP, FONT_BOLD, COLOR_UPDATE));
+        pnlFees.setPreferredSize(new Dimension(320, 0)); // Ancho fijo para la tabla derecha para que no aplaste los textos
+
+        tblCommunityFees = new JTable(new DefaultTableModel(new String[]{"ID", "Community", "Fee (€)"}, 0){
+            @Override public boolean isCellEditable(int r, int c){ return false; }
+        });
+        styleTable(tblCommunityFees);
+        
+        // Ocultar ID de la tabla de fees
+        tblCommunityFees.getColumnModel().getColumn(0).setMinWidth(0);
+        tblCommunityFees.getColumnModel().getColumn(0).setMaxWidth(0);
+        tblCommunityFees.getColumnModel().getColumn(0).setPreferredWidth(0);
+        
+        JScrollPane spFees = new JScrollPane(tblCommunityFees);
+        spFees.getViewport().setBackground(Color.WHITE);
+        spFees.setBorder(BorderFactory.createLineBorder(COLOR_SEPARATOR));
+        
+        pnlFees.add(spFees, BorderLayout.CENTER);
+        
+        // Añadimos la tabla al lado ESTE (Derecha) del panel de detalles
+        pnlDetails.add(pnlFees, BorderLayout.EAST);
+
+        centerContainer.add(pnlDetails, BorderLayout.SOUTH);
+        pnlDetails.setVisible(false);
     }
 
     // ================================
@@ -379,5 +434,20 @@ public class ViewConsultFormativeActions {
 
     public void setTxtTeachers(JTextField txtTeachers) {
         this.txtTeachers = txtTeachers;
+    }
+    public JTable getTblCommunityFees() {
+        return tblCommunityFees;
+    }
+
+    public void setTblCommunityFees(JTable tblCommunityFees) {
+        this.tblCommunityFees = tblCommunityFees;
+    }
+    
+    public JTextField getTxtTotalRegisters() {
+        return txtTotalRegisters;
+    }
+
+    public void setTxtTotalRegisters(JTextField txtTotalRegisters) {
+        this.txtTotalRegisters = txtTotalRegisters;
     }
 }

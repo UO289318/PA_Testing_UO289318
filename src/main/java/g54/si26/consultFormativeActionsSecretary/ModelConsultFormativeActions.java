@@ -26,7 +26,7 @@ public class ModelConsultFormativeActions {
             "      WHEN date(?) > date(fa.endDate) THEN 'Finished' " +
             "      WHEN date(?) >= date(fa.startDate) AND date(?) <= date(fa.endDate) THEN 'In progress' " +
             "      WHEN date(?) >= date(fa.inscriptionPeriodStart) AND date(?) <= date(fa.inscriptionPeriodEnd) THEN 'Enrolment open' " +
-            "      WHEN date(?) < date(fa.inscriptionPeriodStart) THEN 'Upcoming' " +
+            "      WHEN date(?) < date(fa.startDate) THEN 'Upcoming' " +
             "      ELSE fa.status " +
             "    END AS status, " +
             "    fa.inscriptionPeriodStart || ' to ' || fa.inscriptionPeriodEnd AS enrolmentPeriod, " +
@@ -76,7 +76,8 @@ public class ModelConsultFormativeActions {
             "    (SELECT GROUP_CONCAT(t.name, ', ') " +
             "     FROM Teacher t " +
             "     JOIN Teacher_FormativeAction tfa ON t.teacher_id = tfa.teacher_id " +
-            "     WHERE tfa.action_id = fa.action_id) AS teachers " +
+            "     WHERE tfa.action_id = fa.action_id) AS teachers, " +
+            "    (SELECT COUNT(*) FROM Inscription i WHERE i.action_id = fa.action_id) AS totalRegisters " +
             "FROM FormativeAction fa " +
             "WHERE fa.action_id = ?";
         List<FormativeActionDetailsDTO> result = db.executeQueryPojo(FormativeActionDetailsDTO.class, sql, actionId);
@@ -84,5 +85,13 @@ public class ModelConsultFormativeActions {
             return null;
         
         return result.get(0);
+    }
+    
+    // Gets the Community Fees for the Formative Action Selected
+    public List<Object[]> getCourseFees(int actionId){
+        String sql = "SELECT c.community_id, c.communityName, f.amount "
+                   + "FROM Fee f JOIN Community c ON f.community_id = c.community_id "
+                   + "WHERE f.action_id = ? ORDER BY c.communityName";
+        return db.executeQueryArray(sql, actionId);
     }
 }

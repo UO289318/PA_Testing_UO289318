@@ -118,6 +118,15 @@ public class ControllerConsultFormativeActions {
             view.getTxtMainContents().setText(details.getMainContents() != null ? details.getMainContents() : "N/A");
             view.getTxtLocation().setText(details.getLocation() != null ? details.getLocation() : "N/A");
             view.getTxtTeachers().setText(details.getTeachers() != null ? details.getTeachers() : "No teachers assigned");
+            view.getTxtTotalRegisters().setText(String.valueOf(details.getTotalRegisters()));
+            
+            List<Object[]> fees = model.getCourseFees(actionId);
+            DefaultTableModel tmFees = (DefaultTableModel) view.getTblCommunityFees().getModel();
+            tmFees.setRowCount(0);
+            for(Object[] feeRow : fees) 
+                tmFees.addRow(feeRow);
+            
+            
             view.setDetailsPanelVisible(true);
         } else 
             clearDetailsSection();
@@ -131,6 +140,8 @@ public class ControllerConsultFormativeActions {
         view.getTxtMainContents().setText("");
         view.getTxtLocation().setText("");
         view.getTxtTeachers().setText("");
+        view.getTxtTotalRegisters().setText("");
+        ((DefaultTableModel) view.getTblCommunityFees().getModel()).setRowCount(0);
         view.setDetailsPanelVisible(false);
     }
 }

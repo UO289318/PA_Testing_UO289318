@@ -144,7 +144,7 @@ public class ModelPlanMultipleFees {
         if(dto.getNumberOfHours() < 1)
         		result.errors.add("Duration must be at least 1 hour.");
         if(dto.getSpots()<=0)
-        		result.errors.add("Number of spots must be greater than zero.");
+        		result.errors.add("Number of spots must be a number greater than zero.");
 
         // Fees logic
         if(communityFees == null || communityFees.isEmpty()) 

@@ -267,22 +267,30 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
             controller.initController();
         });
         
+        
         leftPanel.add(btnEjecutarPagos);
         leftPanel.add(btnEjecutarPagosProfesores);
-        leftPanel.add(btnCerrarAccion);
-        leftPanel.add(btnExecuteTMConsult);
         leftPanel.add(btnExecuteSecretaryConsult);
+        
         //leftPanel.add(btnPlanFormativeAction);
+        leftPanel.add(btnCerrarAccion);
+        leftPanel.add(btnReopenFA);
+        leftPanel.add(btnViewPendingPayments);
+        
+        //Aquí va Consult status of a FA US
+        rightPanel.add(btnExecuteTMConsult);
+        //Aquí va Record Invoices from Teachers US
         rightPanel.add(btnConsultFA);
         rightPanel.add(btnMoneyMovements);
+        //Aquí va Start and End Date US
+        //Aquí va Cancel Enrolment as Professional US
         rightPanel.add(btnMultipleFees);
         rightPanel.add(btnEjecutarInscripciones);
-        rightPanel.add(btnReopenFA);
         rightPanel.add(btnCancelFA);
-        rightPanel.add(btnViewPendingPayments);
+        //Aqeuí va Register new Teacehr US
         
 
-        for (int i = 5; i <= 14; i++) {
+        for (int i = 7; i <= 14; i++) {
             JButton placeholder = new JButton("US " + i + " – (not yet implemented)");
             placeholder.setEnabled(false);
             placeholder.setFont(new Font("Segoe UI", Font.ITALIC, 11));

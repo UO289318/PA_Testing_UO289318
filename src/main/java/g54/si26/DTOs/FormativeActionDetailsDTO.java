@@ -7,6 +7,7 @@ public class FormativeActionDetailsDTO {
     private String mainContents;
     private String location;
     private String teachers;
+    private int totalRegisters;
 
     public FormativeActionDetailsDTO() {}
 
@@ -42,6 +43,12 @@ public class FormativeActionDetailsDTO {
 		this.teachers = teachers;
 	}
 
-    
+	public int getTotalRegisters() {
+        return totalRegisters;
+    }
+
+    public void setTotalRegisters(int totalRegisters) {
+        this.totalRegisters = totalRegisters;
+    }
     
 }
