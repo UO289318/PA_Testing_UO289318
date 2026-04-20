@@ -7,6 +7,7 @@ import g54.si26.DTOs.FormativeActionDTO;
 public class ControllerReopenFormativeAction {
     private ModelReopenFormativeAction model;
     private ViewReopenFormativeAction view;
+    private String simulatedDateStr;
 
     public ControllerReopenFormativeAction(ModelReopenFormativeAction model, ViewReopenFormativeAction view) {
         this.model = model;
@@ -20,7 +21,7 @@ public class ControllerReopenFormativeAction {
             int selectedRow = view.getTabClosedActions().getSelectedRow();
             if (selectedRow != -1) {
                 int actionId = (int) view.getTabClosedActions().getModel().getValueAt(selectedRow, 0);
-                if (model.reopenFormativeAction(actionId)) {
+                if (model.reopenFormativeAction(actionId, simulatedDateStr)) {
                     view.showSuccessMessage();
                     loadClosedActions();
                 } else {
@@ -56,5 +57,8 @@ public class ControllerReopenFormativeAction {
         }
         view.getTabClosedActions().setModel(tableModel);
         view.getBtnReopenAction().setEnabled(false);
+    }
+    public void setSimulatedDate(String dateIso) {
+        this.simulatedDateStr = dateIso;
     }
 }

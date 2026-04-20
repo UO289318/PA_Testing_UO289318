@@ -36,8 +36,10 @@ CREATE TABLE "FormativeAction" (
     "inscriptionPeriodEnd" TEXT NOT NULL,
     "location" TEXT NOT NULL,
     "status" TEXT NOT NULL,
+    "creationDate" TEXT,
+    "cancelDate" TEXT,
     "closureDate" TEXT,
-    "creationDate" TEXT 
+    "reopenDate" TEXT
 );
 
 -- 2. Tablas con dependencias

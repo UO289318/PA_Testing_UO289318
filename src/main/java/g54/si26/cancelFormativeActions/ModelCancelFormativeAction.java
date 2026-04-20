@@ -49,8 +49,9 @@ public class ModelCancelFormativeAction {
 			conn.setAutoCommit(false);
 			try {
 				// 1. Update FormativeAction status
-				try (PreparedStatement pstmt = conn.prepareStatement("UPDATE FormativeAction SET status = 'CANCELLED' WHERE action_id = ?")) {
-					pstmt.setInt(1, actionId);
+				try (PreparedStatement pstmt = conn.prepareStatement("UPDATE FormativeAction SET status = 'CANCELLED', cancelDate = ? WHERE action_id = ?")) {
+					pstmt.setString(1, simulatedDateStr);
+					pstmt.setInt(2, actionId);
 					pstmt.executeUpdate();
 				}
 
@@ -192,8 +193,8 @@ public class ModelCancelFormativeAction {
         String safeDate = (simDate!=null && !simDate.trim().isEmpty()) ? simDate.substring(0, 10) : "9999-12-31";
         return "CASE " +
                "  WHEN " + tableAlias + ".status = 'CANCELLED' THEN 'Cancelled' " +
-               "  WHEN " + tableAlias + ".status = 'CLOSED' AND " + tableAlias + ".closureDate IS NOT NULL AND date('" + safeDate + "') >= date(" + tableAlias + ".closureDate) THEN 'CLOSED' " +
-               "  WHEN date('" + safeDate + "') > date(" + tableAlias + ".endDate) THEN 'Finished' " +
+               "  WHEN " + tableAlias + ".closureDate IS NOT NULL AND date('" + safeDate + "') >= date(" + tableAlias + ".closureDate) " +
+               "       AND (" + tableAlias + ".reopenDate IS NULL OR date('" + safeDate + "') < date(" + tableAlias + ".reopenDate)) THEN 'CLOSED' " +"  WHEN date('" + safeDate + "') > date(" + tableAlias + ".endDate) THEN 'Finished' " +
                "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".startDate) AND date('" + safeDate + "') <= date(" + tableAlias + ".endDate) THEN 'In progress' " +
                "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".inscriptionPeriodStart) AND date('" + safeDate + "') <= date(" + tableAlias + ".inscriptionPeriodEnd) THEN 'Enrolment open' " +
                "  WHEN date('" + safeDate + "') < date(" + tableAlias + ".startDate) THEN 'Upcoming' " +

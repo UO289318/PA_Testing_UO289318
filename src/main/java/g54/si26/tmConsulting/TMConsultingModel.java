@@ -42,7 +42,7 @@ public class TMConsultingModel {
     }
     
     public List<Object[]> getReportData(String startDate, String endDate, String statusFilter, String simDate) {
-    		String statusSql = getTemporalFaStatusSql(simDate, "fa");
+    		String statusSql = getTemporalFaStatusSql(endDate, "fa");
     		// SQL adaptado a las nuevas tablas (MoneyMovement, Inscription con state, etc.)
         String sql = 
         		"SELECT * FROM (" +
@@ -59,15 +59,16 @@ public class TMConsultingModel {
             "   JOIN Invoice inv ON mm.invoice_id = inv.invoice_id " +
             "   WHERE inv.action_id = fa.action_id AND mm.status = 'CONFIRMED') as confExpenses, " + 
             "  fa.spots, " +
-            "  (SELECT COUNT(*) FROM Inscription WHERE action_id = fa.action_id AND state = 'CONFIRMED') as confirmedCount " + 
+            "  (SELECT COUNT(*) FROM Inscription WHERE action_id = fa.action_id AND state = 'CONFIRMED') as confirmedCount, " +
+            "  (fa.startDate || ' to ' || fa.endDate) AS dateRange " +
             "FROM FormativeAction fa " +
             "WHERE fa.startDate >= ? AND fa.startDate <= ? " +
             ") WHERE 1=1 ";
 
         if (statusFilter!=null && !statusFilter.equals("ALL") && !statusFilter.equals("ACTIVE (Default)")) 
             sql+="AND status = '" + statusFilter + "' ";
-        else if ("ACTIVE(Default)".equals(statusFilter)) 
-            sql += "AND status IN ('CLOSED', 'CANCELLED') "; 
+        else if ("ACTIVE (Default)".equals(statusFilter)) 
+            sql += "AND status NOT IN ('CLOSED') "; 
         
         
         sql += "ORDER BY startDate ASC";
@@ -76,15 +77,16 @@ public class TMConsultingModel {
     }
     
     private String getTemporalFaStatusSql(String simDate, String tableAlias){
-        String safeDate=(simDate!=null && !simDate.trim().isEmpty()) ? simDate.substring(0, 10) : "9999-12-31";
+        String safeDate = (simDate != null && !simDate.trim().isEmpty()) ? simDate.substring(0, 10) : "9999-12-31";
         return "CASE " +
-               "  WHEN " + tableAlias + ".status = 'CANCELLED' THEN 'Cancelled' " +
-               "  WHEN " + tableAlias + ".status = 'CLOSED' AND " + tableAlias + ".closureDate IS NOT NULL AND date('" + safeDate + "') >= date(" + tableAlias + ".closureDate) THEN 'CLOSED' " +
-               "  WHEN date('" + safeDate + "') > date(" + tableAlias + ".endDate) THEN 'Finished' " +
-               "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".startDate) AND date('" + safeDate + "') <= date(" + tableAlias + ".endDate) THEN 'In progress' " +
-               "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".inscriptionPeriodStart) AND date('" + safeDate + "') <= date(" + tableAlias + ".inscriptionPeriodEnd) THEN 'Enrolment open' " +
-               "  WHEN date('" + safeDate + "') < date(" + tableAlias + ".startDate) THEN 'Upcoming' " +
-               "  ELSE " + tableAlias + ".status " +
-               "END";
+        			"  WHEN " + tableAlias + ".closureDate IS NOT NULL AND date('" + safeDate + "') >= date(" + tableAlias + ".closureDate) " +
+        			"       AND (" + tableAlias + ".reopenDate IS NULL OR date('" + safeDate + "') < date(" + tableAlias + ".reopenDate)) THEN 'CLOSED' " +
+        			"  WHEN (" + tableAlias + ".cancelDate IS NOT NULL AND date('" + safeDate + "') >= date(" + tableAlias + ".cancelDate) " +
+        			"       AND (" + tableAlias + ".reopenDate IS NULL OR date('" + safeDate + "') < date(" + tableAlias + ".reopenDate))) " +
+        			"       OR (" + tableAlias + ".status = 'CANCELLED' AND " + tableAlias + ".cancelDate IS NULL) THEN 'Cancelled' " + "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".startDate) AND date('" + safeDate + "') <= date(" + tableAlias + ".endDate) THEN 'In progress' " +
+        			"  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".inscriptionPeriodStart) AND date('" + safeDate + "') <= date(" + tableAlias + ".inscriptionPeriodEnd) THEN 'Enrolment open' " +
+        			"  WHEN date('" + safeDate + "') < date(" + tableAlias + ".startDate) THEN 'Upcoming' " +
+        			"  ELSE " + tableAlias + ".status " +
+        			"END";
     }
 }

@@ -45,7 +45,7 @@ public class ControllerCloseFormativeAction{
     		view.getTabCourses().setModel(tmodel);
         
     		view.getTabCourses().getColumnModel().getColumn(1).setHeaderValue("Course Name");
-    		view.getTabCourses().getColumnModel().getColumn(2).setHeaderValue("End Date (1 Day)");
+    		view.getTabCourses().getColumnModel().getColumn(2).setHeaderValue("End Date");
     		view.getTabCourses().getColumnModel().getColumn(3).setHeaderValue("Unhandled Regs.");
     		view.getTabCourses().getColumnModel().getColumn(4).setHeaderValue("Teacher Invoice");
     		

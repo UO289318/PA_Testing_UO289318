@@ -34,7 +34,7 @@ public class ModelPlanMultipleFees {
         return db.executeQueryPojo(CommunityDTO.class, sql);
     }
     
-    //Gets all the theachers
+    //Gets all the teachers
     public List<TeacherDTO> getAllTeachers(){
         String sql = "SELECT teacher_id AS teacherId, name, fiscal_id AS fiscalId, email, phone FROM Teacher ORDER BY name";
         return db.executeQueryPojo(TeacherDTO.class, sql);

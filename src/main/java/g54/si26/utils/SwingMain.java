@@ -216,6 +216,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
                 ModelReopenFormativeAction model = new ModelReopenFormativeAction();
                 ViewReopenFormativeAction view = new ViewReopenFormativeAction();
                 ControllerReopenFormativeAction controller = new ControllerReopenFormativeAction(model, view);
+                controller.setSimulatedDate(txtSystemDate.getText());
                 controller.initController();
             }
         });

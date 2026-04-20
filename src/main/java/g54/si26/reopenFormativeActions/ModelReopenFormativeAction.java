@@ -15,8 +15,8 @@ public class ModelReopenFormativeAction {
         return db.executeQueryPojo(FormativeActionDTO.class, sql);
     }
 
-    public boolean reopenFormativeAction(int actionId) {
-        String sql = "UPDATE FormativeAction SET status = 'ACTIVE' WHERE action_id = ?";
-        return db.executeUpdate(sql, actionId) > 0;
+    public boolean reopenFormativeAction(int actionId, String simulatedDate) {
+        String sql = "UPDATE FormativeAction SET status = 'ACTIVE', reopenDate = ? WHERE action_id = ?";
+        return db.executeUpdate(sql, simulatedDate, actionId) > 0;
     }
 }

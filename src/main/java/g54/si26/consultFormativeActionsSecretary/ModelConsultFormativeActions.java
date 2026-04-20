@@ -21,9 +21,10 @@ public class ModelConsultFormativeActions {
             "    fa.action_id AS actionId, " +
             "    fa.name AS name, " +
             "    CASE " +
-            "      WHEN fa.status = 'CANCELLED' THEN 'Cancelled' " +
-            "      WHEN fa.status = 'CLOSED' AND fa.closureDate IS NOT NULL AND date(?) >= date(fa.closureDate) THEN 'CLOSED' " +
-            "      WHEN date(?) > date(fa.endDate) THEN 'Finished' " +
+            "      WHEN fa.closureDate IS NOT NULL AND date(?) >= date(fa.closureDate) " +
+            "           AND (fa.reopenDate IS NULL OR date(?) < date(fa.reopenDate)) THEN 'CLOSED' " +
+            "      WHEN (fa.cancelDate IS NOT NULL AND date(?) >= date(fa.cancelDate) AND (fa.reopenDate IS NULL OR date(?) < date(fa.reopenDate))) " +
+            "           OR (fa.status = 'CANCELLED' AND fa.cancelDate IS NULL) THEN 'Cancelled' " + "      WHEN date(?) > date(fa.endDate) THEN 'Finished' " +
             "      WHEN date(?) >= date(fa.startDate) AND date(?) <= date(fa.endDate) THEN 'In progress' " +
             "      WHEN date(?) >= date(fa.inscriptionPeriodStart) AND date(?) <= date(fa.inscriptionPeriodEnd) THEN 'Enrolment open' " +
             "      WHEN date(?) < date(fa.startDate) THEN 'Upcoming' " +
@@ -31,7 +32,7 @@ public class ModelConsultFormativeActions {
             "    END AS status, " +
             "    fa.inscriptionPeriodStart || ' to ' || fa.inscriptionPeriodEnd AS enrolmentPeriod, " +
             "    fa.spots AS totalPlaces, " +
-            "    (fa.spots - (SELECT COUNT(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state NOT IN ('CANCELLED') AND date(i.inscription_date) <= date(?))) AS placesLeft, " +
+            "    (fa.spots - (SELECT COUNT(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state = 'CONFIRMED' AND date(i.inscription_date) <= date(?))) AS placesLeft, " +
             "    fa.startDate || ' to ' || fa.endDate AS actionDate, " +
             "    COALESCE((SELECT SUM(mm.amount) FROM MoneyMovement mm JOIN Inscription i ON mm.inscription_id = i.inscription_id WHERE i.action_id = fa.action_id AND mm.status = 'EXECUTED' AND date(mm.movement_date) <= date(?)), 0.0) AS income, " +
             "    COALESCE(ABS((SELECT SUM(mm.amount) FROM MoneyMovement mm JOIN Invoice inv ON mm.invoice_id = inv.invoice_id WHERE inv.action_id = fa.action_id AND mm.status = 'EXECUTED' AND date(mm.movement_date) <= date(?))), 0.0) AS expenses, " +
@@ -46,7 +47,7 @@ public class ModelConsultFormativeActions {
         	List<Object> params = new ArrayList<>();
         
         // safe chacks
-        	for(int i=0; i<13; i++)
+        	for(int i=0; i<16; i++)
             	params.add(safeDate);
         	
 
@@ -58,7 +59,7 @@ public class ModelConsultFormativeActions {
         }
         else 
         		// "ACTIVE (Default)": All states not included CLOSED or Cancelled
-            	sql.append("AND status NOT IN ('CLOSED', 'Cancelled') "); 
+            	sql.append("AND status != 'CLOSED' "); 
 
         sql.append("ORDER BY actionDate DESC");
 

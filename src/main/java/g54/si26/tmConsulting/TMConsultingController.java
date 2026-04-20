@@ -73,6 +73,7 @@ public class TMConsultingController {
             String date = row[0] != null ? row[0].toString() : "";
             String name = row[1] != null ? row[1].toString() : "";
             String status = row[2] != null ? row[2].toString() : "";
+            String dateRange = row[10] != null ? row[10].toString() : "";
             
             double fee = Double.parseDouble(row[3].toString());
             int pendingEnrollments = Integer.parseInt(row[4].toString());
@@ -115,7 +116,7 @@ public class TMConsultingController {
             String strConfExpenses = String.format("€%.2f", confExpenses);
 
             tableModel.addRow(new Object[]{
-                date, name, status,
+                dateRange, name, status,
                 strEstIncome, strConfIncome, String.format("€%.2f", totalCourseIncome),
                 strEstExpenses, strConfExpenses, String.format("€%.2f", totalCourseExpenses), 
                 String.format("€%.2f", estBalance), String.format("€%.2f", courseBalance)

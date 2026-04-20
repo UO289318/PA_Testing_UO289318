@@ -20,7 +20,7 @@ public class FinancialConsultingModel {
     		if (filter!=null && !filter.equals("ALL") && !filter.equals("ACTIVE (Default)")) 
                 sql += " AND status = '" + filter + "'";
     		else if ("ACTIVE (Default)".equals(filter))
-    			sql += " AND status NOT IN ('CLOSED', 'Cancelled')";
+    			sql += " AND status NOT IN ('CLOSED')";
             
         sql += " ORDER BY name ASC";
         
@@ -78,13 +78,18 @@ public class FinancialConsultingModel {
     public String getTemporalFaStatusSql(String simDate, String tableAlias){
         String safeDate = (simDate!=null && !simDate.trim().isEmpty()) ? simDate.substring(0, 10) : "9999-12-31";
         return "CASE " +
-               "  WHEN " + tableAlias + ".status = 'CANCELLED' THEN 'Cancelled' " +
-               "  WHEN " + tableAlias + ".status = 'CLOSED' AND " + tableAlias + ".closureDate IS NOT NULL AND date('" + safeDate + "') >= date(" + tableAlias + ".closureDate) THEN 'CLOSED' " +
-               "  WHEN date('" + safeDate + "') > date(" + tableAlias + ".endDate) THEN 'Finished' " +
-               "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".startDate) AND date('" + safeDate + "') <= date(" + tableAlias + ".endDate) THEN 'In progress' " +
-               "  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".inscriptionPeriodStart) AND date('" + safeDate + "') <= date(" + tableAlias + ".inscriptionPeriodEnd) THEN 'Enrolment open' " +
-               "  WHEN date('" + safeDate + "') < date(" + tableAlias + ".startDate) THEN 'Upcoming' " +
-               "  ELSE " + tableAlias + ".status " +
-               "END";
+        			"  WHEN " + tableAlias + ".closureDate IS NOT NULL " +
+        			"  AND date('" + safeDate + "') >= date(" + tableAlias + ".closureDate) " +
+        			"  AND (" + tableAlias + ".reopenDate IS NULL OR date('" + safeDate + "') < date(" + tableAlias + ".reopenDate)) " +
+        			"  THEN 'CLOSED' " +
+        			"  WHEN (" + tableAlias + ".cancelDate IS NOT NULL AND date('" + safeDate + "') >= date(" + tableAlias + ".cancelDate) " +
+        			"  AND (" + tableAlias + ".reopenDate IS NULL OR date('" + safeDate + "') < date(" + tableAlias + ".reopenDate))) " +
+        			"  OR (" + tableAlias + ".status = 'CANCELLED' AND " + tableAlias + ".cancelDate IS NULL) THEN 'Cancelled' " +
+        			"  WHEN date('" + safeDate + "') > date(" + tableAlias + ".endDate) THEN 'Finished' " +
+        			"  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".startDate) AND date('" + safeDate + "') <= date(" + tableAlias + ".endDate) THEN 'In progress' " +
+        			"  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".inscriptionPeriodStart) AND date('" + safeDate + "') <= date(" + tableAlias + ".inscriptionPeriodEnd) THEN 'Enrolment open' " +
+        			"  WHEN date('" + safeDate + "') < date(" + tableAlias + ".startDate) THEN 'Upcoming' " +
+        			"  ELSE " + tableAlias + ".status " +
+        			"END";
     }
 }

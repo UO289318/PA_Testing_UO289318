@@ -32,7 +32,7 @@ public class ModelReopenFormativeActionTest {
     @Test
     public void testReopenFormativeAction() {
         // action_id 1 is CLOSED due to setUp
-        boolean success = model.reopenFormativeAction(1);
+        boolean success = model.reopenFormativeAction(1, "2026-04-19");
         assertTrue(success, "Reopen should be successful");
 
         // Verify status in DB
@@ -42,7 +42,7 @@ public class ModelReopenFormativeActionTest {
 
     @Test
     public void testReopenNonExistentAction() {
-        boolean success = model.reopenFormativeAction(999);
+        boolean success = model.reopenFormativeAction(999, "2026-04-19");
         assertFalse(success, "Reopen should fail for non-existent action");
     }
 }

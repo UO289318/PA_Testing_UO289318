@@ -19,21 +19,23 @@ public class ModelCloseFormativeAction {
     //Loads the table taking into account the current date.
     public List<FormativeActionDTO> getUnclosedCourses(Date simulatedDate){
         	List<FormativeActionDTO> courses = new ArrayList<>();
-        	String simulatedDateStr = Util.dateToIsoString(simulatedDate) + " 23:59:59";
-        
+        	String simDateStr = Util.dateToIsoString(simulatedDate);
+        	String simDateWithTime = simDateStr + " 23:59:59";
+        	String statusSql = getTemporalFaStatusSql(simDateStr, "fa");
+            
         	//SQL takig into account the current date
-        	String sql = "SELECT fa.action_id AS actionId, fa.name, fa.startDate, fa.status, " +
-                     "date(fa.startDate, '+1 day') AS calculatedEndDate, " +
-                     "(SELECT count(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state IN ('RECEIVED', 'CANCELLED') AND i.inscription_date <= ?) AS unhandledCount, " +
-                     "(SELECT inv.status FROM Invoice inv WHERE inv.action_id = fa.action_id AND inv.invoice_date <= ? LIMIT 1) AS invoiceStatus " +
-                     "FROM FormativeAction fa " +
-                     "WHERE fa.status != 'CLOSED' OR ? < date(fa.startDate, '+1 day')";
-
+        	String sql = "SELECT * FROM (" +
+                    "  SELECT fa.action_id AS actionId, fa.name, fa.startDate, (" + statusSql + ") AS status, " +
+                    "  date(fa.startDate, '+1 day') AS calculatedEndDate, " +
+                    "  (SELECT count(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state IN ('RECEIVED', 'CANCELLED') AND i.inscription_date <= ?) AS unhandledCount, " +
+                    "  (SELECT inv.status FROM Invoice inv WHERE inv.action_id = fa.action_id AND inv.invoice_date <= ? LIMIT 1) AS invoiceStatus " +
+                    "  FROM FormativeAction fa " +
+                    ") WHERE status != 'CLOSED'";
         	try (Connection conn = db.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)){
              
-        		pstmt.setString(1, simulatedDateStr); 
-        		pstmt.setString(2, simulatedDateStr); 
-        		pstmt.setString(3, simulatedDateStr); 
+        		pstmt.setString(1, simDateWithTime); 
+        		pstmt.setString(2, simDateWithTime); 
+        		
             
         		try(ResultSet rs = pstmt.executeQuery()) {
         			while (rs.next()){
@@ -43,16 +45,8 @@ public class ModelCloseFormativeAction {
         				dto.setName(rs.getString("name"));
         				dto.setStartDate(rs.getString("startDate"));
                     
-        				String dbStatus = rs.getString("status");
-        				String calcEndDateStr = rs.getString("calculatedEndDate");
-        				dto.setEndDate(calcEndDateStr);
-        				Date endDate = Util.isoStringToDate(calcEndDateStr);
-                    
-        				if("CLOSED".equals(dbStatus) && endDate != null && simulatedDate.before(endDate)) 
-        					dto.setStatus("ACTIVE");
-        				else 
-        					dto.setStatus(dbStatus);
-                    
+        				dto.setStatus(rs.getString("status"));
+        				dto.setEndDate(rs.getString("calculatedEndDate"));
         				dto.setUnhandledRegistrations(rs.getInt("unhandledCount"));
                     
         				String invStatus = rs.getString("invoiceStatus");
@@ -150,4 +144,19 @@ public class ModelCloseFormativeAction {
     			return false;
     		}
     	}
+    	private String getTemporalFaStatusSql(String simDate, String tableAlias){
+            String safeDate=(simDate!=null && !simDate.isBlank()) ? simDate.substring(0, 10) : "9999-12-31";
+            return "CASE " +
+            			"  WHEN " + tableAlias + ".closureDate IS NOT NULL AND date('" + safeDate + "') >= date(" + tableAlias + ".closureDate) " +
+            			"  AND (" + tableAlias + ".reopenDate IS NULL OR date('" + safeDate + "') < date(" + tableAlias + ".reopenDate)) THEN 'CLOSED' " +
+            			"  WHEN (" + tableAlias + ".cancelDate IS NOT NULL AND date('" + safeDate + "') >= date(" + tableAlias + ".cancelDate) " +
+            			"  AND (" + tableAlias + ".reopenDate IS NULL OR date('" + safeDate + "') < date(" + tableAlias + ".reopenDate))) " +
+            			"  OR (" + tableAlias + ".status = 'CANCELLED' AND " + tableAlias + ".cancelDate IS NULL) THEN 'Cancelled' " +
+            			"  WHEN date('" + safeDate + "') > date(" + tableAlias + ".endDate) THEN 'Finished' " +
+            			"  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".startDate) AND date('" + safeDate + "') <= date(" + tableAlias + ".endDate) THEN 'In progress' " +
+            			"  WHEN date('" + safeDate + "') >= date(" + tableAlias + ".inscriptionPeriodStart) AND date('" + safeDate + "') <= date(" + tableAlias + ".inscriptionPeriodEnd) THEN 'Enrolment open' " +
+            			"  WHEN date('" + safeDate + "') < date(" + tableAlias + ".startDate) THEN 'Upcoming' " +
+                   "  ELSE " + tableAlias + ".status " +
+                   "END";
+        }
 }

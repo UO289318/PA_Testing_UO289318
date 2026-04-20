@@ -72,7 +72,7 @@ public class TMConsultingView {
         panelCentro.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
         String[] columnas = {
-                "Date", "Course Name", "Status",
+                "Dates", "Course Name", "Status",
                 "Est. Income", "Conf. Income", "TOTAL Income",
                 "Est. Expenses", "Conf. Expenses", "TOTAL Expenses", "Est. BALANCE", "BALANCE"
         };
