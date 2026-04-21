@@ -90,16 +90,22 @@ public class FinancialConsultingController {
         for (Object[] row : movements) {
             String date = row[0].toString();
             String concept = row[1].toString();
-            double amount = Double.parseDouble(row[2].toString());
+            
+            // CORRECCIÓN: Aplicamos Math.abs() para asegurar que la cantidad en memoria sea siempre positiva
+            double amount = Math.abs(Double.parseDouble(row[2].toString()));
             int isIncome = Integer.parseInt(row[3].toString());
 
             String qtyStr = (isIncome == 1 ? "+ €" : "- €") + amount;
             tableModel.addRow(new Object[]{date, concept, qtyStr});
 
-            if (isIncome == 1) totalIncomes += amount;
-            else totalExpenses += amount;
+            if (isIncome == 1) {
+                totalIncomes += amount;
+            } else {
+                totalExpenses += amount;
+            }
         }
 
+        // Ahora la resta funciona correctamente porque totalExpenses siempre es un número positivo
         double balance = totalIncomes - totalExpenses;
 
         // 3. Update UI

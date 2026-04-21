@@ -134,5 +134,4 @@ public class TMConsultingView {
     public JLabel getLblTotalGastos() { return lblTotalGastos; }
     public JLabel getLblEstBalance() { return lblEstBalance; }
     public JLabel getLblBalance() { return lblBalance; }
-    
 }
