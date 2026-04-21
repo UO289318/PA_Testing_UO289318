@@ -10,14 +10,13 @@ public class TMConsultingController {
 
     private TMConsultingModel model;
     private TMConsultingView view;
-    private String simulatedDateStr; // <-- Added to store the system date
+    private String simulatedDateStr; 
 
     public TMConsultingController(TMConsultingModel m, TMConsultingView v) {
         this.model = m;
         this.view = v;
     }
 
-    // <-- Added the method to inject the simulated date
     public void setSimulatedDate(String dateIso) {
         this.simulatedDateStr = dateIso;
     }
@@ -33,20 +32,16 @@ public class TMConsultingController {
     }
 
     public void initView() {
-        // "By default on the report we need all the courses organized in the current year"
-        // Extract the year from the simulated date (e.g., from "2023-10-15" we get "2023")
         String year;
         if (simulatedDateStr != null && simulatedDateStr.length() >= 4) {
             year = simulatedDateStr.substring(0, 4);
         } else {
-            // Just in case the date is missing, use the real one as a fallback
             year = String.valueOf(java.time.LocalDate.now().getYear()); 
         }
         
         view.getTxtFechaInicio().setText(year + "-01-01");
         view.getTxtFechaFin().setText(year + "-12-31");
         
-        // Load default data on startup
         SwingUtil.exceptionWrapper(() -> loadReportData());
         
         view.getFrame().setVisible(true);
@@ -57,14 +52,13 @@ public class TMConsultingController {
         String endDate = view.getTxtFechaFin().getText().trim();
         String statusFilter = (String) view.getCbEstado().getSelectedItem();
 
-        // Basic format validations
         if (startDate.isEmpty() || endDate.isEmpty()) {
             throw new ApplicationException("Start and end dates are mandatory.");
         }
 
         List<Object[]> reportData = model.getReportData(startDate, endDate, statusFilter, simulatedDateStr);
         DefaultTableModel tableModel = view.getModeloTabla();
-        tableModel.setRowCount(0); // Clear table
+        tableModel.setRowCount(0); 
 
         double globalIncome = 0.0;
         double globalExpenses = 0.0;
@@ -80,23 +74,20 @@ public class TMConsultingController {
             double confIncome = Double.parseDouble(row[5].toString());
             double totalExpenses = Double.parseDouble(row[6].toString());
             double confExpenses = Double.parseDouble(row[7].toString());
-
-            // 2. EXTRAEMOS LAS PLAZAS (El nuevo dato que añadimos al Model)
             int totalSpots = Integer.parseInt(row[8].toString());
+            
+            // EXTRAEMOS LOS CONFIRMADOS REALES
+            int confirmedCount = Integer.parseInt(row[9].toString());
 
             boolean isClosed = "CLOSED".equalsIgnoreCase(status) || "CANCELLED".equalsIgnoreCase(status);
 
-            // --- CÁLCULO PROFESIONAL CON TERNARIO ---
-            
-            // Calculamos cuántos han confirmado (Dinero confirmado / precio del curso)
-            // (Ponemos una protección por si el fee es 0 para que no dé error de división)
-            int confirmedEnrollments = (fee > 0) ? (int) (confIncome / fee) : 0;
-            
-            // Calculamos plazas libres (Protegemos con Math.max para que no de negativo si hay overbooking)
-            int freeSpots = Math.max(0, totalSpots - confirmedEnrollments);
+            // CÁLCULO DE INGRESOS ESTIMADOS
+            // Plazas libres = Totales - las que ya están confirmadas (hayan pagado o no)
+            int freeSpots = Math.max(0, totalSpots - confirmedCount);
 
-            // TERNARIO: Ingreso confirmado + (Pendientes limitados por plazas libres * precio)
-            double estIncome = confIncome + ((pendingEnrollments > freeSpots ? freeSpots : pendingEnrollments) * fee);
+            // El ingreso estimado asume que todos los confirmados pagarán, más los pendientes que quepan
+            int expectedNewEnrollments = Math.min(pendingEnrollments, freeSpots);
+            double estIncome = (confirmedCount * fee) + (expectedNewEnrollments * fee);
             
             // Gastos estimados y Balances
             double estExpenses = Math.max(0, totalExpenses - confExpenses);
@@ -106,7 +97,7 @@ public class TMConsultingController {
             double estBalance = estIncome - (estExpenses + confExpenses);
             double courseBalance = totalCourseIncome - totalCourseExpenses;
 
-            // Add to global totals (includes all, active and closed)
+            // Add to global totals
             globalIncome += totalCourseIncome;
             globalExpenses += totalCourseExpenses;
 

@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import g54.si26.DTOs.ProfessionalDTO;
+import g54.si26.cancelEnrollment.*;
 import g54.si26.inscriptions.*;
 import g54.si26.payments.*;
 import g54.si26.teacherpayments.*;
@@ -279,6 +280,15 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         });
         
         
+        JButton btnCancelEnrollment = new JButton("Cancel Enrollment");
+        btnCancelEnrollment.addActionListener(e -> {
+            ModelCancelEnrollment model = new ModelCancelEnrollment();
+            ViewCancelEnrollment view = new ViewCancelEnrollment();
+            ControllerCancelEnrollment controller = new ControllerCancelEnrollment(model, view);
+            controller.setSimulatedDate(txtSystemDate.getText());
+            controller.initController();
+        });
+        
         leftPanel.add(btnEjecutarPagos);
         leftPanel.add(btnEjecutarPagosProfesores);
         leftPanel.add(btnExecuteSecretaryConsult);
@@ -299,7 +309,12 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         rightPanel.add(btnMultipleFees);
         rightPanel.add(btnEjecutarInscripciones);
         rightPanel.add(btnCancelFA);
+
         //Aqeuí va Register new Teacehr US
+
+        rightPanel.add(btnViewPendingPayments);
+        rightPanel.add(btnCancelEnrollment);
+
         
 
         for (int i = 7; i <= 14; i++) {
@@ -334,6 +349,8 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
 
         loadProfessionals();
     }
+    
+    
 
     private void loadProfessionals() {
         try {
