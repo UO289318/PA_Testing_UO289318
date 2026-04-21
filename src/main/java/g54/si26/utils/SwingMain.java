@@ -31,6 +31,7 @@ import g54.si26.reopenFormativeActions.*;
 import g54.si26.planFormativeAction.*;
 import g54.si26.planMultipleFees.*;
 import g54.si26.cancelFormativeActions.*;
+import g54.si26.secretaryStatusFA.*;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -259,12 +260,21 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
             }
         });
         
-        JButton btnConsultFA = new JButton("Consult Formative Actions (Secretary)");
+        JButton btnConsultFA = new JButton("Consult Formative Actions");
         btnConsultFA.addActionListener(e -> {
             ModelConsultFormativeActions model = new ModelConsultFormativeActions();
             ViewConsultFormativeActions view = new ViewConsultFormativeActions();
             ControllerConsultFormativeActions controller = new ControllerConsultFormativeActions(model, view);
             controller.setSimulatedDateStr(txtSystemDate.getText());
+            controller.initController();
+        });
+
+        JButton btnStatusFA = new JButton("Consult FA Registrations");
+        btnStatusFA.addActionListener(e -> {
+            StatusFAModel model = new StatusFAModel();
+            StatusFAView view = new StatusFAView();
+            StatusFAController controller = new StatusFAController(model, view);
+            controller.setSimulatedDate(txtSystemDate.getText());
             controller.initController();
         });
         
@@ -279,6 +289,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         leftPanel.add(btnViewPendingPayments);
         
         //Aquí va Consult status of a FA US
+        rightPanel.add(btnStatusFA);
         rightPanel.add(btnExecuteTMConsult);
         //Aquí va Record Invoices from Teachers US
         rightPanel.add(btnConsultFA);
