@@ -29,10 +29,10 @@ public class MoneyMovementModel {
         String sql = "SELECT * FROM (" +
                      "SELECT i.inscription_id AS inscriptionId, fa.name AS courseName, p.name || ' ' || p.surname AS professionalName, " +
                      "i.applied_fee AS fee, i.state AS state, i.inscription_date AS registrationDate, " +
-                     "(SELECT COALESCE(SUM(amount), 0) FROM MoneyMovement WHERE inscription_id = i.inscription_id) AS netBalance " +
+                     "((SELECT COALESCE(SUM(amount), 0) FROM MoneyMovement WHERE inscription_id = i.inscription_id) - i.applied_fee) AS netBalance " +
                      "FROM Inscription i JOIN FormativeAction fa ON i.action_id = fa.action_id " +
                      "JOIN Professional p ON i.professional_id = p.professional_id" +
-                     ") WHERE netBalance > fee";
+                     ") WHERE netBalance > 0.001";
         return db.executeQueryPojo(EnrollmentRecordDTO.class, sql);
     }
 
@@ -54,10 +54,10 @@ public class MoneyMovementModel {
         String sql = "SELECT * FROM (" +
                      "SELECT i.invoice_id AS invoiceId, t.name AS teacherName, fa.name AS courseName, " +
                      "i.totalAmount AS totalAmount, " +
-                     "(SELECT COALESCE(SUM(amount), 0) FROM MoneyMovement WHERE invoice_id = i.invoice_id) AS netBalance " +
+                     "(ABS((SELECT COALESCE(SUM(amount), 0) FROM MoneyMovement WHERE invoice_id = i.invoice_id)) - i.totalAmount) AS netBalance " +
                      "FROM Invoice i JOIN Teacher t ON i.teacher_id = t.teacher_id " +
                      "JOIN FormativeAction fa ON i.action_id = fa.action_id" +
-                     ") WHERE ABS(netBalance) > totalAmount";
+                     ") WHERE netBalance > 0.001";
         return db.executeQueryPojo(TeacherInvoiceDTO.class, sql);
     }
 
