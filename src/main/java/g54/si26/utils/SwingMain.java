@@ -260,7 +260,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
             }
         });
         
-        JButton btnConsultFA = new JButton("Consult Formative Actions");
+        JButton btnConsultFA = new JButton("Consult Formative Actions for Management Purposes");
         btnConsultFA.addActionListener(e -> {
             ModelConsultFormativeActions model = new ModelConsultFormativeActions();
             ViewConsultFormativeActions view = new ViewConsultFormativeActions();

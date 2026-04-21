@@ -6,6 +6,7 @@ import g54.si26.utils.SwingUtil;
 
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
+import g54.si26.secretaryStatusFA.*;
 
 public class ControllerConsultFormativeActions {
 
@@ -40,6 +41,15 @@ public class ControllerConsultFormativeActions {
         view.getBtnRefresh().addActionListener(e -> SwingUtil.exceptionWrapper(this::handleRefresh));
         
         view.getBtnSearch().addActionListener(e -> SwingUtil.exceptionWrapper(this::handleSearch));
+        view.getBtnStatusFA().addActionListener(e -> {
+            // Nota: Asegúrate de tener importados StatusFAModel, StatusFAView y StatusFAController arriba en los import
+            StatusFAModel statusModel = new StatusFAModel();
+            StatusFAView statusView = new StatusFAView();
+            StatusFAController statusController = new StatusFAController(statusModel, statusView);
+            // Usamos getSimulatedDateStr() para pasarle la fecha en la que estamos viajando en el tiempo
+            statusController.setSimulatedDate(getSimulatedDateStr()); 
+            statusController.initController();
+        });
 
         // For further info
         view.getTblFormativeActions().getSelectionModel().addListSelectionListener(e -> {

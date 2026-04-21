@@ -12,6 +12,7 @@ public class ViewConsultFormativeActions {
     // Top Panel Buttons
     private JButton btnBack;
     private JButton btnRefresh;
+    private JButton btnStatusFA;
 
     // Filters Section
     private JTextField txtDateFilter;
@@ -60,8 +61,10 @@ public class ViewConsultFormativeActions {
         
         btnBack = createStyledButton("Back", COLOR_LIGHT_BLUE, COLOR_UPDATE, 80, 25);
         btnRefresh = createStyledButton("Refresh (Clear Filters)", COLOR_LIGHT_GRAY, Color.DARK_GRAY, 160, 25);
+        btnStatusFA = createStyledButton("Consult FA Registrations", COLOR_LIGHT_GRAY, Color.DARK_GRAY, 200, 25);
         topPanel.add(btnBack);
         topPanel.add(btnRefresh);
+        topPanel.add(btnStatusFA);
         frame.getContentPane().add(topPanel, BorderLayout.NORTH);
 
         // Main Window
@@ -449,5 +452,9 @@ public class ViewConsultFormativeActions {
 
     public void setTxtTotalRegisters(JTextField txtTotalRegisters) {
         this.txtTotalRegisters = txtTotalRegisters;
+    }
+    
+    public JButton getBtnStatusFA() {
+        return btnStatusFA;
     }
 }
