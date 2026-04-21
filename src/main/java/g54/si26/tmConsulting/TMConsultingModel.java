@@ -53,11 +53,11 @@ public class TMConsultingModel {
             "  (SELECT COUNT(*) FROM Inscription WHERE action_id = fa.action_id AND state = 'RECEIVED') as pendingInscriptions, " +
             "  (SELECT COALESCE(SUM(mm.amount), 0) FROM MoneyMovement mm " +
             "   JOIN Inscription i ON mm.inscription_id = i.inscription_id " +
-            "   WHERE i.action_id = fa.action_id AND mm.status = 'CONFIRMED') as confIncome, " + 
+            "   WHERE i.action_id = fa.action_id) as confIncome, " + 
             "  (SELECT COALESCE(SUM(remuneration), 0) FROM Teacher_FormativeAction WHERE action_id = fa.action_id) as totalRemuneration, " + 
-            "  (SELECT COALESCE(SUM(mm.amount), 0) FROM MoneyMovement mm " +
+            "  (SELECT COALESCE(ABS(SUM(mm.amount)), 0) FROM MoneyMovement mm " +
             "   JOIN Invoice inv ON mm.invoice_id = inv.invoice_id " +
-            "   WHERE inv.action_id = fa.action_id AND mm.status = 'CONFIRMED') as confExpenses, " + 
+            "   WHERE inv.action_id = fa.action_id) as confExpenses, " + 
             "  fa.spots, " +
             "  (SELECT COUNT(*) FROM Inscription WHERE action_id = fa.action_id AND state = 'CONFIRMED') as confirmedCount, " +
             "  (fa.startDate || ' to ' || fa.endDate) AS dateRange " +
