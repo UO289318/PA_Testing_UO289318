@@ -12,6 +12,8 @@ public class FormativeActionManagementDTO {
     private double income;
     private double expenses;
     private double balance;
+    private int reservedPlaces;
+    private int confirmedPlaces;
 
     public FormativeActionManagementDTO() {}
 
@@ -94,6 +96,23 @@ public class FormativeActionManagementDTO {
 	public void setBalance(double balance) {
 		this.balance = balance;
 	}
+
+	public int getReservedPlaces() {
+		return reservedPlaces;
+	}
+
+	public void setReservedPlaces(int reservedPlaces) {
+		this.reservedPlaces = reservedPlaces;
+	}
+
+	public int getConfirmedPlaces() {
+		return confirmedPlaces;
+	}
+
+	public void setConfirmedPlaces(int confirmedPlaces) {
+		this.confirmedPlaces = confirmedPlaces;
+	}
+	
 
     
 }

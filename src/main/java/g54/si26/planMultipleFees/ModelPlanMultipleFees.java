@@ -62,9 +62,10 @@ public class ModelPlanMultipleFees {
     		name = (name==null) ? "" : name.trim();
     		if(name.isBlank())
     			throw new ApplicationException("Community name cannot be empty.");
-    		if(communityNameExists(name, -1))
-    			throw new ApplicationException("A community named \"" + name + "\" already exists.");
-
+    		if(communityNameExists(name, -1)) {
+    			List<Object[]> res = db.executeQueryArray("SELECT community_id FROM Community WHERE LOWER(communityName) = LOWER(?)", name);
+    			return Integer.parseInt(res.get(0)[0].toString());
+    		}
     		Object id = db.executeInsert("INSERT INTO Community (communityName) VALUES (?)", name);
     		return Integer.parseInt(id.toString());
     }
@@ -98,7 +99,6 @@ public class ModelPlanMultipleFees {
             LocalDate session = LocalDate.parse(sessionStartDate.substring(0, 10));
             return !enrol.isAfter(session.minusWeeks(3));
         } catch (Exception e){
-        	// En caso de parseo fallido, la validación general de fechas lo cazará después
             return true; 
         }
     }

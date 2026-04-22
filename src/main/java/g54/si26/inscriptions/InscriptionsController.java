@@ -46,7 +46,7 @@ public class InscriptionsController {
             e -> view.getFrame().dispose()
         );
 
-    		// Listener: Cargar tasas al seleccionar un curso
+    		// Loads fees
     		view.getTablaCursos().getSelectionModel().addListSelectionListener(e -> {
     			if(!e.getValueIsAdjusting()){
     				int row = view.getTablaCursos().getSelectedRow();
@@ -98,7 +98,7 @@ public class InscriptionsController {
     		
     		view.getTablaCursos().getColumnModel().getColumn(1).setHeaderValue("Course Name");
     		view.getTablaCursos().getColumnModel().getColumn(2).setHeaderValue("Enrollment Period");
-    		view.getTablaCursos().getColumnModel().getColumn(3).setHeaderValue("Places");
+    		view.getTablaCursos().getColumnModel().getColumn(3).setHeaderValue("Total Places");
     		
     		view.getTablaCursos().getColumnModel().getColumn(0).setMinWidth(0);
     		view.getTablaCursos().getColumnModel().getColumn(0).setMaxWidth(0);
@@ -106,7 +106,10 @@ public class InscriptionsController {
     		
     		view.getTablaCursos().getColumnModel().getColumn(1).setPreferredWidth(350);
     		view.getTablaCursos().getColumnModel().getColumn(2).setPreferredWidth(200);
-    		//view.getTablaCursos().getColumnModel().getColumn(3).setPreferredWidth(100);
+    		
+    		//view.getTablaCursos().getColumnModel().getColumn(3).setMinWidth(0);
+    		//view.getTablaCursos().getColumnModel().getColumn(3).setMaxWidth(0);
+    		view.getTablaCursos().getColumnModel().getColumn(3).setPreferredWidth(100);
     		
     		view.getTablaCursos().setDefaultRenderer(Object.class, new DefaultTableCellRenderer(){
     			@Override

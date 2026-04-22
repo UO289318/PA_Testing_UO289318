@@ -42,13 +42,21 @@ public class ControllerConsultFormativeActions {
         
         view.getBtnSearch().addActionListener(e -> SwingUtil.exceptionWrapper(this::handleSearch));
         view.getBtnStatusFA().addActionListener(e -> {
-            // Nota: Asegúrate de tener importados StatusFAModel, StatusFAView y StatusFAController arriba en los import
+            
             StatusFAModel statusModel = new StatusFAModel();
             StatusFAView statusView = new StatusFAView();
             StatusFAController statusController = new StatusFAController(statusModel, statusView);
-            // Usamos getSimulatedDateStr() para pasarle la fecha en la que estamos viajando en el tiempo
+            
             statusController.setSimulatedDate(getSimulatedDateStr()); 
             statusController.initController();
+        });
+        view.getBtnExecuteTMConsult().addActionListener(e -> {
+            g54.si26.tmConsulting.TMConsultingModel tmModel = new g54.si26.tmConsulting.TMConsultingModel();
+            g54.si26.tmConsulting.TMConsultingView tmView = new g54.si26.tmConsulting.TMConsultingView();
+            g54.si26.tmConsulting.TMConsultingController tmController = new g54.si26.tmConsulting.TMConsultingController(tmModel, tmView);
+            
+            tmController.setSimulatedDate(getSimulatedDateStr());
+            tmController.initController(); 
         });
 
         // For further info
@@ -77,7 +85,7 @@ public class ControllerConsultFormativeActions {
             else if(selectedCombo.equals("ALL")) 
                 statusFilter = "ALL"; 
             else 
-                statusFilter = selectedCombo; // "PLANNING", "ENROLLMENT_OPEN" y"CLOSED"           
+                statusFilter = selectedCombo; // "PLANNING", "ENROLLMENT_OPEN", "FINSHED", "IN PROGRES" y "CLOSED"           
         }
         
         loadFormativeActions(statusFilter, dateFilter);
@@ -99,11 +107,10 @@ public class ControllerConsultFormativeActions {
     private void loadFormativeActions(String status, String date){
         List<FormativeActionManagementDTO> actions = model.getFormativeActions(status, date);
         DefaultTableModel tm = (DefaultTableModel) view.getTblFormativeActions().getModel();
-        //Cleans the grid
         tm.setRowCount(0); 
 
         for(FormativeActionManagementDTO action : actions)
-            tm.addRow(new Object[]{action.getActionId(), action.getName(),action.getStatus(),action.getEnrolmentPeriod(), action.getTotalPlaces(),action.getPlacesLeft(),action.getActionDate(), String.format("%.2f", action.getIncome()),String.format("%.2f", action.getExpenses()),String.format("%.2f", action.getBalance())});
+            tm.addRow(new Object[]{action.getActionId(), action.getName(),action.getStatus(),action.getEnrolmentPeriod(), action.getTotalPlaces(),action.getPlacesLeft(), action.getReservedPlaces(), action.getConfirmedPlaces(), action.getActionDate(), String.format("%.2f", action.getIncome()),String.format("%.2f", action.getExpenses()),String.format("%.2f", action.getBalance())});
         
     }
 

@@ -13,6 +13,7 @@ public class ViewConsultFormativeActions {
     private JButton btnBack;
     private JButton btnRefresh;
     private JButton btnStatusFA;
+    private JButton btnExecuteTMConsult;
 
     // Filters Section
     private JTextField txtDateFilter;
@@ -48,8 +49,8 @@ public class ViewConsultFormativeActions {
 
     private void initialize() {
         // Title
-        frame = new JFrame("Consult Formative Actions for Management");
-        frame.setBounds(100, 100, 1000, 750);
+        frame = new JFrame("Consult a list of Formative Actions for Management");
+        frame.setBounds(100, 100, 1000, 650);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().setLayout(new BorderLayout(10, 10));
         frame.getContentPane().setBackground(COLOR_BG);
@@ -61,10 +62,10 @@ public class ViewConsultFormativeActions {
         
         btnBack = createStyledButton("Back", COLOR_LIGHT_BLUE, COLOR_UPDATE, 80, 25);
         btnRefresh = createStyledButton("Refresh (Clear Filters)", COLOR_LIGHT_GRAY, Color.DARK_GRAY, 160, 25);
-        btnStatusFA = createStyledButton("Consult FA Registrations", COLOR_LIGHT_GRAY, Color.DARK_GRAY, 200, 25);
+        //btnStatusFA = createStyledButton("Consult FA Registrations", COLOR_LIGHT_GRAY, Color.DARK_GRAY, 200, 25);
         topPanel.add(btnBack);
         topPanel.add(btnRefresh);
-        topPanel.add(btnStatusFA);
+        //topPanel.add(btnStatusFA);
         frame.getContentPane().add(topPanel, BorderLayout.NORTH);
 
         // Main Window
@@ -114,7 +115,7 @@ public class ViewConsultFormativeActions {
         pnlHint.add(lblGridHint);
         p2.add(pnlHint, BorderLayout.NORTH); 
         
-        String[] columnNames = {"ID", "Name", "Status", "Enrolment Period", "Total Places", "Places Left", "Date", "Income (€)", "Expenses (€)", "Balance (€)"};
+        String[] columnNames = {"ID", "Name", "Status", "Enrolment Period", "Total Places", "Places Left", "Reserved Places", "Confirmed Enrolments", "Date", "Conf. Income (€)", "Conf. Expenses (€)", "Balance (€)"};
         tblFormativeActions = new JTable(new DefaultTableModel(columnNames, 0) {
             @Override public boolean isCellEditable(int row, int column) { return false; }
         });
@@ -192,30 +193,49 @@ public class ViewConsultFormativeActions {
         gbc.gridx = 0; gbc.gridy = 4; gbc.weightx = 0.05; 
         JLabel lblRegisters = new JLabel("Total Registers:");
         lblRegisters.setFont(FONT_REGULAR);
+        lblRegisters.setVisible(false);
         formPanel.add(lblRegisters, gbc);
         
         gbc.gridx = 1; gbc.weightx = 0.95; 
         txtTotalRegisters = new JTextField();
         styleReadOnlyField(txtTotalRegisters);
+        txtTotalRegisters.setVisible(false);
         formPanel.add(txtTotalRegisters, gbc);
         
         pnlDetails.add(formPanel, BorderLayout.CENTER);
-
+        
+        btnStatusFA = createStyledButton("Consult FA Registrations", COLOR_UPDATE, Color.WHITE, 200, 30);
+        JPanel pnlStatusAction = new JPanel(new BorderLayout(0, 5));
+        pnlStatusAction.setOpaque(false);
+        
+        //JLabel lblStatusInfo = new JLabel("Check enrolled professionals:");
+        //lblStatusInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        //lblStatusInfo.setForeground(Color.DARK_GRAY);
+        //lblStatusInfo.setHorizontalAlignment(SwingConstants.RIGHT);
+        
+        //pnlStatusAction.add(lblStatusInfo, BorderLayout.NORTH); 
+        //pnlStatusAction.add(btnStatusFA, BorderLayout.SOUTH);   
+        
+        JPanel pnlBottomRightWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        pnlBottomRightWrapper.setOpaque(false);
+        pnlBottomRightWrapper.add(pnlStatusAction);
+        
+        pnlDetails.add(pnlBottomRightWrapper, BorderLayout.SOUTH);
         // details section
         centerContainer.add(pnlDetails, BorderLayout.SOUTH);
         pnlDetails.setVisible(false); 
         
-        JPanel pnlFees = new JPanel(new BorderLayout());
+        JPanel pnlFees = new JPanel(new BorderLayout(0, 15));
         pnlFees.setOpaque(false);
         pnlFees.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(10, 0, 10, 10), "Community Fees", TitledBorder.LEFT, TitledBorder.TOP, FONT_BOLD, COLOR_UPDATE));
-        pnlFees.setPreferredSize(new Dimension(320, 0)); // Ancho fijo para la tabla derecha para que no aplaste los textos
+        pnlFees.setPreferredSize(new Dimension(320, 300)); 
 
         tblCommunityFees = new JTable(new DefaultTableModel(new String[]{"ID", "Community", "Fee (€)"}, 0){
             @Override public boolean isCellEditable(int r, int c){ return false; }
         });
         styleTable(tblCommunityFees);
         
-        // Ocultar ID de la tabla de fees
+        // Ocultar ID d la tabla d fees
         tblCommunityFees.getColumnModel().getColumn(0).setMinWidth(0);
         tblCommunityFees.getColumnModel().getColumn(0).setMaxWidth(0);
         tblCommunityFees.getColumnModel().getColumn(0).setPreferredWidth(0);
@@ -223,11 +243,33 @@ public class ViewConsultFormativeActions {
         JScrollPane spFees = new JScrollPane(tblCommunityFees);
         spFees.getViewport().setBackground(Color.WHITE);
         spFees.setBorder(BorderFactory.createLineBorder(COLOR_SEPARATOR));
-        
+        spFees.setPreferredSize(new Dimension(300, 100));
         pnlFees.add(spFees, BorderLayout.CENTER);
         
-        // Añadimos la tabla al lado ESTE (Derecha) del panel de detalles
+        JPanel pnlActionButtons = new JPanel(new GridLayout(5, 1, 0, 3)); 
+        pnlActionButtons.setOpaque(false);
+        
+        // Botón 1: Registros
+        JLabel lblStatusInfo = new JLabel("Check enrolled professionals:");
+        lblStatusInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        lblStatusInfo.setForeground(Color.DARK_GRAY);
+        btnStatusFA = createStyledButton("Consult FA Registrations", COLOR_UPDATE, Color.WHITE, 200, 30);
+        
+        // Botón 2: Finanzas
+        JLabel lblFinanceInfo = new JLabel("Check financial status:");
+        lblFinanceInfo.setFont(new Font("Segoe UI", Font.ITALIC, 11));
+        lblFinanceInfo.setForeground(Color.DARK_GRAY);
+        btnExecuteTMConsult = createStyledButton("Consult Income and Expenses", COLOR_UPDATE, Color.WHITE, 200, 30);
+
+        pnlActionButtons.add(lblStatusInfo);
+        pnlActionButtons.add(btnStatusFA);
+        pnlActionButtons.add(new JLabel(" ")); 
+        
+        pnlActionButtons.add(lblFinanceInfo);
+        pnlActionButtons.add(btnExecuteTMConsult);
+        pnlFees.add(pnlActionButtons, BorderLayout.SOUTH);
         pnlDetails.add(pnlFees, BorderLayout.EAST);
+
 
         centerContainer.add(pnlDetails, BorderLayout.SOUTH);
         pnlDetails.setVisible(false);
@@ -457,4 +499,9 @@ public class ViewConsultFormativeActions {
     public JButton getBtnStatusFA() {
         return btnStatusFA;
     }
+    
+    public JButton getBtnExecuteTMConsult() {
+        return btnExecuteTMConsult;
+    }
+    
 }

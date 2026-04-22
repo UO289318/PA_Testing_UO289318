@@ -35,6 +35,7 @@ public class ControllerPlanMultipleFees {
         loadTeachers();
         loadCommunities();
         updateTeacherHintVisibility(); 
+        setupValidationHints();
         view.getFrame().setVisible(true);
 
         // Bottom toolbar listeners
@@ -185,21 +186,35 @@ public class ControllerPlanMultipleFees {
             }
         }
         
-        // Guardamos en DB y recuperamos el ID generado
-        int newId = model.addCommunity(name);
+        
+        	int newId = model.addCommunity(name);
         view.getTxtEditCommName().setText("");
         view.getTxtEditCommFee().setText("");
         
-        // Añadimos directamente a la tabla sin recargar toda la BD
         DefaultTableModel tm = (DefaultTableModel) view.getTblCommunities().getModel();
-        tm.addRow(new Object[]{newId, name, newFee});
+        //	tm.addRow(new Object[]{newId, name, newFee});
+        
+        boolean alreadyInGrid = false;
+        for(int i=0; i<tm.getRowCount(); i++) 
+        		//Check if its already on the db
+            if(Integer.parseInt(tm.getValueAt(i, 0).toString()) == newId){
+                tm.setValueAt(newFee, i, 2);
+                alreadyInGrid = true;
+                break;
+            }
+        
+        
+        // If it was not in the table (Deleted previously)
+        if(!alreadyInGrid) 
+            tm.addRow(new Object[]{newId, name, newFee});
+
         
         // Si el Single Fee está marcado, aplicamos el precio a todas
-        if(view.getChkSingleFee().isSelected()){
-            for(int j = 0; j < tm.getRowCount(); j++) {
+        if(view.getChkSingleFee().isSelected())
+            for(int j=0; j<tm.getRowCount(); j++) 
                 tm.setValueAt(newFee, j, 2);
-            }
-        }
+            
+        
     }
 
     
@@ -264,7 +279,7 @@ public class ControllerPlanMultipleFees {
         for(int i=0; i<tm.getRowCount(); i++){
             int id = (int) tm.getValueAt(i, 0);
             String feeStr = tm.getValueAt(i, 2).toString();
-            // Solo coleccionamos aquellas filas que tienen una fee explícita para guardar
+            // Solo recogemos aquellas filas que tienen una fee explícita para guardar
             if(feeStr!=null && !feeStr.isBlank())
                 fees.put(id, Double.parseDouble(feeStr));
         }
@@ -467,6 +482,49 @@ public class ControllerPlanMultipleFees {
     public void setSimulatedDate(String dateIso){
 		this.simulatedDateStr = dateIso; 
 	}
+    
+    private void setupValidationHints() {
+        javax.swing.event.DocumentListener docListener = new javax.swing.event.DocumentListener(){
+            public void insertUpdate(javax.swing.event.DocumentEvent e){
+            		updateHints();
+            	}
+            public void removeUpdate(javax.swing.event.DocumentEvent e){
+            		updateHints();
+            	}
+            public void changedUpdate(javax.swing.event.DocumentEvent e){
+            		updateHints();
+            	}
+        };
+
+        view.getTxtCourseNameField().getDocument().addDocumentListener(docListener);
+        view.getTxtSpotsField().getDocument().addDocumentListener(docListener);
+        view.getTxtStartDateField().getDocument().addDocumentListener(docListener);
+        view.getTxtEndDateField().getDocument().addDocumentListener(docListener);
+        view.getTxtEnrolStartField().getDocument().addDocumentListener(docListener);
+        view.getTxtEnrolEndField().getDocument().addDocumentListener(docListener);
+
+        view.getTblTeachers().getModel().addTableModelListener(e -> updateHints());
+        view.getTblCommunities().getModel().addTableModelListener(e -> updateHints());
+        
+        updateHints();
+    }
+
+    private void updateHints(){
+        view.getLblHintCourseName().setVisible(view.getTxtCourseName().isEmpty());
+        view.getLblHintSpots().setVisible(view.getTxtSpots().isEmpty());
+        view.getLblHintStartDate().setVisible(view.getTxtStartDate().isEmpty());
+        view.getLblHintEndDate().setVisible(view.getTxtEndDate().isEmpty());
+        
+        boolean enrolEmpty=view.getTxtEnrolStart().isEmpty() || view.getTxtEnrolEnd().isEmpty();
+        view.getLblHintEnrolment().setVisible(enrolEmpty);
+        
+        boolean noTeachers=view.getTblTeachers().getRowCount() == 0;
+        view.getLblHintTeacher().setVisible(noTeachers);
+        
+        boolean noFees=collectCommunityFees().isEmpty();
+        view.getLblHintCommunity().setVisible(noFees);
+    }
+    
 
     /** Rellena el formulario con datos d prueba pa agilizar la entrada manual. */
     private void fillDebugData(){

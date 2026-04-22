@@ -64,7 +64,12 @@ public class InscriptionsView {
 
         //SECCION 1
         JPanel p1 = createSection("1. Available Formative Actions", 10, 15, 810, 250);
-        tabCourses = new JTable();
+        tabCourses = new JTable(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; 
+            }
+        };
         styleTable(tabCourses);
         tabCourses.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane spCourses = new JScrollPane(tabCourses);

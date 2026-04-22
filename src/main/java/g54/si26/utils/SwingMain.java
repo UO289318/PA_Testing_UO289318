@@ -17,7 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import g54.si26.DTOs.ProfessionalDTO;
-import g54.si26.cancelEnrollment.*;
+//import g54.si26.cancelEnrollment.*;
 import g54.si26.inscriptions.*;
 import g54.si26.payments.*;
 import g54.si26.teacherpayments.*;
@@ -117,7 +117,7 @@ public class SwingMain {
         frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
 
         // --- BOTÓN P'ARRINCAR LA HISTORIA D'USUARIU: INSCRIPCIONES ---
-        JButton btnEjecutarInscripciones = new JButton("Enrol Multiple Fees");
+        JButton btnEjecutarInscripciones = new JButton("Enrol in a Formative Action");
         btnEjecutarInscripciones.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
             public void actionPerformed(ActionEvent e) {
                 InscriptionsModel model = new InscriptionsModel();
@@ -201,7 +201,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
     		}
 		});
         
-	    JButton btnMultipleFees = new JButton("Plan Multiple Fees");
+	    JButton btnMultipleFees = new JButton("Plan Formative Action");
 		btnMultipleFees.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
         		ModelPlanMultipleFees model      = new ModelPlanMultipleFees();
@@ -261,7 +261,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
             }
         });
         
-        JButton btnConsultFA = new JButton("Consult Formative Actions for Management Purposes");
+        JButton btnConsultFA = new JButton("Consult a list of Formative Actions for Management Purposes");
         btnConsultFA.addActionListener(e -> {
             ModelConsultFormativeActions model = new ModelConsultFormativeActions();
             ViewConsultFormativeActions view = new ViewConsultFormativeActions();
@@ -282,11 +282,11 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         
         JButton btnCancelEnrollment = new JButton("Cancel Enrollment");
         btnCancelEnrollment.addActionListener(e -> {
-            ModelCancelEnrollment model = new ModelCancelEnrollment();
-            ViewCancelEnrollment view = new ViewCancelEnrollment();
-            ControllerCancelEnrollment controller = new ControllerCancelEnrollment(model, view);
-            controller.setSimulatedDate(txtSystemDate.getText());
-            controller.initController();
+            //ModelCancelEnrollment model = new ModelCancelEnrollment();
+            //ViewCancelEnrollment view = new ViewCancelEnrollment();
+            //ControllerCancelEnrollment controller = new ControllerCancelEnrollment(model, view);
+            //controller.setSimulatedDate(txtSystemDate.getText());
+            //controller.initController();
         });
         
         leftPanel.add(btnEjecutarPagos);

@@ -15,15 +15,16 @@ public class InscriptionsModel {
     	public List<FormativeActionDTO> getAvailableCourses(Date currentDate){
     		validateNotNull(currentDate, "The consult date cannot be null");
         
+    		String d = dateToTimestamp(currentDate); 
     		String sql = "SELECT action_id AS actionId, name, spots, "
                    + "startDate, endDate, inscriptionPeriodStart, inscriptionPeriodEnd, status "
                    + "FROM FormativeAction "
-                   + "WHERE status IN ('ACTIVE', 'CLOSED') "
-                   + "AND SUBSTR(?, 1, 10) >= inscriptionPeriodStart "
-                   + "AND SUBSTR(?, 1, 10) <= inscriptionPeriodEnd";
-
-    		String d = dateToTimestamp(currentDate); 
-    		List<FormativeActionDTO> courses = db.executeQueryPojo(FormativeActionDTO.class, sql, d, d);
+                   + "WHERE SUBSTR(?, 1, 10) >= inscriptionPeriodStart "
+                   + "AND SUBSTR(?, 1, 10) <= inscriptionPeriodEnd "
+                   + "AND (cancelDate IS NULL OR cancelDate = '' OR SUBSTR(?, 1, 10) < cancelDate) "
+                   + "AND (closureDate IS NULL OR closureDate = '' OR SUBSTR(?, 1, 10) < closureDate)";
+    		
+    		List<FormativeActionDTO> courses = db.executeQueryPojo(FormativeActionDTO.class, sql, d, d, d, d);
 
     		for(FormativeActionDTO course : courses){
     			String sqlEnrolled = "SELECT COUNT(*) FROM Inscription WHERE action_id = ? AND state IN ('RECEIVED', 'CONFIRMED') AND inscription_date <= ?";
@@ -137,14 +138,13 @@ public class InscriptionsModel {
     	private void createInscription(int professionalId, int actionId, int communityId, Date simulatedDate){
     		String d = dateToTimestamp(simulatedDate); 
     		
-        // Primero, consultamos la tasa para saber si debemos requerir pago o no
     		String sqlFee = "SELECT amount FROM Fee WHERE action_id = ? AND community_id = ?";
     		List<Object[]> feeRes = db.executeQueryArray(sqlFee, actionId, communityId);
     		double feeAmount = 0.0;
     		if(!feeRes.isEmpty())
             feeAmount = Double.parseDouble(feeRes.get(0)[0].toString());
 
-        // Regla: si la tasa es 0€, la inscripción queda automáticamente validada (CONFIRMED)
+        // If the payment is 0, its in confirmed status
         String state = (feeAmount == 0.0) ? "CONFIRMED" : "RECEIVED";
         
         String sqlInsertInsc = "INSERT INTO Inscription (inscription_date, applied_fee, state, professional_id, action_id) "
