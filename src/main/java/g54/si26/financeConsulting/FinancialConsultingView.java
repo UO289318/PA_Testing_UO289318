@@ -192,7 +192,7 @@ public class FinancialConsultingView {
         modeloTabla.setRowCount(0);
         lblTotalIngresos.setText("Confirmed Income: €0.00");
         lblTotalGastos.setText("Confirmed Expenses: €0.00");
-        lblBalance.setText("Course Confirmed Balance: €0.00");
+        lblBalance.setText("Confirmed Balance: €0.00");
         lblBalance.setForeground(Color.BLACK);
     }
 }

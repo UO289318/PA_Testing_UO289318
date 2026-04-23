@@ -9,14 +9,16 @@ public class TeacherInvoiceView {
 
     private JFrame frame;
     
-    // Inputs
+    // Inputs (Ahora el Neto y el Porcentaje de IVA se introducen a mano)
     private JComboBox<TeacherInvoiceDTO> cbTeacherCourse;
     private JTextField txtDate;
     private JTextField txtNet;
     private JTextField txtVat;
-    private JTextField txtTotal;
+    
+    // Auto-calculated outputs (Ahora el Total y la cantidad de IVA se calculan solos)
+    private JTextField txtVatAmount; 
+    private JTextField txtTotal; 
     private JTextField txtSystemCommitment;
-
     // Messages
     private JLabel lblWarningIcon;
     private JLabel lblMessage;
@@ -34,7 +36,7 @@ public class TeacherInvoiceView {
 
     private void initialize() {
         frame = new JFrame("COIIPA - Teacher Invoice Management");
-        frame.setBounds(100, 100, 850, 400);
+        frame.setBounds(100, 100, 850, 450); 
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().setLayout(new BorderLayout(10, 10));
 
@@ -42,7 +44,7 @@ public class TeacherInvoiceView {
         panelCenter.setBorder(BorderFactory.createEmptyBorder(15, 15, 5, 15));
 
         // -- Panel Izquierdo: Detalles --
-        JPanel panelDetails = new JPanel(new GridLayout(5, 2, 5, 15));
+        JPanel panelDetails = new JPanel(new GridLayout(6, 2, 5, 15)); 
         panelDetails.setBorder(BorderFactory.createTitledBorder("Invoice Details"));
 
         panelDetails.add(new JLabel("Teacher Name:"));
@@ -64,19 +66,29 @@ public class TeacherInvoiceView {
         txtDate = new JTextField();
         panelDetails.add(txtDate);
 
+        // INPUT: El usuario mete el Neto
         panelDetails.add(new JLabel("Net Amount (€):"));
         txtNet = new JTextField();
         panelDetails.add(txtNet);
 
-        // CAMBIO: Ahora pedimos porcentaje
+        // INPUT: El usuario mete el porcentaje de IVA
         panelDetails.add(new JLabel("VAT (%):")); 
         txtVat = new JTextField();
         panelDetails.add(txtVat);
 
-        panelDetails.add(new JLabel("Total Amount (€):"));
+        // OUTPUT: El sistema calcula el IVA en euros
+        panelDetails.add(new JLabel("Calculated VAT Amount (€):"));
+        txtVatAmount = new JTextField();
+        txtVatAmount.setEditable(false);
+        txtVatAmount.setBackground(Color.WHITE);
+        txtVatAmount.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        panelDetails.add(txtVatAmount);
+
+        // OUTPUT: El sistema calcula el Total sumando Neto + IVA
+        panelDetails.add(new JLabel("Calculated Total Amount (€):"));
         txtTotal = new JTextField();
-        txtTotal.setEditable(false); // CAMBIO: Solo lectura
-        txtTotal.setBackground(Color.WHITE); // Para que no se vea gris oscuro
+        txtTotal.setEditable(false);
+        txtTotal.setBackground(Color.WHITE);
         txtTotal.setFont(new Font("Segoe UI", Font.BOLD, 12));
         panelDetails.add(txtTotal);
 
@@ -87,7 +99,6 @@ public class TeacherInvoiceView {
         panelVerification.setBorder(BorderFactory.createTitledBorder("Verification"));
 
         JPanel pnlCommitment = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        // CAMBIO: Aclaramos que el compromiso es NETO
         pnlCommitment.add(new JLabel("System Initial Payment Commitment (Net €):")); 
         txtSystemCommitment = new JTextField(10);
         txtSystemCommitment.setEditable(false);
@@ -97,7 +108,7 @@ public class TeacherInvoiceView {
         panelVerification.add(pnlCommitment);
 
         panelMessage = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        lblWarningIcon = new JLabel("⚠"); 
+        lblWarningIcon = new JLabel("!"); // Cambiado para que no salga el cuadrado roto en tu Windows
         lblWarningIcon.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblWarningIcon.setForeground(Color.RED);
         
@@ -148,6 +159,7 @@ public class TeacherInvoiceView {
     public JTextField getTxtNet() { return txtNet; }
     public JTextField getTxtVat() { return txtVat; }
     public JTextField getTxtTotal() { return txtTotal; }
+    public JTextField getTxtVatAmount() { return txtVatAmount; } 
     public JTextField getTxtSystemCommitment() { return txtSystemCommitment; }
     
     public JLabel getLblWarningIcon() { return lblWarningIcon; }

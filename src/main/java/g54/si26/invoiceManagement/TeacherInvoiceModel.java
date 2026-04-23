@@ -14,7 +14,10 @@ public class TeacherInvoiceModel {
             "FROM Teacher t " +
             "JOIN Teacher_FormativeAction tfa ON t.teacher_id = tfa.teacher_id " +
             "JOIN FormativeAction fa ON tfa.action_id = fa.action_id " +
-            "WHERE tfa.status IS NULL OR tfa.status != 'INVOICED'";
+            "WHERE NOT EXISTS (" +
+            "    SELECT 1 FROM Invoice i " +
+            "    WHERE i.teacher_id = t.teacher_id AND i.action_id = fa.action_id" +
+            ")";
 
         List<Object[]> rows = db.executeQueryArray(sql);
         List<TeacherInvoiceDTO> list = new ArrayList<>();

@@ -21,21 +21,32 @@ public class ViewPendingController {
         });
 
         String[] columnNames = {"Professional/Teacher Name", "Amount", "Formative Action", "Reason"};
-        DefaultTableModel emptyModel = new DefaultTableModel(columnNames, 0);
+        DefaultTableModel emptyModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
         view.getTabPayments().setModel(emptyModel);
 
         view.getFrame().setVisible(true);
     }
 
     private void loadPayments(String filter) {
-        // Obtenemos las filas ya calculadas desde el modelo
         List<Object[]> rows = model.getPendingPaymentsData(filter);
         
         String[] columnNames = {"Professional/Teacher Name", "Amount", "Formative Action", "Reason"};
-        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
 
-        // Añadimos directamente las filas a la tabla
         for (Object[] rowData : rows) {
+            try {
+                double amount = Double.parseDouble(rowData[1].toString());
+                // Usamos Locale.US para asegurar que el punto sea el separador decimal
+                rowData[1] = String.format(java.util.Locale.US, "€%.2f", amount);
+            } catch (Exception e) {
+                rowData[1] = "€0.00";
+            }
             tableModel.addRow(rowData);
         }
         

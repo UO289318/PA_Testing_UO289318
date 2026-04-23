@@ -88,7 +88,7 @@ public class ControllerCancelEnrollment {
         String startDateStr = view.getTableEnrollments().getValueAt(row, 2).toString().substring(0, 10); 
         double feePaid = Double.parseDouble(view.getTableEnrollments().getValueAt(row, 4).toString().replace(",", "."));
 
-        // CORRECCIÓN: Parseo directo sin usar .toInstant() para evitar crashes
+        // Parseo directo sin usar .toInstant() para evitar crashes
         LocalDate simDate;
         try {
             simDate = LocalDate.parse(simulatedDateStr.substring(0, 10));
@@ -99,16 +99,25 @@ public class ControllerCancelEnrollment {
         LocalDate startDate = LocalDate.parse(startDateStr);
         
         long daysRemaining = ChronoUnit.DAYS.between(simDate, startDate);
-        if (daysRemaining < 0) daysRemaining = 0; 
-
-        view.getTxtSelectedCourse().setText(selectedInscriptionId + " - " + courseName);
-        view.getTxtStartDate().setText(startDateStr);
-        view.getTxtDaysRemaining().setText(daysRemaining + " (Calendar Days)");
+        
+        // NUEVA LÓGICA: Comprobar si el curso ya está en el pasado
+        boolean canCancel = true;
+        
+        if (daysRemaining < 0) {
+            view.getTxtDaysRemaining().setText("Started " + Math.abs(daysRemaining) + " days ago");
+            canCancel = false; // Bloqueamos la cancelación
+        } else {
+            view.getTxtDaysRemaining().setText(daysRemaining + " (Calendar Days)");
+        }
 
         String policyTier = "";
         double percentage = 0.0;
 
-        if (daysRemaining >= 7) {
+        // Evaluamos las políticas incluyendo la nueva restricción
+        if (!canCancel) {
+            policyTier = "Course already started/passed (Cancellation Denied)";
+            percentage = 0.0;
+        } else if (daysRemaining >= 7) {
             policyTier = "7+ Days (100% Refund)";
             percentage = 1.0;
         } else if (daysRemaining >= 3 && daysRemaining <= 6) {
@@ -121,10 +130,12 @@ public class ControllerCancelEnrollment {
 
         currentCalculatedRefund = feePaid * percentage;
 
-        view.getLblTotalFeePaid().setText(String.format("€%.2f", feePaid));
+        view.getLblTotalFeePaid().setText(String.format(java.util.Locale.US, "€%.2f", feePaid));
         view.getLblAppliedPolicy().setText(policyTier);
-        view.getLblTotalRefundDue().setText(String.format("€%.2f", currentCalculatedRefund));
-        view.getBtnCancelSelected().setEnabled(true);
+        view.getLblTotalRefundDue().setText(String.format(java.util.Locale.US, "€%.2f", currentCalculatedRefund));
+        
+        // Activamos o desactivamos el botón según si se permite cancelar
+        view.getBtnCancelSelected().setEnabled(canCancel);
     }
 
     private void clearDetails() {
