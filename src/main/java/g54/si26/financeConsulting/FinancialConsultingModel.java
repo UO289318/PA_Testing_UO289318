@@ -41,11 +41,6 @@ public class FinancialConsultingModel {
         return rows.get(0);
     }
 
-    /**
-     * ACTUALIZADO: Recupera los movimientos económicos usando el nuevo esquema.
-     * Los ingresos vienen de MoneyMovement (tipo PAYMENT vinculado a Inscription).
-     * Los gastos vienen de MoneyMovement (tipo PAYMENT vinculado a Invoice/Teacher).
-     */
     public List<Object[]> getMovements(int actionId) {
         String sql =
             // 1. INGRESOS (Pagos de profesionales/alumnos)

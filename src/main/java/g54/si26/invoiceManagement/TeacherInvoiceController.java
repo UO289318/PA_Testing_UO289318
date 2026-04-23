@@ -1,6 +1,8 @@
 package g54.si26.invoiceManagement;
 
 import java.awt.Color;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
@@ -13,15 +15,20 @@ public class TeacherInvoiceController {
 
     private TeacherInvoiceModel model;
     private TeacherInvoiceView view;
+    private String simulatedDateStr; 
 
     public TeacherInvoiceController(TeacherInvoiceModel m, TeacherInvoiceView v) {
         this.model = m;
         this.view = v;
     }
 
+    public void setSimulatedDate(String date) {
+        this.simulatedDateStr = date;
+    }
+
     public void initController() {
         loadComboBox();
-        setupAutoCalculate(); // Inicializamos el cálculo automático
+        setupAutoCalculate();
 
         view.getCbTeacherCourse().addActionListener(e -> {
             resetValidation();
@@ -45,28 +52,34 @@ public class TeacherInvoiceController {
         view.getFrame().setVisible(true);
     }
 
-    // Método para calcular el total automáticamente cuando se escribe en Net o VAT
+    // Ahora escucha los campos Net y VAT para calcular el Total
     private void setupAutoCalculate() {
         DocumentListener calcListener = new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) { calculateTotal(); }
-            public void removeUpdate(DocumentEvent e) { calculateTotal(); }
-            public void changedUpdate(DocumentEvent e) { calculateTotal(); }
+            public void insertUpdate(DocumentEvent e) { calculateBreakdown(); }
+            public void removeUpdate(DocumentEvent e) { calculateBreakdown(); }
+            public void changedUpdate(DocumentEvent e) { calculateBreakdown(); }
         };
 
         view.getTxtNet().getDocument().addDocumentListener(calcListener);
         view.getTxtVat().getDocument().addDocumentListener(calcListener);
     }
 
-    private void calculateTotal() {
+    // Calcula el Total y la cantidad de IVA a partir del Neto y el Porcentaje
+    private void calculateBreakdown() {
         try {
             double net = Double.parseDouble(view.getTxtNet().getText().replace(",", "."));
             double vatPct = Double.parseDouble(view.getTxtVat().getText().replace(",", "."));
+            
+            // Fórmula: Cantidad IVA = Neto * (%IVA/100) | Total = Neto + IVA
             double vatAmount = net * (vatPct / 100.0);
             double total = net + vatAmount;
             
+            view.getTxtVatAmount().setText(String.format(java.util.Locale.US, "%.2f", vatAmount));
             view.getTxtTotal().setText(String.format(java.util.Locale.US, "%.2f", total));
         } catch (NumberFormatException e) {
-            view.getTxtTotal().setText(""); // Si borran o ponen texto inválido, se vacía
+            // Si borran, limpian los desgloses
+            view.getTxtVatAmount().setText(""); 
+            view.getTxtTotal().setText(""); 
         }
     }
 
@@ -89,7 +102,7 @@ public class TeacherInvoiceController {
         view.getTxtDate().setText("");
         view.getTxtNet().setText("");
         view.getTxtVat().setText("");
-        // El total se vacía solo gracias al DocumentListener
+        // Total y VatAmount se limpian solos gracias al DocumentListener
         resetValidation();
         loadComboBox(); 
     }
@@ -99,13 +112,12 @@ public class TeacherInvoiceController {
         if (selected == null) throw new ApplicationException("Please select a teacher/course.");
 
         try {
-            // CAMBIO: Ahora validamos usando el Net Amount
+            // Validamos contra el Neto que el usuario ha introducido
             double inputNet = Double.parseDouble(view.getTxtNet().getText().replace(",", "."));
             double systemCommitment = selected.getTotalAmount(); 
 
             view.getPanelMessage().setVisible(true);
 
-            // Tolerancia de 1 céntimo 
             if (Math.abs(inputNet - systemCommitment) <= 0.01) {
                 view.getLblWarningIcon().setText("✓");
                 view.getLblWarningIcon().setForeground(new Color(0, 153, 51));
@@ -115,7 +127,7 @@ public class TeacherInvoiceController {
                 view.getBtnRequestRectifying().setEnabled(false);
                 view.getBtnUpdateCommitment().setEnabled(false);
             } else {
-                view.getLblWarningIcon().setText("⚠");
+                view.getLblWarningIcon().setText("X"); // Usamos "X" para asegurar compatibilidad en Windows
                 view.getLblWarningIcon().setForeground(Color.RED);
                 view.getLblMessage().setText(String.format(
                     java.util.Locale.US,
@@ -142,17 +154,23 @@ public class TeacherInvoiceController {
 
         String dateDB;
         try {
-            String[] parts = dateRaw.split("/");
-            if (parts.length != 3) throw new Exception();
-            dateDB = parts[2] + "-" + parts[1] + "-" + parts[0]; 
-        } catch (Exception ex) {
-            throw new ApplicationException("Invalid date format. Use DD/MM/YYYY.");
+            LocalDate validDate = LocalDate.parse(dateRaw);
+            LocalDate simDate = LocalDate.parse(simulatedDateStr.substring(0, 10));
+            
+            // Permitimos facturas pasadas o de hoy, pero no del futuro
+            if (validDate.isAfter(simDate)) {
+                throw new ApplicationException("The invoice date cannot be in the future (after " + simDate + ").");
+            }
+            dateDB = validDate.toString(); 
+        } catch (DateTimeParseException ex) {
+            throw new ApplicationException("Invalid or non-existent date. Please use a valid YYYY-MM-DD date.");
         }
 
+        // Leemos el Neto y el IVA
         double net = Double.parseDouble(view.getTxtNet().getText().replace(",", "."));
         double vatPct = Double.parseDouble(view.getTxtVat().getText().replace(",", "."));
         
-        // Calculamos la cantidad en Euros del IVA y el Total
+        // Recalculamos para la base de datos
         double vatAmount = net * (vatPct / 100.0);
         double total = net + vatAmount;
 
@@ -165,11 +183,9 @@ public class TeacherInvoiceController {
         }
 
         if (updateCommitmentFirst) {
-            // Actualizamos el compromiso con la cantidad NETA
             model.updateCommitment(teacherId, actionId, net);
         }
 
-        // Guardamos en la base de datos la cantidad monetaria de IVA para mantener consistencia 
         model.registerInvoice(teacherId, actionId, dateDB, net, vatAmount, total);
 
         JOptionPane.showMessageDialog(view.getFrame(), "Invoice registered successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);

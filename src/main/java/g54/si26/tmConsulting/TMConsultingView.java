@@ -71,10 +71,12 @@ public class TMConsultingView {
         JPanel panelCentro = new JPanel(new BorderLayout());
         panelCentro.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
+        // CAMBIO: Columnas eliminadas para simplificar
         String[] columnas = {
                 "Dates", "Course Name", "Status",
-                "Est. Income", "Conf. Income", "TOTAL Income",
-                "Est. Expenses", "Conf. Expenses", "TOTAL Expenses", "Est. BALANCE", "BALANCE"
+                "Est. Income", "Conf. Income", 
+                "Est. Expenses", "Conf. Expenses", 
+                "Est. BALANCE", "BALANCE"
         };
 
         modeloTabla = new DefaultTableModel(null, columnas) {
@@ -107,10 +109,10 @@ public class TMConsultingView {
         panelTotales.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
 
         Font fontTotales = new Font("Segoe UI", Font.BOLD, 15);
-        lblTotalIngresos = new JLabel("Global Total Income: €0.00");
-        lblTotalGastos = new JLabel("Global Total Expenses: €0.00");
+        lblTotalIngresos = new JLabel("Total Income: €0.00");
+        lblTotalGastos = new JLabel("Total Expenses: €0.00");
         lblEstBalance = new JLabel("OVERALL EST. BALANCE: €0.00");
-        lblBalance = new JLabel("OVERALL BALANCE: €0.00");
+        lblBalance = new JLabel("Total BALANCE: €0.00");
 
         lblTotalIngresos.setFont(fontTotales);
         lblTotalGastos.setFont(fontTotales);

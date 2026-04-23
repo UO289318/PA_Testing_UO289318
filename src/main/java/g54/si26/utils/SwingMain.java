@@ -318,6 +318,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
                 TeacherInvoiceModel model = new TeacherInvoiceModel();
                 TeacherInvoiceView view = new TeacherInvoiceView();
                 TeacherInvoiceController controller = new TeacherInvoiceController(model, view);
+                controller.setSimulatedDate(txtSystemDate.getText());
                 controller.initController();
             }
         });

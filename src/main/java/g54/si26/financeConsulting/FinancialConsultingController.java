@@ -92,7 +92,6 @@ public class FinancialConsultingController {
             String date = row[0].toString();
             String concept = row[1].toString();
             
-            // CORRECCIÓN: Aplicamos Math.abs() para asegurar que la cantidad en memoria sea siempre positiva
             double amount = Math.abs(Double.parseDouble(row[2].toString()));
             int isIncome = Integer.parseInt(row[3].toString());
 
@@ -106,7 +105,6 @@ public class FinancialConsultingController {
             }
         }
 
-        // Ahora la resta funciona correctamente porque totalExpenses siempre es un número positivo
         double balance = totalIncomes - totalExpenses;
 
         // 3. Update UI
