@@ -19,6 +19,7 @@ import javax.swing.border.TitledBorder;
 import g54.si26.DTOs.ProfessionalDTO;
 
 //import g54.si26.cancelEnrollment.*;
+
 import g54.si26.inscriptions.*;
 import g54.si26.invoiceManagement.*;
 import g54.si26.payments.*;
@@ -280,14 +281,16 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         });
         
         
-//
+
 //        JButton btnCancelEnrollment = new JButton("Cancel Enrollment");
 //        btnCancelEnrollment.addActionListener(e -> {
 //            ModelCancelEnrollment model = new ModelCancelEnrollment();
 //            ViewCancelEnrollment view = new ViewCancelEnrollment();
 //            ControllerCancelEnrollment controller = new ControllerCancelEnrollment(model, view);
 //            controller.setSimulatedDate(txtSystemDate.getText());
+//            controller.setProfessionalId(selectedProf.getProfessionalId());
 //            controller.initController();
+//            
 //        });
 
         
@@ -302,7 +305,6 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
             }
         });
 
-        
         leftPanel.add(btnEjecutarPagos);
         leftPanel.add(btnEjecutarPagosProfesores);
         leftPanel.add(btnExecuteSecretaryConsult);
@@ -327,7 +329,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         //Aqeuí va Register new Teacehr US
 
         rightPanel.add(btnViewPendingPayments);
-        //rightPanel.add(btnCancelEnrollment);
+       // rightPanel.add(btnCancelEnrollment);
         rightPanel.add(btnRecordInvoices);
         
 

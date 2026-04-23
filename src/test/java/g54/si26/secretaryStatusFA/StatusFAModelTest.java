@@ -29,7 +29,7 @@ public class StatusFAModelTest {
     @Test
     public void testGetFADetail() {
         // Assuming action_id 1 exists in initial data
-        FAStatusDTO detail = model.getFADetail(1);
+        FAStatusDTO detail = model.getFADetail(1, "9999-12-31");
         if (detail != null) {
             assertEquals(1, detail.getActionId());
             // Check that financials are at least 0 (not negative or null)
@@ -43,7 +43,7 @@ public class StatusFAModelTest {
     @Test
     public void testGetFARegistrations() {
         // Assuming action_id 1 exists
-        var regs = model.getFARegistrations(1);
+        var regs = model.getFARegistrations(1, "9999-12-31");
         assertNotNull(regs);
     }
 }

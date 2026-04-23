@@ -190,7 +190,7 @@ public class ModelPlanMultipleFees {
 
             }
             catch (Exception e){
-                result.errors.add("Invalid date format detected. Please use YYYY-MM-DD.");
+                result.errors.add("The date format is incorrect or does not exist. Please use YYYY-MM-DD.");
             }
         }
         return result;
