@@ -252,7 +252,7 @@ public class ViewPlanMultipleFees {
         btnFillDebug = createStyledButton("Fill Debug Data", COLOR_CLEAR, Color.DARK_GRAY, 150, 25);
         btnClear = createStyledButton("Clear", COLOR_LIGHT_BLUE, COLOR_UPDATE, 100, 25);
         btnSave = createStyledButton("Save Action", COLOR_INSERT, Color.WHITE, 150, 25);
-        
+        btnFillDebug.setVisible(false);
         toolbar.add(btnFillDebug); 
         toolbar.add(btnClear); 
         toolbar.add(btnSave);
