@@ -88,8 +88,6 @@ public class ModelCancelFormativeAction {
 					}
 
 					double newRem = currentRem * (teacherPct / 100.0);
-					double netAmount = newRem / 1.21;
-					double vat = newRem - netAmount;
 
 					try (PreparedStatement pstmt = conn.prepareStatement("UPDATE Teacher_FormativeAction SET remuneration = ? WHERE action_id = ? AND teacher_id = ?")) {
 						pstmt.setDouble(1, newRem);
@@ -97,38 +95,6 @@ public class ModelCancelFormativeAction {
 						pstmt.setInt(3, teacherId);
 						pstmt.executeUpdate();
 					}
-
-					// Invoice management
-					int invoiceId = -1;
-					try (PreparedStatement pstmt = conn.prepareStatement("SELECT invoice_id FROM Invoice WHERE action_id = ? AND teacher_id = ?")) {
-						pstmt.setInt(1, actionId);
-						pstmt.setInt(2, teacherId);
-						try (ResultSet rs = pstmt.executeQuery()) {
-							if (rs.next()) invoiceId = rs.getInt("invoice_id");
-						}
-					}
-
-					if (invoiceId != -1) {
-						try (PreparedStatement pstmt = conn.prepareStatement("UPDATE Invoice SET totalAmount = ?, netAmount = ?, vat = ? WHERE invoice_id = ?")) {
-							pstmt.setDouble(1, newRem);
-							pstmt.setDouble(2, netAmount);
-							pstmt.setDouble(3, vat);
-							pstmt.setInt(4, invoiceId);
-							pstmt.executeUpdate();
-						}
-					} else {
-						try (PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Invoice (invoice_date, netAmount, vat, totalAmount, status, teacher_id, action_id) VALUES (?, ?, ?, ?, 'PENDING', ?, ?)")) {
-							pstmt.setString(1, simulatedDateStr);
-							pstmt.setDouble(2, netAmount);
-							pstmt.setDouble(3, vat);
-							pstmt.setDouble(4, newRem);
-							pstmt.setInt(5, teacherId);
-							pstmt.setInt(6, actionId);
-							pstmt.executeUpdate();
-						}
-					}
-					
-					updateInvoiceStatusAfterCancellation(conn, actionId, teacherId);
 				}
 
 				conn.commit();

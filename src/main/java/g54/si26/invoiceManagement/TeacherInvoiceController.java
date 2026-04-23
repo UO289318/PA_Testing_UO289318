@@ -13,10 +13,15 @@ public class TeacherInvoiceController {
 
     private TeacherInvoiceModel model;
     private TeacherInvoiceView view;
+    private String simulatedDate; // Simulated system date
 
     public TeacherInvoiceController(TeacherInvoiceModel m, TeacherInvoiceView v) {
         this.model = m;
         this.view = v;
+    }
+
+    public void setSimulatedDate(String date) {
+        this.simulatedDate = date;
     }
 
     public void initController() {
@@ -140,14 +145,25 @@ public class TeacherInvoiceController {
             throw new ApplicationException("Date is required.");
         }
 
-        String dateDB;
-        try {
-            String[] parts = dateRaw.split("/");
-            if (parts.length != 3) throw new Exception();
-            dateDB = parts[2] + "-" + parts[1] + "-" + parts[0]; 
-        } catch (Exception ex) {
-            throw new ApplicationException("Invalid date format. Use DD/MM/YYYY.");
+        // Validate format YYYY-MM-DD strictly (4 digits year, 2 month, 2 day)
+        if (!dateRaw.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            throw new ApplicationException("Invalid date format. Use YYYY-MM-DD (e.g. 2026-05-01).");
         }
+
+        try {
+            java.util.Date invoiceDate = g54.si26.utils.Util.isoStringToDate(dateRaw);
+            if (this.simulatedDate != null && !this.simulatedDate.isEmpty()) {
+                java.util.Date sysDate = g54.si26.utils.Util.isoStringToDate(this.simulatedDate);
+                if (invoiceDate.after(sysDate)) {
+                    throw new ApplicationException("Invoice date cannot be in the future (Simulated system date: " + this.simulatedDate + ").");
+                }
+            }
+        } catch (ApplicationException ae) {
+            throw ae;
+        } catch (Exception ex) {
+            throw new ApplicationException("Invalid date format or values. Use YYYY-MM-DD (e.g. 2026-05-01).");
+        }
+        String dateDB = dateRaw;
 
         double net = Double.parseDouble(view.getTxtNet().getText().replace(",", "."));
         double vatPct = Double.parseDouble(view.getTxtVat().getText().replace(",", "."));

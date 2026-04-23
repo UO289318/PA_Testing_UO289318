@@ -13,6 +13,7 @@ public class FAStatusDTO {
     
     // Financials
     private double confirmedIncome;
+    private double estimatedIncome;
     private double confirmedExpenses;
     private double totalRemuneration;
     private double estimatedExpenses;
@@ -50,6 +51,9 @@ public class FAStatusDTO {
     // Financial Getters/Setters
     public double getConfirmedIncome() { return confirmedIncome; }
     public void setConfirmedIncome(double confirmedIncome) { this.confirmedIncome = confirmedIncome; }
+
+    public double getEstimatedIncome() { return estimatedIncome; }
+    public void setEstimatedIncome(double estimatedIncome) { this.estimatedIncome = estimatedIncome; }
 
     public double getConfirmedExpenses() { return confirmedExpenses; }
     public void setConfirmedExpenses(double confirmedExpenses) { this.confirmedExpenses = confirmedExpenses; }

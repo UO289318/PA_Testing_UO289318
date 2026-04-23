@@ -25,6 +25,7 @@ public class StatusFAView {
 
     // Financial Metrics
     private JTextField txtConfirmedIncome;
+    private JTextField txtEstimatedIncome;
     private JTextField txtEstimatedExpenses;
     private JTextField txtConfirmedExpenses;
 
@@ -108,9 +109,10 @@ public class StatusFAView {
         pnlCenter.add(pnlRegistrations);
 
         // --- BOTTOM: Financial Metrics ---
-        JPanel pnlFinancials = new JPanel(new GridLayout(1, 3, 10, 10));
+        JPanel pnlFinancials = new JPanel(new GridLayout(1, 4, 10, 10));
         pnlFinancials.setBorder(new TitledBorder("4. Financial Metrics"));
 
+        pnlFinancials.add(createFinancialBox("Estimated Income", txtEstimatedIncome = createReadOnlyField()));
         pnlFinancials.add(createFinancialBox("Confirmed Income", txtConfirmedIncome = createReadOnlyField()));
         pnlFinancials.add(createFinancialBox("Estimated Expenses", txtEstimatedExpenses = createReadOnlyField()));
         pnlFinancials.add(createFinancialBox("Confirmed Expenses", txtConfirmedExpenses = createReadOnlyField()));
@@ -155,6 +157,7 @@ public class StatusFAView {
     public JTextField getTxtPlacesLeft() { return txtPlacesLeft; }
     public JLabel getLblEnrolmentOpen() { return lblEnrolmentOpen; }
     public JTextField getTxtConfirmedIncome() { return txtConfirmedIncome; }
+    public JTextField getTxtEstimatedIncome() { return txtEstimatedIncome; }
     public JTextField getTxtEstimatedExpenses() { return txtEstimatedExpenses; }
     public JTextField getTxtConfirmedExpenses() { return txtConfirmedExpenses; }
 }

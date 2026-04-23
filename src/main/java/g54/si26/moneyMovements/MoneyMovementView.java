@@ -31,18 +31,28 @@ public class MoneyMovementView {
         JSplitPane splitMain = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitMain.setDividerLocation(300);
 
-        tableMain = new JTable();
+        tableMain = new JTable() {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
         JScrollPane scrollMain = new JScrollPane(tableMain);
-        scrollMain.setBorder(new TitledBorder("Records / Full History"));
+        scrollMain.setBorder(new TitledBorder("Registrations / Invoices / Movement History"));
         splitMain.setTopComponent(scrollMain);
+
 
         JPanel bottomTablesPanel = new JPanel(new GridLayout(1, 2, 5, 5));
         
-        tableHistory = new JTable();
+        tableHistory = new JTable() {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
         JScrollPane scrollHistory = new JScrollPane(tableHistory);
         scrollHistory.setBorder(new TitledBorder("Details / Movement History (Selected)"));
         
-        tablePending = new JTable();
+        tablePending = new JTable() {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
         JScrollPane scrollPending = new JScrollPane(tablePending);
         scrollPending.setBorder(new TitledBorder("Records Pending Compensation"));
 

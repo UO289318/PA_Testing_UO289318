@@ -80,6 +80,11 @@ public class StatusFAModel {
         
         FAStatusDTO dto = results.get(0);
         
+        // Estimated Income: Sum of all applied fees for professionals who didn't cancel their inscription
+        String sqlExpected = "SELECT COALESCE(SUM(applied_fee), 0.0) FROM Inscription WHERE action_id = ? AND state != 'CANCELLED' AND date(inscription_date) <= date(?)";
+        double estimatedIncome = (double) db.executeQueryArray(sqlExpected, actionId, safeDate).get(0)[0];
+        dto.setEstimatedIncome(estimatedIncome);
+
         // Confirmed Income: Sum of actual verified payments made by the enrolled professionals
         String sqlIncome = "SELECT COALESCE(SUM(mm.amount), 0.0) " +
                            "FROM MoneyMovement mm " +

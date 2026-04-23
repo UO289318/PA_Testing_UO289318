@@ -69,6 +69,7 @@ public class StatusFAController {
             view.getLblEnrolmentOpen().setVisible(isOpen);
 
             // Financials
+            view.getTxtEstimatedIncome().setText(String.format("%.2f €", fa.getEstimatedIncome()));
             view.getTxtConfirmedIncome().setText(String.format("%.2f €", fa.getConfirmedIncome()));
             view.getTxtEstimatedExpenses().setText(String.format("%.2f €", fa.getEstimatedExpenses()));
             view.getTxtConfirmedExpenses().setText(String.format("%.2f €", fa.getConfirmedExpenses()));

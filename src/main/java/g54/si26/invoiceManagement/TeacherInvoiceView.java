@@ -60,7 +60,7 @@ public class TeacherInvoiceView {
         });
         panelDetails.add(cbTeacherCourse);
 
-        panelDetails.add(new JLabel("Date (DD/MM/YYYY):"));
+        panelDetails.add(new JLabel("Date (YYYY-MM-DD):"));
         txtDate = new JTextField();
         panelDetails.add(txtDate);
 

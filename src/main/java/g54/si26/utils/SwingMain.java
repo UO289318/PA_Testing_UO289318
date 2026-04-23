@@ -33,6 +33,7 @@ import g54.si26.planFormativeAction.*;
 import g54.si26.planMultipleFees.*;
 import g54.si26.cancelFormativeActions.*;
 import g54.si26.secretaryStatusFA.*;
+import g54.si26.registerTeacher.*;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -200,7 +201,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
     		}
 		});
         
-	    JButton btnMultipleFees = new JButton("Plan Formative Action");
+	    JButton btnMultipleFees = new JButton("Plan Formative Action (Multiple Fees)");
 		btnMultipleFees.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
     			if (!checkDateAndConfirm()) return;
@@ -275,7 +276,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
             controller.initController();
         });
 
-        JButton btnStatusFA = new JButton("Consult FA Registrations");
+        JButton btnStatusFA = new JButton("Consult FA Status/Registrations");
         btnStatusFA.addActionListener(e -> {
         	if (!checkDateAndConfirm()) return;
             StatusFAModel model = new StatusFAModel();
@@ -311,10 +312,21 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
                 TeacherInvoiceModel model = new TeacherInvoiceModel();
                 TeacherInvoiceView view = new TeacherInvoiceView();
                 TeacherInvoiceController controller = new TeacherInvoiceController(model, view);
+                controller.setSimulatedDate(txtSystemDate.getText());
                 controller.initController();
             }
         });
-        
+
+        // --- BOTÓN PA' REGISTRAR NUEVOS PROFESORES ---
+        JButton btnRegisterTeacher = new JButton("Register New Teacher");
+        btnRegisterTeacher.addActionListener(e -> {
+            if (!checkDateAndConfirm()) return;
+            RegisterTeacherModel model = new RegisterTeacherModel();
+            RegisterTeacherView view = new RegisterTeacherView();
+            RegisterTeacherController controller = new RegisterTeacherController(model, view);
+            controller.initController();
+        });
+
         featuresPanel.add(btnEjecutarInscripciones);
         featuresPanel.add(btnEjecutarPagos);
         
@@ -336,20 +348,9 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         featuresPanel.add(btnCancelFA);
         featuresPanel.add(btnViewPendingPayments);
         
+        featuresPanel.add(btnRegisterTeacher);
         featuresPanel.add(btnReopenFA);
         
-  
-        
-        
-        
-/*
-        for (int i = 7; i <= 14; i++) {
-            JButton placeholder = new JButton("US " + i + " – (not yet implemented)");
-            placeholder.setEnabled(false);
-            placeholder.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-            featuresPanel.add(placeholder);
-        }
-*/
         // --- BOTONES DE BASE DE DATOS ---
         JButton btnInicializarBaseDeDatos = new JButton("Initialize Blank database");
         btnInicializarBaseDeDatos.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
