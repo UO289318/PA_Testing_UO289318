@@ -17,14 +17,17 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import g54.si26.DTOs.ProfessionalDTO;
+<<<<<<< HEAD
 //import g54.si26.cancelEnrollment.*;
+=======
+
+>>>>>>> refs/heads/invoiceManagement
 import g54.si26.inscriptions.*;
+import g54.si26.invoiceManagement.*;
 import g54.si26.payments.*;
 import g54.si26.teacherpayments.*;
 import g54.si26.tmConsulting.*;
-import g54.si26.viewPendingPayments.ViewPendingController;
-import g54.si26.viewPendingPayments.ViewPendingModel;
-import g54.si26.viewPendingPayments.ViewPendingView;
+import g54.si26.viewPendingPayments.*;
 import g54.si26.closeFormativeActions.*;
 import g54.si26.consultFormativeActionsSecretary.*;
 import g54.si26.financeConsulting.*;
@@ -280,15 +283,28 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         });
         
         
-        JButton btnCancelEnrollment = new JButton("Cancel Enrollment");
-        btnCancelEnrollment.addActionListener(e -> {
-            //ModelCancelEnrollment model = new ModelCancelEnrollment();
-            //ViewCancelEnrollment view = new ViewCancelEnrollment();
-            //ControllerCancelEnrollment controller = new ControllerCancelEnrollment(model, view);
-            //controller.setSimulatedDate(txtSystemDate.getText());
-            //controller.initController();
-        });
+
+//        JButton btnCancelEnrollment = new JButton("Cancel Enrollment");
+//        btnCancelEnrollment.addActionListener(e -> {
+//            ModelCancelEnrollment model = new ModelCancelEnrollment();
+//            ViewCancelEnrollment view = new ViewCancelEnrollment();
+//            ControllerCancelEnrollment controller = new ControllerCancelEnrollment(model, view);
+//            controller.setSimulatedDate(txtSystemDate.getText());
+//            controller.initController();
+//        });
+
         
+     // --- BOTÓN PA' REGISTRAR FACTURAS DE PROFESORES ---
+        JButton btnRecordInvoices = new JButton("Record Teacher Invoices");
+        btnRecordInvoices.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                TeacherInvoiceModel model = new TeacherInvoiceModel();
+                TeacherInvoiceView view = new TeacherInvoiceView();
+                TeacherInvoiceController controller = new TeacherInvoiceController(model, view);
+                controller.initController();
+            }
+        });
+
         leftPanel.add(btnEjecutarPagos);
         leftPanel.add(btnEjecutarPagosProfesores);
         leftPanel.add(btnExecuteSecretaryConsult);
@@ -313,8 +329,8 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         //Aqeuí va Register new Teacehr US
 
         rightPanel.add(btnViewPendingPayments);
-        rightPanel.add(btnCancelEnrollment);
-
+        //rightPanel.add(btnCancelEnrollment);
+        rightPanel.add(btnRecordInvoices);
         
 
         for (int i = 7; i <= 14; i++) {
