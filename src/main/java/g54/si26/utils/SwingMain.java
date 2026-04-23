@@ -21,8 +21,6 @@ import g54.si26.DTOs.ProfessionalDTO;
 import g54.si26.cancelEnrollment.*;
 import g54.si26.inscriptions.*;
 import g54.si26.invoiceManagement.*;
-import g54.si26.payments.*;
-import g54.si26.teacherpayments.*;
 import g54.si26.tmConsulting.*;
 import g54.si26.viewPendingPayments.*;
 import g54.si26.closeFormativeActions.*;
@@ -120,31 +118,6 @@ public class SwingMain {
                 controller.setSimulatedDate(txtSystemDate.getText());
                 controller.setSelectedProfessional((ProfessionalDTO) cbProfessional.getSelectedItem());
                 controller.initController(); 
-            }
-        });
-        
-        // --- BOTÓN PA' REGISTRAR PAGOS DE PROFESIONALES ---
-        JButton btnEjecutarPagos = new JButton("Register Payments");
-        btnEjecutarPagos.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	if (!checkDateAndConfirm()) return;
-                PaymentModel model = new PaymentModel();
-                PaymentView view = new PaymentView();
-                PaymentController controller = new PaymentController(model, view);
-                
-                controller.initController();
-            }
-        });
-        
-        // --- BOTÓN PA' REGISTRAR PAGOS A PROFESORES ---
-        JButton btnEjecutarPagosProfesores = new JButton("Record Teacher Payments");
-        btnEjecutarPagosProfesores.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	if (!checkDateAndConfirm()) return;
-            		TeacherPaymentModel model = new TeacherPaymentModel();
-            		TeacherPaymentView view = new TeacherPaymentView();
-            		TeacherPaymentController controller = new TeacherPaymentController(model, view);
-            		controller.initController();
             }
         });
         
@@ -328,13 +301,11 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         });
 
         featuresPanel.add(btnEjecutarInscripciones);
-        featuresPanel.add(btnEjecutarPagos);
         
         featuresPanel.add(btnStatusFA);
         featuresPanel.add(btnExecuteTMConsult);
         
         featuresPanel.add(btnRecordInvoices);
-        featuresPanel.add(btnEjecutarPagosProfesores);
         
         featuresPanel.add(btnExecuteSecretaryConsult);
         featuresPanel.add(btnMultipleFees);

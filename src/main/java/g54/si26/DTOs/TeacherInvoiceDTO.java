@@ -7,6 +7,8 @@ public class TeacherInvoiceDTO {
     private int invoiceId;
     private String teacherName;
     private String courseName;
+    private double netAmount;
+    private double vat;
     private double totalAmount;
     private String invoiceDate;
     private double amountPaid;
@@ -28,6 +30,12 @@ public class TeacherInvoiceDTO {
     public String getCourseName() { return courseName; }
     public void setCourseName(String courseName) { this.courseName = courseName; }
 
+    public double getNetAmount() { return netAmount; }
+    public void setNetAmount(double netAmount) { this.netAmount = netAmount; }
+
+    public double getVat() { return vat; }
+    public void setVat(double vat) { this.vat = vat; }
+
     public double getTotalAmount() { return totalAmount; }
     public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
 
@@ -41,4 +49,9 @@ public class TeacherInvoiceDTO {
     public void setNetBalance(double netBalance) { this.netBalance = netBalance; }
 
     public double getPendingAmount() { return totalAmount - amountPaid; }
+
+    @Override
+    public String toString() {
+        return teacherName + " (" + courseName + ")";
+    }
 }

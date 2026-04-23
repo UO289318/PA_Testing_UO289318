@@ -57,7 +57,7 @@ public class MoneyMovementController {
             }
         } else if (view.getRdInvoices().isSelected()) {
             List<TeacherInvoiceDTO> list = model.getAllInvoices();
-            String[] columns = {"ID", "Course", "Teacher", "Total Amount", "Net Balance", "Status"};
+            String[] columns = {"ID", "Course", "Teacher", "Amount", "Net Balance", "Status"};
             tableModel = new DefaultTableModel(columns, 0);
             for (TeacherInvoiceDTO i : list) {
                 tableModel.addRow(new Object[]{i.getInvoiceId(), i.getCourseName(), i.getTeacherName(), String.format("%.2f", i.getTotalAmount()), i.getNetBalance(), i.getStatus()});
@@ -65,10 +65,10 @@ public class MoneyMovementController {
         } else {
             // Full History
             List<MoneyMovementDTO> list = model.getAllMovements();
-            String[] columns = {"ID", "Amount", "Date", "Status", "Related To"};
+            String[] columns = {"ID", "Amount", "Date", "Status", "Type", "Related To"};
             tableModel = new DefaultTableModel(columns, 0);
             for (MoneyMovementDTO m : list) {
-                tableModel.addRow(new Object[]{m.getMovementId(), m.getAmount(), m.getMovementDate(), m.getStatus(), m.getRelatedTo()});
+                tableModel.addRow(new Object[]{m.getMovementId(), m.getAmount(), m.getMovementDate(), m.getStatus(), m.getType(), m.getRelatedTo()});
             }
         }
         view.getTableMain().setModel(tableModel);
@@ -123,10 +123,10 @@ public class MoneyMovementController {
         if (view.getRdEnrollments().isSelected()) list = model.getMovementsByInscription(id);
         else list = model.getMovementsByInvoice(id);
 
-        String[] columns = {"ID", "Amount", "Date", "Status"};
+        String[] columns = {"ID", "Amount", "Date", "Status", "Type"};
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
         for (MoneyMovementDTO m : list) {
-            tableModel.addRow(new Object[]{m.getMovementId(), m.getAmount(), m.getMovementDate(), m.getStatus()});
+            tableModel.addRow(new Object[]{m.getMovementId(), m.getAmount(), m.getMovementDate(), m.getStatus(), m.getType()});
         }
         view.getTableHistory().setModel(tableModel);
         hideColumn(view.getTableHistory(), 0); // ID
@@ -246,16 +246,28 @@ public class MoneyMovementController {
                     double currentNetPaid = selected.getNetBalance(); // Sum of movements (usually negative for expenses)
                     double totalInvoice = selected.getTotalAmount();
                     
-                    if (amount > 0) {
-                        // Positive movement for an invoice (income/refund from teacher)
-                        if (Math.abs(currentNetPaid) <= totalInvoice + 0.001) {
-                            errors.add("Cannot register a positive movement (income) for an invoice unless it has been overpaid to the teacher.");
+                    // DATE VALIDATION (Movement cannot be before invoice)
+                    if (moveDate != null) {
+                        String invDateStr = selected.getInvoiceDate();
+                        if (invDateStr != null) {
+                            if (invDateStr.length() > 10) invDateStr = invDateStr.substring(0, 10);
+                            LocalDate invDate = LocalDate.parse(invDateStr, FORMATTER);
+                            if (moveDate.isBefore(invDate)) {
+                                errors.add("Movement date cannot be before invoice date (" + invDateStr + ").");
+                            }
                         }
                     }
                     
-                    // Overcharge warning (Expenses are negative): |currentNetPaid + amount| > totalInvoice
-                    if (Math.abs(currentNetPaid + amount) > totalInvoice + 0.001) {
-                        warnings.add("This movement will result in an overcharge (payment exceeding the invoice amount).");
+                    if (amount > 0) {
+                        // Positive movement for an invoice (income/refund from teacher)
+                        if (Math.abs(currentNetPaid) <= totalInvoice + 0.001) {
+                            errors.add("Outgoing movements (invoice payments) must be represented as negative numbers. Use a positive number only for teacher refunds of an overpayment.");
+                        }
+                    } else if (amount < 0) {
+                        // Overcharge warning (Expenses are negative): |currentNetPaid + amount| > totalInvoice
+                        if (Math.abs(currentNetPaid + amount) > totalInvoice + 0.001) {
+                            warnings.add("This movement will result in an overcharge (payment exceeding the invoice amount).");
+                        }
                     }
                 } else {
                     errors.add("Selected invoice not found in database.");
