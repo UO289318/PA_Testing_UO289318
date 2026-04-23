@@ -17,11 +17,8 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import g54.si26.DTOs.ProfessionalDTO;
-<<<<<<< HEAD
-//import g54.si26.cancelEnrollment.*;
-=======
 
->>>>>>> refs/heads/invoiceManagement
+//import g54.si26.cancelEnrollment.*;
 import g54.si26.inscriptions.*;
 import g54.si26.invoiceManagement.*;
 import g54.si26.payments.*;
@@ -283,7 +280,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         });
         
         
-
+//
 //        JButton btnCancelEnrollment = new JButton("Cancel Enrollment");
 //        btnCancelEnrollment.addActionListener(e -> {
 //            ModelCancelEnrollment model = new ModelCancelEnrollment();
@@ -305,6 +302,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
             }
         });
 
+        
         leftPanel.add(btnEjecutarPagos);
         leftPanel.add(btnEjecutarPagosProfesores);
         leftPanel.add(btnExecuteSecretaryConsult);
