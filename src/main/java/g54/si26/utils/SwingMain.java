@@ -95,23 +95,15 @@ public class SwingMain {
 
         frame.getContentPane().add(topPanel, BorderLayout.NORTH);
 
-        JPanel columnsPanel = new JPanel(new GridLayout(1, 2, 10, 0));
-        frame.getContentPane().add(columnsPanel, BorderLayout.CENTER);
-
-        JPanel leftPanel = new JPanel();
-        leftPanel.setBorder(new TitledBorder(null, "Existing User Stories",
-                TitledBorder.LEADING, TitledBorder.TOP,
-                new Font("Segoe UI", Font.BOLD, 12), null));
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        columnsPanel.add(leftPanel);
-
-        JPanel rightPanel = new JPanel();
-        rightPanel.setBorder(new TitledBorder(null, "New User Stories",
-                TitledBorder.LEADING, TitledBorder.TOP,
-                new Font("Segoe UI", Font.BOLD, 12), new java.awt.Color(0, 120, 215)));
-        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-        columnsPanel.add(rightPanel);
-
+        JPanel featuresPanel = new JPanel(new GridLayout(0, 2, 15, 15)); 
+        featuresPanel.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                new TitledBorder(null, "System Features (User Stories)", 
+                        TitledBorder.LEADING, TitledBorder.TOP, 
+                        new Font("Segoe UI", Font.BOLD, 14), new java.awt.Color(0, 120, 215)),
+                javax.swing.BorderFactory.createEmptyBorder(15, 15, 15, 15) // Padding interior
+        ));
+        frame.getContentPane().add(featuresPanel, BorderLayout.CENTER);
+        
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
         frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
@@ -120,6 +112,7 @@ public class SwingMain {
         JButton btnEjecutarInscripciones = new JButton("Enrol in a Formative Action");
         btnEjecutarInscripciones.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
             public void actionPerformed(ActionEvent e) {
+            	if (!checkDateAndConfirm()) return;
                 InscriptionsModel model = new InscriptionsModel();
                 InscriptionsView view = new InscriptionsView();
                 InscriptionsController controller = new InscriptionsController(model, view);
@@ -321,42 +314,42 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
                 controller.initController();
             }
         });
-
-        leftPanel.add(btnEjecutarPagos);
-        leftPanel.add(btnEjecutarPagosProfesores);
-        leftPanel.add(btnExecuteSecretaryConsult);
         
-        //leftPanel.add(btnPlanFormativeAction);
-        leftPanel.add(btnCerrarAccion);
-        leftPanel.add(btnReopenFA);
-        leftPanel.add(btnViewPendingPayments);
+        featuresPanel.add(btnEjecutarInscripciones);
+        featuresPanel.add(btnEjecutarPagos);
         
-        //Aquí va Consult status of a FA US
-        rightPanel.add(btnStatusFA);
-        rightPanel.add(btnExecuteTMConsult);
-        //Aquí va Record Invoices from Teachers US
-        rightPanel.add(btnConsultFA);
-        rightPanel.add(btnMoneyMovements);
-        //Aquí va Start and End Date US
-        //Aquí va Cancel Enrolment as Professional US
-        rightPanel.add(btnMultipleFees);
-        rightPanel.add(btnEjecutarInscripciones);
-        rightPanel.add(btnCancelFA);
-
-        //Aqeuí va Register new Teacehr US
-
-        rightPanel.add(btnViewPendingPayments);
-        rightPanel.add(btnCancelEnrollment);
-        rightPanel.add(btnRecordInvoices);
+        featuresPanel.add(btnStatusFA);
+        featuresPanel.add(btnExecuteTMConsult);
         
-
+        featuresPanel.add(btnRecordInvoices);
+        featuresPanel.add(btnEjecutarPagosProfesores);
+        
+        featuresPanel.add(btnExecuteSecretaryConsult);
+        featuresPanel.add(btnMultipleFees);
+        
+        featuresPanel.add(btnConsultFA);
+        featuresPanel.add(btnCerrarAccion);
+        
+        featuresPanel.add(btnMoneyMovements);
+        featuresPanel.add(btnCancelEnrollment);
+        
+        featuresPanel.add(btnCancelFA);
+        featuresPanel.add(btnViewPendingPayments);
+        
+        featuresPanel.add(btnReopenFA);
+        
+  
+        
+        
+        
+/*
         for (int i = 7; i <= 14; i++) {
             JButton placeholder = new JButton("US " + i + " – (not yet implemented)");
             placeholder.setEnabled(false);
             placeholder.setFont(new Font("Segoe UI", Font.ITALIC, 11));
-            rightPanel.add(placeholder);
+            featuresPanel.add(placeholder);
         }
-
+*/
         // --- BOTONES DE BASE DE DATOS ---
         JButton btnInicializarBaseDeDatos = new JButton("Initialize Blank database");
         btnInicializarBaseDeDatos.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu

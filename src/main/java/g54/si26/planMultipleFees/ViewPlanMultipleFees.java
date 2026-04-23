@@ -137,7 +137,7 @@ public class ViewPlanMultipleFees {
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.05; p3.add(createLabel("Start (yyyy-MM-dd):"), gbc);
         gbc.gridx = 1; gbc.weightx = 0.45; 
         txtEnrolStart = createTextField(); 
-        lblHintEnrolment = createMandatoryHint("(i) Mandatory Field");
+        lblHintEnrolment = createMandatoryHint("(i) Mandatory Fields");
         p3.add(wrapWithHint(txtEnrolStart, lblHintEnrolment), gbc);
         gbc.gridx = 2; gbc.weightx = 0.05; p3.add(createLabel("End (yyyy-MM-dd):"), gbc);
         gbc.gridx = 3; gbc.weightx = 0.45; txtEnrolEnd = createTextField(); p3.add(txtEnrolEnd, gbc);

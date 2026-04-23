@@ -77,7 +77,7 @@ public class ViewConsultFormativeActions {
         // SECTION 1: FILTERS 
         JPanel p1 = createSection("1. Filters", new FlowLayout(FlowLayout.LEFT, 15, 15));
         
-        JLabel lblDate = new JLabel("Date (yyyy-MM-dd):");
+        JLabel lblDate = new JLabel("Dates (yyyy-MM-dd):");
         lblDate.setFont(FONT_REGULAR);
         p1.add(lblDate);
         
