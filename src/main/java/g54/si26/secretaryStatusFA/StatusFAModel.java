@@ -14,18 +14,31 @@ public class StatusFAModel {
      * Uses a simplified version of the status logic found in the project.
      */
     public List<FAStatusDTO> getFormativeActions(String simulatedDate) {
+    	String safeDate = (simulatedDate != null && !simulatedDate.isBlank()) ? simulatedDate.substring(0, 10) : "9999-12-31";
         String sql = 
             "SELECT " +
             "    fa.action_id AS actionId, " +
             "    fa.name AS name, " +
-            "    fa.status AS status, " +
+            "    CASE " +
+            "      WHEN fa.closureDate IS NOT NULL AND date('" + safeDate + "') >= date(fa.closureDate) " +
+            "           AND (fa.reopenDate IS NULL OR date('" + safeDate + "') < date(fa.reopenDate)) THEN 'CLOSED' " +
+            "      WHEN (fa.cancelDate IS NOT NULL AND date('" + safeDate + "') >= date(fa.cancelDate) AND (fa.reopenDate IS NULL OR date('" + safeDate + "') < date(fa.reopenDate))) " +
+            "           OR (fa.status = 'CANCELLED' AND fa.cancelDate IS NULL) THEN 'Cancelled' " +
+            "      WHEN date('" + safeDate + "') > date(fa.endDate) THEN 'Finished' " +
+            "      WHEN date('" + safeDate + "') >= date(fa.startDate) AND date('" + safeDate + "') <= date(fa.endDate) THEN 'In progress' " +
+            "      WHEN date('" + safeDate + "') >= date(fa.inscriptionPeriodStart) AND date('" + safeDate + "') <= date(fa.inscriptionPeriodEnd) THEN 'Enrolment open' " +
+            "      WHEN date('" + safeDate + "') < date(fa.startDate) THEN 'Upcoming' " +
+            "      ELSE fa.status " +
+            "    END AS status, " +
             "    fa.inscriptionPeriodStart AS inscriptionPeriodStart, " +
             "    fa.inscriptionPeriodEnd AS inscriptionPeriodEnd, " +
             "    fa.startDate AS startDate, " +
             "    fa.endDate AS endDate, " +
             "    fa.spots AS totalSpots, " +
-            "    (SELECT COUNT(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state = 'CONFIRMED') AS confirmedPlaces " +
+            
+            "    (SELECT COUNT(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state = 'CONFIRMED' AND date(i.inscription_date) <= date('" + safeDate + "')) AS confirmedPlaces " +
             "FROM FormativeAction fa " +
+            "WHERE fa.creationDate IS NULL OR date(substr(fa.creationDate, 1, 10)) <= date('" + safeDate + "') " +
             "ORDER BY fa.startDate DESC";
         
         return db.executeQueryPojo(FAStatusDTO.class, sql);
@@ -34,19 +47,31 @@ public class StatusFAModel {
     /**
      * Retrieves detailed financial metrics for a specific formative action.
      */
-    public FAStatusDTO getFADetail(int actionId) {
+    public FAStatusDTO getFADetail(int actionId, String simulatedDate) {
+    	
         // We get the basic data first
+    		String safeDate = (simulatedDate != null && !simulatedDate.isBlank()) ? simulatedDate.substring(0, 10) : "9999-12-31";
         String sqlBasic = 
             "SELECT " +
             "    fa.action_id AS actionId, " +
             "    fa.name AS name, " +
-            "    fa.status AS status, " +
+            "    CASE " +
+            "      WHEN fa.closureDate IS NOT NULL AND date('" + safeDate + "') >= date(fa.closureDate) " +
+            "           AND (fa.reopenDate IS NULL OR date('" + safeDate + "') < date(fa.reopenDate)) THEN 'CLOSED' " +
+            "      WHEN (fa.cancelDate IS NOT NULL AND date('" + safeDate + "') >= date(fa.cancelDate) AND (fa.reopenDate IS NULL OR date('" + safeDate + "') < date(fa.reopenDate))) " +
+            "           OR (fa.status = 'CANCELLED' AND fa.cancelDate IS NULL) THEN 'Cancelled' " +
+            "      WHEN date('" + safeDate + "') > date(fa.endDate) THEN 'Finished' " +
+            "      WHEN date('" + safeDate + "') >= date(fa.startDate) AND date('" + safeDate + "') <= date(fa.endDate) THEN 'In progress' " +
+            "      WHEN date('" + safeDate + "') >= date(fa.inscriptionPeriodStart) AND date('" + safeDate + "') <= date(fa.inscriptionPeriodEnd) THEN 'Enrolment open' " +
+            "      WHEN date('" + safeDate + "') < date(fa.startDate) THEN 'Upcoming' " +
+            "      ELSE fa.status " +
+            "    END AS status, " +
             "    fa.inscriptionPeriodStart AS inscriptionPeriodStart, " +
             "    fa.inscriptionPeriodEnd AS inscriptionPeriodEnd, " +
             "    fa.startDate AS startDate, " +
             "    fa.endDate AS endDate, " +
             "    fa.spots AS totalSpots, " +
-            "    (SELECT COUNT(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state = 'CONFIRMED') AS confirmedPlaces " +
+            "    (SELECT COUNT(*) FROM Inscription i WHERE i.action_id = fa.action_id AND i.state = 'CONFIRMED' AND date(i.inscription_date) <= date('" + safeDate + "')) AS confirmedPlaces " +
             "FROM FormativeAction fa " +
             "WHERE fa.action_id = ?";
         
@@ -59,16 +84,16 @@ public class StatusFAModel {
         String sqlIncome = "SELECT COALESCE(SUM(mm.amount), 0.0) " +
                            "FROM MoneyMovement mm " +
                            "JOIN Inscription i ON mm.inscription_id = i.inscription_id " +
-                           "WHERE i.action_id = ? AND mm.status = 'EXECUTED'";
-        double confirmedIncome = (double) db.executeQueryArray(sqlIncome, actionId).get(0)[0];
+                           "WHERE i.action_id = ? AND mm.status = 'EXECUTED' AND date(mm.movement_date) <= date(?)";
+        double confirmedIncome = (double) db.executeQueryArray(sqlIncome, actionId, safeDate).get(0)[0];
         dto.setConfirmedIncome(confirmedIncome);
         
         // Confirmed Expenses: Sum of actual money movements (payments) already transferred to the teachers
         String sqlConfExp = "SELECT COALESCE(SUM(ABS(mm.amount)), 0.0) " +
                             "FROM MoneyMovement mm " +
                             "JOIN Invoice inv ON mm.invoice_id = inv.invoice_id " +
-                            "WHERE inv.action_id = ? AND mm.status = 'EXECUTED'";
-        double confirmedExpenses = (double) db.executeQueryArray(sqlConfExp, actionId).get(0)[0];
+                            "WHERE inv.action_id = ? AND mm.status = 'EXECUTED' AND date(mm.movement_date) <= date(?)";
+        double confirmedExpenses = (double) db.executeQueryArray(sqlConfExp, actionId, safeDate).get(0)[0];
         dto.setConfirmedExpenses(confirmedExpenses);
         
         // Total Promised Remuneration
@@ -87,7 +112,8 @@ public class StatusFAModel {
     /**
      * Retrieves the list of registrations for a specific formative action.
      */
-    public List<FARegistrationDTO> getFARegistrations(int actionId) {
+    public List<FARegistrationDTO> getFARegistrations(int actionId, String simulatedDate) {
+    		String safeDate = (simulatedDate != null && !simulatedDate.isBlank()) ? simulatedDate.substring(0, 10) : "9999-12-31";
         String sql = 
             "SELECT " +
             "    p.name || ' ' || p.surname AS professionalName, " +
@@ -97,9 +123,9 @@ public class StatusFAModel {
             "    i.state AS state " +
             "FROM Inscription i " +
             "JOIN Professional p ON i.professional_id = p.professional_id " +
-            "WHERE i.action_id = ? " +
+            "WHERE i.action_id = ? AND date(i.inscription_date) <= date(?) " +
             "ORDER BY i.inscription_date DESC";
         
-        return db.executeQueryPojo(FARegistrationDTO.class, sql, actionId);
+        return db.executeQueryPojo(FARegistrationDTO.class, sql, actionId, safeDate);
     }
 }

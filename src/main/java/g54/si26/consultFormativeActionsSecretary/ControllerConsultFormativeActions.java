@@ -70,6 +70,9 @@ public class ControllerConsultFormativeActions {
     
     //Extracts filters from View and asks the info to the model
     private void handleSearch(){
+    		if(!checkFilterDateAndConfirm())
+            return;
+        
         String dateFilter=view.getTxtDateFilter().getText().trim();
         if(dateFilter.isEmpty()){
             dateFilter = getSimulatedDateStr();
@@ -161,4 +164,35 @@ public class ControllerConsultFormativeActions {
         ((DefaultTableModel) view.getTblCommunityFees().getModel()).setRowCount(0);
         view.setDetailsPanelVisible(false);
     }
+    
+    private boolean checkFilterDateAndConfirm() {
+        String dateStr = view.getTxtDateFilter().getText().trim();
+        
+        if(dateStr.isEmpty())
+            return true;
+       
+
+        boolean isValid = false;
+        try {
+            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("uuuu-MM-dd")
+                    .withResolverStyle(java.time.format.ResolverStyle.STRICT);
+            java.time.LocalDate.parse(dateStr, formatter);
+            isValid=true;
+        } catch (Exception ex) {
+            isValid=false;
+        }
+
+        if (!isValid) {
+            int choice = javax.swing.JOptionPane.showConfirmDialog(view.getFrame(), 
+                "The input date is incorrect or does not exist.\nThe system might not show all the information accurately.\nAre you sure you want to continue with this filter?", 
+                "Invalid Date Warning", 
+                javax.swing.JOptionPane.YES_NO_OPTION, 
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            
+            return choice == javax.swing.JOptionPane.YES_OPTION;
+        }
+        
+        return true;
+    }
+    
 }

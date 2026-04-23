@@ -34,7 +34,7 @@ public class ViewPlanMultipleFees {
 
     private JButton btnFillDebug, btnBack, btnClear, btnSave;
 
-    private static final Color COLOR_DELETE = new Color(220, 53, 69);     
+    private static final Color COLOR_DELETE = new Color(220, 53, 69); 
     private static final Color COLOR_LIGHT_BLUE = new Color(227, 242, 253);   
     private static final Color COLOR_LIGHT_GRAY = new Color(240, 244, 248);   
     private static final Color COLOR_BG  = UIManager.getColor("Panel.background");
@@ -249,9 +249,9 @@ public class ViewPlanMultipleFees {
         toolbar.setBackground(COLOR_BG);
         toolbar.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, COLOR_SEPARATOR));
         
-        btnFillDebug = createStyledButton("Fill Debug Data", COLOR_LIGHT_GRAY, Color.DARK_GRAY, 150, 25);
-        btnClear = createStyledButton("Clear", COLOR_CLEAR, Color.BLACK, 100, 25);
-        btnSave = createStyledButton("Save Action", COLOR_UPDATE, Color.WHITE, 150, 25);
+        btnFillDebug = createStyledButton("Fill Debug Data", COLOR_CLEAR, Color.DARK_GRAY, 150, 25);
+        btnClear = createStyledButton("Clear", COLOR_LIGHT_BLUE, COLOR_UPDATE, 100, 25);
+        btnSave = createStyledButton("Save Action", COLOR_INSERT, Color.WHITE, 150, 25);
         
         toolbar.add(btnFillDebug); 
         toolbar.add(btnClear); 

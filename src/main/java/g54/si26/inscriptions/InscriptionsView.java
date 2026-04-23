@@ -26,6 +26,7 @@ public class InscriptionsView {
     private static final Color COLOR_CLEAR = new Color(255, 235, 100);    
     private static final Color COLOR_SEPARATOR = new Color(180, 205, 230);
     private static final Color COLOR_LIGHT_BLUE = new Color(227, 242, 253);
+    private static final Color COLOR_LIGHT_GRAY = new Color(240, 244, 248);
     
     private static final Font FONT_REGULAR = new Font("Segoe UI", Font.PLAIN, 12);
     private static final Font FONT_BOLD = new Font("Segoe UI", Font.BOLD, 12);
@@ -43,27 +44,28 @@ public class InscriptionsView {
         frame.getContentPane().setBackground(COLOR_BG);
 
         // Panel principal
-        JPanel mainPanel = new JPanel(null);
-        mainPanel.setPreferredSize(new Dimension(810, 600));
+        JPanel mainPanel = new JPanel(new BorderLayout(10,10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         mainPanel.setBackground(COLOR_BG);
-        JScrollPane scrollPane = new JScrollPane(mainPanel);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.setBorder(null);
-        frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-
+        frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
+        
         //TOP PANEL (BACK y REFRESH)
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         topPanel.setBackground(COLOR_BG);
         topPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, COLOR_SEPARATOR));
         
         btnBack = createStyledButton("Back", COLOR_LIGHT_BLUE, COLOR_UPDATE, 0, 0, 80, 25);
-        btnLoadCourses = createStyledButton("Refresh Courses", COLOR_CLEAR, Color.DARK_GRAY, 0, 0, 150, 30);
+        btnLoadCourses = createStyledButton("Refresh Courses", COLOR_LIGHT_GRAY, Color.DARK_GRAY, 0, 0, 150, 30);
         topPanel.add(btnBack);
         topPanel.add(btnLoadCourses);
         frame.getContentPane().add(topPanel, BorderLayout.NORTH);
 
         //SECCION 1
-        JPanel p1 = createSection("1. Available Formative Actions", 10, 15, 810, 250);
+        JPanel p1 = createSection("1. Available Formative Actions", new BorderLayout(5, 5));
+        p1.setBorder(BorderFactory.createCompoundBorder(
+                p1.getBorder(), BorderFactory.createEmptyBorder(5, 10, 10, 10)
+        		));
+        
         tabCourses = new JTable(){
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -73,37 +75,58 @@ public class InscriptionsView {
         styleTable(tabCourses);
         tabCourses.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane spCourses = new JScrollPane(tabCourses);
-        spCourses.setBounds(15, 25, 780, 210);
+        //spCourses.setBounds(15, 25, 780, 210);
         spCourses.getViewport().setBackground(Color.WHITE);
         spCourses.setBorder(BorderFactory.createLineBorder(COLOR_SEPARATOR));
-        p1.add(spCourses);
-        mainPanel.add(p1);
+        p1.add(spCourses, BorderLayout.CENTER);
+        mainPanel.add(p1, BorderLayout.CENTER);
 
         // SECCION 2
-        JPanel p2 = createSection("2. Professional's Info", 10, 280, 810, 240);
+        JPanel p2 = createSection("2. Professional's Info", new GridLayout(1, 2, 15, 0));
+        p2.setBorder(BorderFactory.createCompoundBorder(
+                p2.getBorder(), BorderFactory.createEmptyBorder(5, 10, 10, 10)
+            ));
+        p2.setPreferredSize(new Dimension(0, 250));
         
         //Subsecció: Personal Data
-        JPanel subPersonal = createSubSection("Personal Data", 15, 25, 380, 200);
-        addLabel(subPersonal, "Name:", 15, 30, 80);
-        txtName = addTextField(subPersonal, 100, 30, 260);
+        JPanel subPersonal = createSubSection("Personal Data", new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weighty = 0;
+
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.1;
+        addLabel(subPersonal, "Name:", gbc);
+        gbc.gridx = 1; gbc.weightx = 0.9;
+        txtName = addTextField(subPersonal, gbc);
         
-        addLabel(subPersonal, "Surname:", 15, 70, 80);
-        txtSurname = addTextField(subPersonal, 100, 70, 260);
+        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0.1;
+        addLabel(subPersonal, "Surname:", gbc);
+        gbc.gridx = 1; gbc.weightx = 0.9;
+        txtSurname = addTextField(subPersonal, gbc);
         
-        addLabel(subPersonal, "Phone:", 15, 110, 80);
-        txtPhone = addTextField(subPersonal, 100, 110, 260);
+        gbc.gridx = 0; gbc.gridy = 2; gbc.weightx = 0.1;
+        addLabel(subPersonal, "Phone:", gbc);
+        gbc.gridx = 1; gbc.weightx = 0.9;
+        txtPhone = addTextField(subPersonal, gbc);
         
-        addLabel(subPersonal, "Email:", 15, 150, 80);
-        txtEmail = addTextField(subPersonal, 100, 150, 260);
+        gbc.gridx = 0; gbc.gridy = 3; gbc.weightx = 0.1;
+        addLabel(subPersonal, "Email:", gbc);
+        gbc.gridx = 1; gbc.weightx = 0.9;
+        txtEmail = addTextField(subPersonal, gbc);
+        
         p2.add(subPersonal);
 
         // Subsección: Community Fees
-        JPanel subFees = createSubSection("Community Fees", 415, 25, 380, 200);
+        JPanel subFees = createSubSection("Community Fees", new BorderLayout(5, 5));
+        subFees.setBorder(BorderFactory.createCompoundBorder(
+                subFees.getBorder(), BorderFactory.createEmptyBorder(5, 10, 10, 10)
+            ));
         lblCommunityHint = new JLabel("(!) Select a community fee from the grid");
         lblCommunityHint.setFont(new Font("Segoe UI", Font.ITALIC, 11));
         lblCommunityHint.setForeground(Color.red);
         lblCommunityHint.setBounds(15, 20, 300, 20);
-        subFees.add(lblCommunityHint);
+        subFees.add(lblCommunityHint, BorderLayout.NORTH);
         
         tblCommunityFees = new JTable(new DefaultTableModel(new String[]{"ID", "Community", "Fee (€)"}, 0){
             @Override public boolean isCellEditable(int r, int c){ return false; }
@@ -114,13 +137,13 @@ public class InscriptionsView {
         tblCommunityFees.getColumnModel().getColumn(0).setPreferredWidth(0);
         tblCommunityFees.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane spFees = new JScrollPane(tblCommunityFees);
-        spFees.setBounds(15, 45, 350, 140);
+        //spFees.setBounds(15, 45, 350, 140);
         spFees.getViewport().setBackground(Color.WHITE);
         spFees.setBorder(BorderFactory.createLineBorder(COLOR_SEPARATOR));
-        subFees.add(spFees);
+        subFees.add(spFees, BorderLayout.CENTER);
         p2.add(subFees);
 
-        mainPanel.add(p2);
+        mainPanel.add(p2, BorderLayout.SOUTH);
 
         //BOTTOM TOOLBAR
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
@@ -156,8 +179,8 @@ public class InscriptionsView {
         };
     }
 
-    private JPanel createSection(String title, int x, int y, int w, int h){
-        JPanel p = new JPanel(null){
+    private JPanel createSection(String title, LayoutManager layout){
+        JPanel p = new JPanel(layout){
             @Override
             protected void paintComponent(Graphics g){
                 super.paintComponent(g);
@@ -169,13 +192,13 @@ public class InscriptionsView {
             }
         };
         p.setOpaque(false); 
-        p.setBounds(x, y, w, h);
+        //p.setBounds(x, y, w, h);
         p.setBorder(BorderFactory.createTitledBorder(createRoundedBorder(COLOR_UPDATE, 1, 16), title, TitledBorder.LEFT, TitledBorder.TOP, FONT_BOLD, COLOR_UPDATE));
         return p;
     }
 
-    private JPanel createSubSection(String title, int x, int y, int w, int h){
-        JPanel p = new JPanel(null){
+    private JPanel createSubSection(String title, LayoutManager layout){
+        JPanel p = new JPanel(layout){
             @Override
             protected void paintComponent(Graphics g){
                 super.paintComponent(g);
@@ -187,7 +210,7 @@ public class InscriptionsView {
             }
         };
         p.setOpaque(false); 
-        p.setBounds(x, y, w, h);
+        //p.setBounds(x, y, w, h);
         p.setBorder(BorderFactory.createTitledBorder(createRoundedBorder(new Color(230, 200, 150), 1, 12), title, TitledBorder.LEFT, TitledBorder.TOP, new Font("Segoe UI", Font.ITALIC, 11), COLOR_UPDATE));
         return p;
     }
@@ -204,23 +227,23 @@ public class InscriptionsView {
         table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, COLOR_SEPARATOR));
     }
 
-    private void addLabel(JPanel p, String text, int x, int y, int w){
+    private void addLabel(JPanel p, String text, Object constraints){
         JLabel l = new JLabel(text);
-        l.setBounds(x, y, w, 25);
+        //l.setBounds(x, y, w, 25);
         l.setFont(FONT_REGULAR);
         l.setOpaque(false); 
-        p.add(l);
+        p.add(l, constraints);
     }
 
-    private JTextField addTextField(JPanel p, int x, int y, int w){
+    private JTextField addTextField(JPanel p, Object constraints){
         JTextField t = new JTextField();
-        t.setBounds(x, y, w, 25);
+        //t.setBounds(x, y, w, 25);
         t.setFont(FONT_REGULAR);
         t.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(COLOR_SEPARATOR),
             BorderFactory.createEmptyBorder(2, 5, 2, 5)
         ));
-        p.add(t);
+        p.add(t, constraints);
         return t;
     }
 

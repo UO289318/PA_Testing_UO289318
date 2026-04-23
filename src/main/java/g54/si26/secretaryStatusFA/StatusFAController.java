@@ -55,7 +55,7 @@ public class StatusFAController {
     }
 
     private void updateDetails(int actionId) {
-        FAStatusDTO fa = model.getFADetail(actionId);
+        FAStatusDTO fa = model.getFADetail(actionId, simulatedDateStr);
         if (fa != null) {
             view.getTxtName().setText(fa.getName());
             view.getTxtStatus().setText(fa.getStatus());
@@ -79,7 +79,7 @@ public class StatusFAController {
     }
 
     private void updateRegistrations(int actionId) {
-        List<FARegistrationDTO> registrations = model.getFARegistrations(actionId);
+        List<FARegistrationDTO> registrations = model.getFARegistrations(actionId, simulatedDateStr);
         DefaultTableModel tm = (DefaultTableModel) view.getTblRegistrations().getModel();
         tm.setRowCount(0);
         for (FARegistrationDTO reg : registrations) {

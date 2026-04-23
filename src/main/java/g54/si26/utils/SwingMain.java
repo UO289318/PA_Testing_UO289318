@@ -118,8 +118,9 @@ public class SwingMain {
 
         // --- BOTÓN P'ARRINCAR LA HISTORIA D'USUARIU: INSCRIPCIONES ---
         JButton btnEjecutarInscripciones = new JButton("Enrol in a Formative Action");
-        btnEjecutarInscripciones.addActionListener(new ActionListener() { //NOSONAR códigu autoxeneráu
+        btnEjecutarInscripciones.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	if (!checkDateAndConfirm()) return;
                 InscriptionsModel model = new InscriptionsModel();
                 InscriptionsView view = new InscriptionsView();
                 InscriptionsController controller = new InscriptionsController(model, view);
@@ -133,6 +134,7 @@ public class SwingMain {
         JButton btnEjecutarPagos = new JButton("Register Payments");
         btnEjecutarPagos.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	if (!checkDateAndConfirm()) return;
                 PaymentModel model = new PaymentModel();
                 PaymentView view = new PaymentView();
                 PaymentController controller = new PaymentController(model, view);
@@ -145,6 +147,7 @@ public class SwingMain {
         JButton btnEjecutarPagosProfesores = new JButton("Record Teacher Payments");
         btnEjecutarPagosProfesores.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	if (!checkDateAndConfirm()) return;
             		TeacherPaymentModel model = new TeacherPaymentModel();
             		TeacherPaymentView view = new TeacherPaymentView();
             		TeacherPaymentController controller = new TeacherPaymentController(model, view);
@@ -156,6 +159,7 @@ public class SwingMain {
         JButton btnCerrarAccion = new JButton("Close Formative Actions");
         btnCerrarAccion.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	if (!checkDateAndConfirm()) return;
                 String fechaSimulada = txtSystemDate.getText();
                 ViewCloseFormativeAction viewClose = new ViewCloseFormativeAction();
                 ModelCloseFormativeAction modelClose = new ModelCloseFormativeAction();
@@ -168,6 +172,7 @@ public class SwingMain {
         JButton btnExecuteSecretaryConsult = new JButton("Consult Money Movements");
         btnExecuteSecretaryConsult.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	if (!checkDateAndConfirm()) return;
                 FinancialConsultingModel model = new FinancialConsultingModel();
                 FinancialConsultingView view = new FinancialConsultingView();
                 FinancialConsultingController controller = new FinancialConsultingController(model, view);
@@ -181,6 +186,7 @@ public class SwingMain {
 JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         btnExecuteTMConsult.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	if (!checkDateAndConfirm()) return;
                 TMConsultingModel model = new TMConsultingModel();
                 TMConsultingView view = new TMConsultingView();
                 TMConsultingController controller = new TMConsultingController(model, view);
@@ -193,6 +199,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
 	    JButton btnPlanFormativeAction = new JButton("Plan Formative Action");
 		btnPlanFormativeAction.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
+    			if (!checkDateAndConfirm()) return;
         		ModelPlanFormativeAction model      = new ModelPlanFormativeAction();
         		ViewPlanFormativeAction  view       = new ViewPlanFormativeAction();
         		ControllerPlanFormativeAction ctrl  = new ControllerPlanFormativeAction(model, view);
@@ -204,6 +211,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
 	    JButton btnMultipleFees = new JButton("Plan Formative Action");
 		btnMultipleFees.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
+    			if (!checkDateAndConfirm()) return;
         		ModelPlanMultipleFees model      = new ModelPlanMultipleFees();
         		ViewPlanMultipleFees  view       = new ViewPlanMultipleFees();
         		ControllerPlanMultipleFees ctrl  = new ControllerPlanMultipleFees(model, view);
@@ -215,6 +223,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         JButton btnReopenFA = new JButton("Re-open FA's");
         btnReopenFA.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	if (!checkDateAndConfirm()) return;
                 ModelReopenFormativeAction model = new ModelReopenFormativeAction();
                 ViewReopenFormativeAction view = new ViewReopenFormativeAction();
                 ControllerReopenFormativeAction controller = new ControllerReopenFormativeAction(model, view);
@@ -226,6 +235,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         JButton btnMoneyMovements = new JButton("Register Real Money Movements");
         btnMoneyMovements.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	if (!checkDateAndConfirm()) return;
                 g54.si26.moneyMovements.MoneyMovementModel model = new g54.si26.moneyMovements.MoneyMovementModel();
                 g54.si26.moneyMovements.MoneyMovementView view = new g54.si26.moneyMovements.MoneyMovementView();
                 g54.si26.moneyMovements.MoneyMovementController controller = new g54.si26.moneyMovements.MoneyMovementController(model, view);
@@ -239,6 +249,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         JButton btnViewPendingPayments = new JButton("View Pending Payments");
         btnViewPendingPayments.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	if (!checkDateAndConfirm()) return;
                 ViewPendingModel model = new ViewPendingModel();
                 ViewPendingView view = new ViewPendingView();
                 ViewPendingController controller = new ViewPendingController(model, view);
@@ -253,6 +264,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         JButton btnCancelFA = new JButton("Cancel Formative Action");
         btnCancelFA.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	if (!checkDateAndConfirm()) return;
                 ModelCancelFormativeAction model = new ModelCancelFormativeAction();
                 g54.si26.cancelFormativeActions.ViewCancelFormativeAction view = new g54.si26.cancelFormativeActions.ViewCancelFormativeAction();
                 g54.si26.cancelFormativeActions.ControllerCancelFormativeAction controller = new g54.si26.cancelFormativeActions.ControllerCancelFormativeAction(model, view);
@@ -263,6 +275,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         
         JButton btnConsultFA = new JButton("Consult a list of Formative Actions for Management Purposes");
         btnConsultFA.addActionListener(e -> {
+        	if (!checkDateAndConfirm()) return;
             ModelConsultFormativeActions model = new ModelConsultFormativeActions();
             ViewConsultFormativeActions view = new ViewConsultFormativeActions();
             ControllerConsultFormativeActions controller = new ControllerConsultFormativeActions(model, view);
@@ -272,6 +285,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
 
         JButton btnStatusFA = new JButton("Consult FA Registrations");
         btnStatusFA.addActionListener(e -> {
+        	if (!checkDateAndConfirm()) return;
             StatusFAModel model = new StatusFAModel();
             StatusFAView view = new StatusFAView();
             StatusFAController controller = new StatusFAController(model, view);
@@ -282,6 +296,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         
         JButton btnCancelEnrollment = new JButton("Cancel Enrollment");
         btnCancelEnrollment.addActionListener(e -> {
+        	if (!checkDateAndConfirm()) return;
             //ModelCancelEnrollment model = new ModelCancelEnrollment();
             //ViewCancelEnrollment view = new ViewCancelEnrollment();
             //ControllerCancelEnrollment controller = new ControllerCancelEnrollment(model, view);
@@ -372,4 +387,30 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
     public JFrame getFrame() { return this.frame; }
     public JTextField getTxtSystemDate() { return txtSystemDate; }
     public JComboBox<ProfessionalDTO> getCbProfessional() { return cbProfessional; }
+
+ // Método para validar la fecha y mostrar el popup si es necesario
+    private boolean checkDateAndConfirm() {
+        String dateStr = txtSystemDate.getText().trim();
+        boolean isValid = false;
+        
+        try {
+            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("uuuu-MM-dd")
+                    .withResolverStyle(java.time.format.ResolverStyle.STRICT);
+            java.time.LocalDate.parse(dateStr, formatter);
+            isValid = true;
+        } catch (Exception ex) {
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            int choice = javax.swing.JOptionPane.showConfirmDialog(frame, 
+                "The input date is incorrect or does not exist, the system might not show all the information.\nAre you sure you want to continue?", 
+                "Invalid Date Warning", 
+                javax.swing.JOptionPane.YES_NO_OPTION, 
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return choice == javax.swing.JOptionPane.YES_OPTION;
+        }
+        return true;
+    }
+
 }
