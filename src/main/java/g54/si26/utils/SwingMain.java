@@ -17,11 +17,9 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
 import g54.si26.DTOs.ProfessionalDTO;
-<<<<<<< HEAD
-//import g54.si26.cancelEnrollment.*;
-=======
 
->>>>>>> refs/heads/invoiceManagement
+import g54.si26.cancelEnrollment.*;
+
 import g54.si26.inscriptions.*;
 import g54.si26.invoiceManagement.*;
 import g54.si26.payments.*;
@@ -284,14 +282,18 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         
         
 
-//        JButton btnCancelEnrollment = new JButton("Cancel Enrollment");
-//        btnCancelEnrollment.addActionListener(e -> {
-//            ModelCancelEnrollment model = new ModelCancelEnrollment();
-//            ViewCancelEnrollment view = new ViewCancelEnrollment();
-//            ControllerCancelEnrollment controller = new ControllerCancelEnrollment(model, view);
-//            controller.setSimulatedDate(txtSystemDate.getText());
-//            controller.initController();
-//        });
+        JButton btnCancelEnrollment = new JButton("Cancel Enrollment");
+        btnCancelEnrollment.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                ModelCancelEnrollment model = new ModelCancelEnrollment();
+                g54.si26.cancelEnrollment.ViewCancelEnrollment view = new g54.si26.cancelEnrollment.ViewCancelEnrollment();
+                g54.si26.cancelEnrollment.ControllerCancelEnrollment controller = new g54.si26.cancelEnrollment.ControllerCancelEnrollment(model, view);
+                
+                controller.setSimulatedDate(txtSystemDate.getText());
+                controller.setSelectedProfessional((g54.si26.DTOs.ProfessionalDTO) cbProfessional.getSelectedItem());
+                controller.initController(); 
+            }
+        });
 
         
      // --- BOTÓN PA' REGISTRAR FACTURAS DE PROFESORES ---
@@ -329,7 +331,7 @@ JButton btnExecuteTMConsult = new JButton("Consult Income and Expenses");
         //Aqeuí va Register new Teacehr US
 
         rightPanel.add(btnViewPendingPayments);
-        //rightPanel.add(btnCancelEnrollment);
+        rightPanel.add(btnCancelEnrollment);
         rightPanel.add(btnRecordInvoices);
         
 
