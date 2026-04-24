@@ -18,8 +18,8 @@ INSERT INTO "Professional" ("professional_id", "name", "surname", "phone", "emai
 INSERT INTO "FormativeAction" ("action_id", "name", "objectives", "mainContents", "spots", "startDate", "endDate", "numberOfHours", "inscriptionPeriodStart", "inscriptionPeriodEnd", "location", "status", "creationDate") VALUES
 (1, 'New Testing Techniques', 'Learn new testing techniques', 'TDD, BDD, JUnit', 3, '2025-09-01', '2025-09-01', '8', '2025-07-01', '2025-07-31', 'Online', 'ACTIVE', '2025-01-01'),
 (2, 'Neo4J Database Administration', 'Databases basics', 'Neo4J, Cypher', 4, '2026-04-20', '2026-04-24', '24', '2026-02-23', '2026-03-31', 'Aulario Sur', 'ACTIVE', '2026-01-01'),
-(3, 'Neo4J Database Administration', 'Databases basics', 'Neo4J, Cypher', 4, '2026-12-01', '2026-12-04', '24', '2026-11-01', '2026-11-31', 'Aulario Sur', 'ACTIVE', '2026-04-23'),
-(4, 'MongoDB Database Administration', 'NoSQL DB', 'MongoDB', 4, '2026-12-05', '2026-12-09', '24', '2026-11-01', '2026-11-31', 'Aulario Sur', 'ACTIVE', '2026-04-23');
+(3, 'Neo4J Database Administration', 'Databases basics', 'Neo4J, Cypher', 4, '2026-12-01', '2026-12-04', '24', '2026-11-01', '2026-11-30', 'Aulario Sur', 'ACTIVE', '2026-04-23'),
+(4, 'MongoDB Database Administration', 'NoSQL DB', 'MongoDB', 4, '2026-12-05', '2026-12-09', '24', '2026-11-01', '2026-11-30', 'Aulario Sur', 'ACTIVE', '2026-04-23');
 
 -- 3. Tasas (Fees) asociadas a las acciones y comunidades
 INSERT INTO "Fee" ("amount", "community_id", "action_id") VALUES
@@ -35,7 +35,12 @@ INSERT INTO "Fee" ("amount", "community_id", "action_id") VALUES
 INSERT INTO "Teacher_FormativeAction" ("remuneration", "status", "action_id", "teacher_id") VALUES
 (500.00, 'PAID', 1, 1),    
 (200.00, 'PENDING', 2, 2), 
-(100.00, 'PENDING', 2, 1); 
+(100.00, 'PENDING', 2, 1),
+
+(200.00, 'PENDING', 3, 2), 
+(100.00, 'PENDING', 3, 1),
+(200.00, 'PENDING', 4, 2), 
+(100.00, 'PENDING', 4, 1);
 
 -- 5. Inscripciones
 INSERT INTO "Inscription" ("inscription_id", "inscription_date", "applied_fee", "state", "professional_id", "action_id") VALUES
