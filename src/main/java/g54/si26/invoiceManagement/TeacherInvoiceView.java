@@ -67,7 +67,7 @@ public class TeacherInvoiceView {
         panelDetails.add(txtDate);
 
         // INPUT: El usuario mete el Neto
-        panelDetails.add(new JLabel("Total Amount (€):"));
+        panelDetails.add(new JLabel("Net Amount (€):"));
         txtNet = new JTextField();
         panelDetails.add(txtNet);
 
@@ -85,7 +85,7 @@ public class TeacherInvoiceView {
         panelDetails.add(txtVatAmount);
 
         // OUTPUT: El sistema calcula el Total sumando Neto + IVA
-        panelDetails.add(new JLabel("Net Amount (€):"));
+        panelDetails.add(new JLabel("Total Amount (€):"));
         txtTotal = new JTextField();
         txtTotal.setEditable(false);
         txtTotal.setBackground(Color.WHITE);
