@@ -36,7 +36,6 @@ INSERT INTO "Teacher_FormativeAction" ("remuneration", "status", "action_id", "t
 (500.00, 'PAID', 1, 1),    
 (200.00, 'PENDING', 2, 2), 
 (100.00, 'PENDING', 2, 1),
-
 (200.00, 'PENDING', 3, 2), 
 (100.00, 'PENDING', 3, 1),
 (200.00, 'PENDING', 4, 2), 

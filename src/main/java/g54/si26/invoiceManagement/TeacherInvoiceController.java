@@ -72,7 +72,7 @@ public class TeacherInvoiceController {
             
             // Fórmula: Cantidad IVA = Neto * (%IVA/100) | Total = Neto + IVA
             double vatAmount = net * (vatPct / 100.0);
-            double total = net - vatAmount;
+            double total = net + vatAmount;
             
             view.getTxtVatAmount().setText(String.format(java.util.Locale.US, "%.2f", vatAmount));
             view.getTxtTotal().setText(String.format(java.util.Locale.US, "%.2f", total));
