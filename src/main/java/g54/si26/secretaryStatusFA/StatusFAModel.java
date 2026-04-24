@@ -2,12 +2,14 @@ package g54.si26.secretaryStatusFA;
 
 import g54.si26.secretaryStatusFA.dto.FARegistrationDTO;
 import g54.si26.secretaryStatusFA.dto.FAStatusDTO;
+import g54.si26.tmConsulting.TMConsultingModel;
+import g54.si26.utils.BaseModel;
 import g54.si26.utils.Database;
 import java.util.List;
 
-public class StatusFAModel {
+public class StatusFAModel extends BaseModel {
 
-    private final Database db = new Database();
+    private final TMConsultingModel tmModel = new TMConsultingModel();
 
     /**
      * Retrieves the list of formative actions with basic status information.
@@ -15,21 +17,12 @@ public class StatusFAModel {
      */
     public List<FAStatusDTO> getFormativeActions(String simulatedDate) {
     	String safeDate = (simulatedDate != null && !simulatedDate.isBlank()) ? simulatedDate.substring(0, 10) : "9999-12-31";
+        String statusSql = getTemporalFaStatusSql(simulatedDate, "fa");
         String sql = 
             "SELECT " +
             "    fa.action_id AS actionId, " +
             "    fa.name AS name, " +
-            "    CASE " +
-            "      WHEN fa.closureDate IS NOT NULL AND date('" + safeDate + "') >= date(fa.closureDate) " +
-            "           AND (fa.reopenDate IS NULL OR date('" + safeDate + "') < date(fa.reopenDate)) THEN 'CLOSED' " +
-            "      WHEN (fa.cancelDate IS NOT NULL AND date('" + safeDate + "') >= date(fa.cancelDate) AND (fa.reopenDate IS NULL OR date('" + safeDate + "') < date(fa.reopenDate))) " +
-            "           OR (fa.status = 'CANCELLED' AND fa.cancelDate IS NULL) THEN 'Cancelled' " +
-            "      WHEN date('" + safeDate + "') > date(fa.endDate) THEN 'Finished' " +
-            "      WHEN date('" + safeDate + "') >= date(fa.startDate) AND date('" + safeDate + "') <= date(fa.endDate) THEN 'In progress' " +
-            "      WHEN date('" + safeDate + "') >= date(fa.inscriptionPeriodStart) AND date('" + safeDate + "') <= date(fa.inscriptionPeriodEnd) THEN 'Enrolment open' " +
-            "      WHEN date('" + safeDate + "') < date(fa.startDate) THEN 'Upcoming' " +
-            "      ELSE fa.status " +
-            "    END AS status, " +
+            "    (" + statusSql + ") AS status, " +
             "    fa.inscriptionPeriodStart AS inscriptionPeriodStart, " +
             "    fa.inscriptionPeriodEnd AS inscriptionPeriodEnd, " +
             "    fa.startDate AS startDate, " +
@@ -51,21 +44,12 @@ public class StatusFAModel {
     	
         // We get the basic data first
     		String safeDate = (simulatedDate != null && !simulatedDate.isBlank()) ? simulatedDate.substring(0, 10) : "9999-12-31";
+        String statusSql = getTemporalFaStatusSql(simulatedDate, "fa");
         String sqlBasic = 
             "SELECT " +
             "    fa.action_id AS actionId, " +
             "    fa.name AS name, " +
-            "    CASE " +
-            "      WHEN fa.closureDate IS NOT NULL AND date('" + safeDate + "') >= date(fa.closureDate) " +
-            "           AND (fa.reopenDate IS NULL OR date('" + safeDate + "') < date(fa.reopenDate)) THEN 'CLOSED' " +
-            "      WHEN (fa.cancelDate IS NOT NULL AND date('" + safeDate + "') >= date(fa.cancelDate) AND (fa.reopenDate IS NULL OR date('" + safeDate + "') < date(fa.reopenDate))) " +
-            "           OR (fa.status = 'CANCELLED' AND fa.cancelDate IS NULL) THEN 'Cancelled' " +
-            "      WHEN date('" + safeDate + "') > date(fa.endDate) THEN 'Finished' " +
-            "      WHEN date('" + safeDate + "') >= date(fa.startDate) AND date('" + safeDate + "') <= date(fa.endDate) THEN 'In progress' " +
-            "      WHEN date('" + safeDate + "') >= date(fa.inscriptionPeriodStart) AND date('" + safeDate + "') <= date(fa.inscriptionPeriodEnd) THEN 'Enrolment open' " +
-            "      WHEN date('" + safeDate + "') < date(fa.startDate) THEN 'Upcoming' " +
-            "      ELSE fa.status " +
-            "    END AS status, " +
+            "    (" + statusSql + ") AS status, " +
             "    fa.inscriptionPeriodStart AS inscriptionPeriodStart, " +
             "    fa.inscriptionPeriodEnd AS inscriptionPeriodEnd, " +
             "    fa.startDate AS startDate, " +
@@ -80,36 +64,28 @@ public class StatusFAModel {
         
         FAStatusDTO dto = results.get(0);
         
-        // Estimated Income: Sum of all applied fees for professionals who didn't cancel their inscription
-        String sqlExpected = "SELECT COALESCE(SUM(applied_fee), 0.0) FROM Inscription WHERE action_id = ? AND state != 'CANCELLED' AND date(inscription_date) <= date(?)";
-        double estimatedIncome = (double) db.executeQueryArray(sqlExpected, actionId, safeDate).get(0)[0];
-        dto.setEstimatedIncome(estimatedIncome);
-
-        // Confirmed Income: Sum of actual verified payments made by the enrolled professionals
-        String sqlIncome = "SELECT COALESCE(SUM(mm.amount), 0.0) " +
-                           "FROM MoneyMovement mm " +
-                           "JOIN Inscription i ON mm.inscription_id = i.inscription_id " +
-                           "WHERE i.action_id = ? AND mm.status = 'EXECUTED' AND date(mm.movement_date) <= date(?)";
-        double confirmedIncome = (double) db.executeQueryArray(sqlIncome, actionId, safeDate).get(0)[0];
-        dto.setConfirmedIncome(confirmedIncome);
+        // Use TMConsultingModel for financial metrics to ensure consistent logic across US
+        double confIncome = tmModel.getConfirmedIncome(actionId, simulatedDate);
+        dto.setConfirmedIncome(confIncome);
         
-        // Confirmed Expenses: Sum of actual money movements (payments) already transferred to the teachers
-        String sqlConfExp = "SELECT COALESCE(SUM(ABS(mm.amount)), 0.0) " +
-                            "FROM MoneyMovement mm " +
-                            "JOIN Invoice inv ON mm.invoice_id = inv.invoice_id " +
-                            "WHERE inv.action_id = ? AND mm.status = 'EXECUTED' AND date(mm.movement_date) <= date(?)";
-        double confirmedExpenses = (double) db.executeQueryArray(sqlConfExp, actionId, safeDate).get(0)[0];
-        dto.setConfirmedExpenses(confirmedExpenses);
+        double confExpenses = tmModel.getConfirmedExpenses(actionId, simulatedDate);
+        dto.setConfirmedExpenses(confExpenses);
         
-        // Total Promised Remuneration
-        String sqlTotalRem = "SELECT COALESCE(SUM(remuneration), 0.0) " +
-                             "FROM Teacher_FormativeAction " +
-                             "WHERE action_id = ?";
-        double totalRemuneration = (double) db.executeQueryArray(sqlTotalRem, actionId).get(0)[0];
+        double totalRemuneration = tmModel.getTotalRemuneration(actionId);
         dto.setTotalRemuneration(totalRemuneration);
         
-        // Estimated Expenses: (Total promised remuneration) - (Confirmed Expenses)
-        dto.setEstimatedExpenses(totalRemuneration - confirmedExpenses);
+        // New consistent estimation logic using the same formulas as TMConsulting
+        double avgFee = tmModel.getAvgFee(actionId);
+        int pendingInscriptions = tmModel.getPendingInscriptionsCount(actionId, simulatedDate);
+        int confirmedInscriptions = tmModel.getConfirmedInscriptionsCount(actionId, simulatedDate);
+        
+        double estimatedIncome = tmModel.calculateEstimatedIncome(dto.getTotalSpots(), confirmedInscriptions, pendingInscriptions, avgFee, confIncome);
+        dto.setEstimatedIncome(estimatedIncome);
+        
+        double totalEstimatedExpenses = tmModel.calculateEstimatedExpenses(confExpenses, totalRemuneration);
+        // The StatusFA DTO treats 'Estimated Expenses' as the ADDITIONAL amount expected
+        // based on the original implementation (Total Remuneration - Confirmed Expenses)
+        dto.setEstimatedExpenses(Math.max(0, totalEstimatedExpenses - confExpenses));
         
         return dto;
     }

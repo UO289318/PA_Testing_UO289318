@@ -41,7 +41,10 @@ public class MoneyMovementModel {
                      "i.invoice_id AS invoiceId, " +
                      "t.name AS teacherName, " +
                      "fa.name AS courseName, " +
+                     "i.netAmount AS netAmount, " +
+                     "i.vat AS vat, " +
                      "i.totalAmount AS totalAmount, " +
+                     "i.invoice_date AS invoiceDate, " +
                      "i.status AS status, " +
                      "(SELECT COALESCE(SUM(amount), 0) FROM MoneyMovement WHERE invoice_id = i.invoice_id) AS netBalance " +
                      "FROM Invoice i " +
@@ -53,7 +56,7 @@ public class MoneyMovementModel {
     public List<TeacherInvoiceDTO> getInvoicesPendingCompensation() {
         String sql = "SELECT * FROM (" +
                      "SELECT i.invoice_id AS invoiceId, t.name AS teacherName, fa.name AS courseName, " +
-                     "i.totalAmount AS totalAmount, " +
+                     "i.netAmount AS netAmount, i.vat AS vat, i.totalAmount AS totalAmount, " +
                      "(ABS((SELECT COALESCE(SUM(amount), 0) FROM MoneyMovement WHERE invoice_id = i.invoice_id)) - i.totalAmount) AS netBalance " +
                      "FROM Invoice i JOIN Teacher t ON i.teacher_id = t.teacher_id " +
                      "JOIN FormativeAction fa ON i.action_id = fa.action_id" +
@@ -62,7 +65,7 @@ public class MoneyMovementModel {
     }
 
     public List<MoneyMovementDTO> getAllMovements() {
-        String sql = "SELECT mm.movement_id AS movementId, mm.amount, mm.movement_date AS movementDate, mm.status, mm.inscription_id AS inscriptionId, mm.invoice_id AS invoiceId, " +
+        String sql = "SELECT mm.movement_id AS movementId, mm.amount, mm.movement_date AS movementDate, mm.status, mm.type, mm.inscription_id AS inscriptionId, mm.invoice_id AS invoiceId, " +
                      "COALESCE('Insc: ' || p.surname || ' (' || fa.name || ')', 'Inv: ' || t.name || ' (' || fa2.name || ')') AS relatedTo " +
                      "FROM MoneyMovement mm " +
                      "LEFT JOIN Inscription i ON mm.inscription_id = i.inscription_id " +
@@ -76,19 +79,19 @@ public class MoneyMovementModel {
     }
 
     public List<MoneyMovementDTO> getMovementsByInscription(int id) {
-        String sql = "SELECT movement_id AS movementId, amount, movement_date AS movementDate, status, inscription_id AS inscriptionId " +
+        String sql = "SELECT movement_id AS movementId, amount, movement_date AS movementDate, status, type, inscription_id AS inscriptionId " +
                      "FROM MoneyMovement WHERE inscription_id = ? ORDER BY movement_date DESC";
         return db.executeQueryPojo(MoneyMovementDTO.class, sql, id);
     }
 
     public List<MoneyMovementDTO> getMovementsByInvoice(int id) {
-        String sql = "SELECT movement_id AS movementId, amount, movement_date AS movementDate, status, invoice_id AS invoiceId " +
+        String sql = "SELECT movement_id AS movementId, amount, movement_date AS movementDate, status, type, invoice_id AS invoiceId " +
                      "FROM MoneyMovement WHERE invoice_id = ? ORDER BY movement_date DESC";
         return db.executeQueryPojo(MoneyMovementDTO.class, sql, id);
     }
 
     public void registerMovement(Integer inscriptionId, Integer invoiceId, double amount, String date, String status) {
-        String sql = "INSERT INTO MoneyMovement (amount, movement_date, status, inscription_id, invoice_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO MoneyMovement (amount, movement_date, status, type, inscription_id, invoice_id) VALUES (?, ?, ?, 'PAYMENT', ?, ?)";
         db.executeUpdate(sql, amount, date, status, inscriptionId, invoiceId);
         
         if (inscriptionId != null) updateInscriptionStatus(inscriptionId);

@@ -5,11 +5,15 @@ public class MoneyMovementDTO {
     private double amount;
     private String movementDate;
     private String status;
+    private String type;
     private Integer inscriptionId;
     private Integer invoiceId;
     private String relatedTo;
 
     public MoneyMovementDTO() {}
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
 
     public String getRelatedTo() { return relatedTo; }
     public void setRelatedTo(String relatedTo) { this.relatedTo = relatedTo; }
