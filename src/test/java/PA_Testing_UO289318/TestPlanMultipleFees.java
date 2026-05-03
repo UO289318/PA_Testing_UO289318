@@ -233,4 +233,44 @@ public class TestPlanMultipleFees {
         assertTrue(result.hasErrors());
         assertTrue(result.errors.contains("Fee for community id 1 must be zero or positive."));
     }
+
+    // TC-12: FUture deletion leaves  data
+    @Test
+    public void testTC12_DeleteFutureDuplicatesOrphansData() {
+        db.executeUpdate("INSERT INTO FormativeAction(action_id, name, spots, startDate, endDate, numberOfHours, inscriptionPeriodStart, inscriptionPeriodEnd, location, status, creationDate) " +
+                         "VALUES (99, 'Curso Duplicado', 10, '2026-09-01', '2026-09-30', 40, '2026-07-01', '2026-07-31', 'Online', 'ACTIVE', '2026-05-01')");
+        db.executeUpdate("INSERT INTO Fee(fee_id, amount, community_id, action_id) VALUES (99, 100.0, 1, 99)");
+        db.executeUpdate("INSERT INTO Teacher_FormativeAction(id, remuneration, status, action_id, teacher_id) VALUES (99, 1000.0, 'PENDING', 99, 1)");
+
+        FormativeActionDTO dto = createBaseDTO();
+        dto.setName("Curso Duplicado");
+        model.addFormativeAction(dto, SIMULATED_TODAY, createBaseFees(), createBaseTeacherModel());
+
+
+        List<Object[]> oldFA = db.executeQueryArray("SELECT * FROM FormativeAction WHERE action_id = 99");
+        assertEquals(0, oldFA.size(), "Futre FA Should have been deleted");
+
+        List<Object[]> orphanedFees = db.executeQueryArray("SELECT * FROM Fee WHERE action_id = 99");
+        List<Object[]> orphanedTeachers = db.executeQueryArray("SELECT * FROM Teacher_FormativeAction WHERE action_id = 99");
+
+        assertAll("Verificación de Orfandad",
+            () -> assertEquals(0, orphanedFees.size(), "Fees lefct in the DB"),
+            () -> assertEquals(0, orphanedTeachers.size(), "Teachers left in the DB")
+        );
+    }
+
+    // TC-13: Removing a Community from the selected FA removes in the DB
+    @Test
+    public void testTC13_DeleteCommunityDestroysActiveCourses() {
+
+        db.executeUpdate("INSERT INTO FormativeAction(action_id, name, spots, startDate, endDate, numberOfHours, inscriptionPeriodStart, inscriptionPeriodEnd, location, status, creationDate) " +
+                         "VALUES (88, 'Curso Blindado', 10, '2026-09-01', '2026-09-30', 40, '2026-07-01', '2026-07-31', 'Online', 'ACTIVE', '2026-04-01')");
+        db.executeUpdate("INSERT INTO Fee(fee_id, amount, community_id, action_id) VALUES (88, 100.0, 1, 88)");
+        
+        model.deleteCommunity(1);
+
+        List<Object[]> activeFees = db.executeQueryArray("SELECT * FROM Fee WHERE action_id = 88");
+
+        assertTrue(activeFees.size() > 0, "A community has been removed from the DB");
+    }
 }
